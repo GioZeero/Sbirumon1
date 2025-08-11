@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback, useTransition } from 'react';
 import type { Fighter } from '@/types/battle';
 import { getPlayerProfileData, updatePlayerMoney } from '@/lib/fighter-repository';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, Coins, ChevronLeftCircle, Info, Bone, Beaker } from 'lucide-react';
 import { ALL_CONSUMABLES } from '@/config/consumables';
 import { buyConsumable } from '@/app/shop/consumables/actions';
@@ -57,7 +57,7 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData }: Bla
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
             <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-8 w-8" />
+                <ChevronLeftCircle className="h-9 w-9" strokeWidth={2.5} />
             </Button>
             <main className="w-full max-w-4xl p-4 sm:p-6">
                 <header className="w-full mb-8 mt-12 sm:mt-0 relative">

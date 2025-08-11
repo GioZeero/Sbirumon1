@@ -199,7 +199,7 @@ export default function EditSbirulinoMovesClientView({ sbirulinoInitial, availab
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground relative">
       <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-          <ArrowLeft className="h-7 w-7" />
+          <ArrowLeft className="h-9 w-9" strokeWidth={2.5} />
       </Button>
       <main className="w-full max-w-4xl space-y-4 p-4 sm:p-6 md:p-8">
         <header className="w-full mt-12 sm:mt-0 mb-4">

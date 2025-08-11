@@ -41,7 +41,7 @@ export const ArenaLeaderboardPage = ({ onNavigate }: ArenaLeaderboardPageProps) 
     return (
         <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
             <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-8 w-8" />
+                <ChevronLeftCircle className="h-9 w-9" strokeWidth={2.5} />
             </Button>
             <main className="w-full max-w-lg p-4">
                 <header className="mb-8 mt-12 sm:mt-0">

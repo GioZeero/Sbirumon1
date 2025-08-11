@@ -38,7 +38,7 @@ export const ArenaPage = ({
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-4 text-foreground overflow-hidden">
         <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-20 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => navigateTo('main')}>
-            <ChevronLeftCircle className="h-8 w-8" />
+            <ChevronLeftCircle className="h-9 w-9" strokeWidth={2.5} />
         </Button>
 
         <main className="flex w-full max-w-lg flex-col items-center justify-center space-y-8">

@@ -116,7 +116,7 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
              <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ArrowLeft className="h-7 w-7" />
+                <ArrowLeft className="h-9 w-9" strokeWidth={2.5} />
             </Button>
             <main className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6 mt-16">
                 <section className="flex flex-col items-center">
