@@ -51,32 +51,14 @@ export const ChatPage = ({ onNavigate, trainerName, recipientName }: ChatPagePro
 
         setNewMessage('');
         
-        // Optimistic update
-        const optimisticMessage: Message = {
-            id: `temp-${Date.now()}`,
-            chatId: chatId,
-            sender: trainerName,
-            recipient: recipientName,
-            text: textToSend,
-            timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, optimisticMessage]);
+        await sendMessage(chatId, trainerName, recipientName, textToSend);
 
-        const result = await sendMessage(chatId, trainerName, recipientName, textToSend);
-
-        if (!result.success) {
-            // Revert optimistic update on failure
-            setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
-            setNewMessage(textToSend); // Restore message in input
-        }
-        
-        // Let the polling handle the final state
         await fetchMessages(); 
     };
 
     return (
-        <div className="min-h-screen h-screen flex flex-col items-center text-foreground relative">
-            <header className="w-full p-2 sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b">
+        <div className="h-screen flex flex-col text-foreground">
+            <header className="w-full p-2 bg-background/80 backdrop-blur-sm z-10 border-b flex-shrink-0">
                 <div className="max-w-xl mx-auto flex items-center gap-2">
                     <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => onNavigate('messages_hub')}>
                         <ChevronLeftCircle className="h-6 w-6" />
@@ -85,32 +67,34 @@ export const ChatPage = ({ onNavigate, trainerName, recipientName }: ChatPagePro
                 </div>
             </header>
             
-            <ScrollArea className="flex-grow w-full" viewportRef={viewportRef}>
-                <div className="max-w-xl mx-auto p-4">
-                    {isLoading ? (
-                        <div className="flex justify-center items-center h-full">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {messages.map(msg => (
-                                <div key={msg.id} className={cn("flex", msg.sender === trainerName ? "justify-end" : "justify-start")}>
-                                    <div className={cn(
-                                        "max-w-xs md:max-w-md p-3 rounded-2xl",
-                                        msg.sender === trainerName 
-                                            ? "bg-primary text-primary-foreground rounded-br-lg" 
-                                            : "bg-secondary text-secondary-foreground rounded-bl-lg"
-                                    )}>
-                                        <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+            <main className="flex-grow w-full max-w-xl mx-auto overflow-y-auto">
+                <ScrollArea className="h-full" viewportRef={viewportRef}>
+                    <div className="p-4">
+                        {isLoading ? (
+                            <div className="flex justify-center items-center h-full">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {messages.map(msg => (
+                                    <div key={msg.id} className={cn("flex", msg.sender === trainerName ? "justify-end" : "justify-start")}>
+                                        <div className={cn(
+                                            "max-w-xs md:max-w-md p-3 rounded-2xl",
+                                            msg.sender === trainerName 
+                                                ? "bg-primary text-primary-foreground rounded-br-lg" 
+                                                : "bg-secondary text-secondary-foreground rounded-bl-lg"
+                                        )}>
+                                            <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </ScrollArea>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
+            </main>
 
-            <footer className="sticky bottom-0 w-full bg-background border-t">
+            <footer className="w-full bg-background border-t flex-shrink-0">
                 <form onSubmit={handleSendMessage} className="p-2">
                     <div className="flex items-center gap-2 max-w-xl mx-auto">
                         <Input 
