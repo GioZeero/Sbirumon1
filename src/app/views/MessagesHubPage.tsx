@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, ChevronLeftCircle, Search, MessageSquarePlus } from 'lucide-react';
+import { Loader2, ChevronLeftCircle, Search, MessageSquarePlus, UserCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { it } from 'date-fns/locale';
 import type { View } from './types';
 import { useDebounce } from 'use-debounce';
+import { cn } from '@/lib/utils';
 
 interface MessagesHubPageProps {
   onNavigate: (view: View, data?: any) => void;
@@ -52,17 +53,13 @@ export const MessagesHubPage = ({ onNavigate, trainerName }: MessagesHubPageProp
         performSearch();
     }, [debouncedSearchQuery, trainerName]);
 
-    const getChatId = (otherUser: string) => {
-        return [trainerName, otherUser].sort().join('_');
-    };
-    
     const handleNewChat = (recipient: string) => {
         onNavigate('chat', { recipient });
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center text-foreground relative pb-4">
-            <header className="w-full p-4 sticky top-0 bg-background/80 backdrop-blur-sm z-10">
+        <div className="min-h-screen flex flex-col items-center text-foreground relative">
+            <header className="w-full p-4 sticky top-0 bg-background/80 backdrop-blur-sm z-10 border-b">
                 <div className="max-w-xl mx-auto flex items-center gap-4">
                     <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => onNavigate('trainer')}>
                         <ChevronLeftCircle className="h-6 w-6" />
@@ -82,14 +79,14 @@ export const MessagesHubPage = ({ onNavigate, trainerName }: MessagesHubPageProp
                 </div>
                 
                 {searchQuery.trim().length > 0 ? (
-                     <Card className="mt-2">
-                        <CardContent className="p-2">
+                     <Card className="mt-2 bg-card/50">
+                        <CardContent className="p-1">
                             {isSearching ? <div className="flex justify-center p-4"><Loader2 className="animate-spin" /></div> : (
                                 searchResults.length > 0 ? (
                                     searchResults.map(user => (
-                                        <Button key={user.trainerName} variant="ghost" className="w-full justify-start gap-2" onClick={() => handleNewChat(user.trainerName)}>
+                                        <Button key={user.trainerName} variant="ghost" className="w-full justify-start gap-3 py-6" onClick={() => handleNewChat(user.trainerName)}>
                                             <MessageSquarePlus className="h-5 w-5 text-primary" />
-                                            {user.trainerName}
+                                            <span className="text-base">{user.trainerName}</span>
                                         </Button>
                                     ))
                                 ) : <p className="text-center text-sm text-muted-foreground p-4">Nessun utente trovato.</p>
@@ -101,30 +98,31 @@ export const MessagesHubPage = ({ onNavigate, trainerName }: MessagesHubPageProp
                         {isLoading ? (
                             <div className="flex justify-center p-8"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>
                         ) : chats.length > 0 ? (
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 {chats.map(chat => {
                                     const otherParticipant = chat.participants.find(p => p !== trainerName) || 'Sconosciuto';
                                     const isUnread = chat.unreadBy?.[trainerName];
                                     return (
-                                        <Card key={chat.id} className="cursor-pointer hover:bg-accent/10" onClick={() => handleNewChat(otherParticipant)}>
-                                            <CardContent className="p-3 flex items-center gap-3">
-                                                {isUnread && <div className="h-2.5 w-2.5 rounded-full bg-destructive flex-shrink-0" />}
-                                                <div className="flex-grow overflow-hidden">
-                                                    <p className="font-bold truncate">{otherParticipant}</p>
-                                                    {chat.lastMessage && (
-                                                         <p className="text-sm text-muted-foreground truncate">
-                                                            {chat.lastMessage.sender === trainerName && "Tu: "}
-                                                            {chat.lastMessage.text}
-                                                         </p>
-                                                    )}
-                                                </div>
+                                        <div key={chat.id} className="p-3 flex items-center gap-4 cursor-pointer rounded-lg hover:bg-accent/10 transition-colors" onClick={() => handleNewChat(otherParticipant)}>
+                                            <UserCircle className="w-10 h-10 text-muted-foreground flex-shrink-0" />
+                                            <div className="flex-grow overflow-hidden">
+                                                <p className={cn("font-bold truncate", isUnread && "text-primary")}>{otherParticipant}</p>
                                                 {chat.lastMessage && (
-                                                    <p className="text-xs text-muted-foreground flex-shrink-0">
+                                                     <p className="text-sm text-muted-foreground truncate">
+                                                        {chat.lastMessage.sender === trainerName && "Tu: "}
+                                                        {chat.lastMessage.text}
+                                                     </p>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                                                {chat.lastMessage && (
+                                                    <p className="text-xs text-muted-foreground">
                                                         {formatDistanceToNow(chat.lastMessage.timestamp, { addSuffix: true, locale: it })}
                                                     </p>
                                                 )}
-                                            </CardContent>
-                                        </Card>
+                                                {isUnread && <div className="h-2.5 w-2.5 rounded-full bg-destructive" />}
+                                            </div>
+                                        </div>
                                     );
                                 })}
                             </div>
