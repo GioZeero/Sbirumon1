@@ -1300,7 +1300,7 @@ function SbirumonApp() {
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
-    items_hub: <ItemsHubPage onNavigate={navigateTo} />,
+    items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     items_moves: <MovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
