@@ -477,8 +477,10 @@ export async function getFighterDataForBattle(
         opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
       }
       
-      if (opponent) {
+      if (opponent && opponent.baseId) {
           await addEncounteredCreature(trainerName, opponent.baseId);
+      } else if (opponent && opponent.isUnique) { // For Viandanti and other unique creatures
+          await addEncounteredCreature(trainerName, opponent.id);
       }
       return opponent;
   }

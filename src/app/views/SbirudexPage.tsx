@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Fighter, CreatureType, Archetype } from '@/types/battle';
-import { getCreaturePool } from '@/config/fighters';
+import { getCreaturePool, getViandanteMaestroPool } from '@/config/fighters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -31,7 +31,11 @@ interface SbirudexPageProps {
 }
 
 export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: SbirudexPageProps) => {
-  const [allCreatures] = useState(() => getCreaturePool().sort((a, b) => a.name.localeCompare(b.name)));
+  const [allCreatures] = useState(() => {
+    const regularCreatures = getCreaturePool();
+    const uniqueCreatures = getViandanteMaestroPool();
+    return [...regularCreatures, ...uniqueCreatures].sort((a, b) => a.name.localeCompare(b.name));
+  });
   const [selectedCreature, setSelectedCreature] = useState<Fighter | null>(null);
 
   const getArchetypeDescription = (archetype?: Archetype): string => {
@@ -73,7 +77,7 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
         <ScrollArea className="h-[70vh]">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
                 {allCreatures.map((creature) => {
-                    const isEncountered = encounteredIds.has(creature.id);
+                    const isEncountered = encounteredIds.has(creature.id) || encounteredIds.has(creature.baseId);
                     const TypeIcon = creatureTypeIconMap[creature.creatureType];
 
                     return (
