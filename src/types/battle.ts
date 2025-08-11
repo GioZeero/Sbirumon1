@@ -134,6 +134,9 @@ export interface Fighter {
   // Arena
   arenaDisclaimerAccepted?: boolean;
   defeatedBy?: string | null;
+
+  // Sbirudex
+  encounteredCreatureIds?: string[];
 }
 
 export type LogMessagePart = string | { type: 'attack'; attackId: string; attackName: string };

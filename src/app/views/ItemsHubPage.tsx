@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { PackagePlus, Book, ChevronLeftCircle } from 'lucide-react';
+import { PackagePlus, Book, ChevronLeftCircle, Dna } from 'lucide-react';
 import type { View } from './types';
 
 interface ItemsHubPageProps {
@@ -38,6 +38,15 @@ export const ItemsHubPage = ({ onNavigate }: ItemsHubPageProps) => {
                     <div>
                         <p className="text-base font-bold">Libro delle Mosse</p>
                         <p className="text-sm text-muted-foreground">Consulta le mosse sbloccate</p>
+                    </div>
+                </div>
+            </Button>
+            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('sbirudex')}>
+                <div className="flex items-center gap-4">
+                    <div className="rounded-lg bg-green-500/20 p-3"><Dna className="h-6 w-6 text-green-400" /></div>
+                    <div>
+                        <p className="text-base font-bold">Sbirudex</p>
+                        <p className="text-sm text-muted-foreground">Enciclopedia delle creature</p>
                     </div>
                 </div>
             </Button>

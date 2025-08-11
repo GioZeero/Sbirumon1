@@ -60,6 +60,7 @@ interface FighterDbData {
   didNotUseConsumables?: boolean;
   arenaDisclaimerAccepted?: boolean;
   defeatedBy?: string | null;
+  encounteredCreatureIds?: string[];
 }
 
 interface QuestStateDbData {
@@ -132,6 +133,7 @@ function mapFighterToDbData(fighter: Fighter): FighterDbData {
     didNotUseConsumables: fighter.didNotUseConsumables ?? true,
     arenaDisclaimerAccepted: fighter.arenaDisclaimerAccepted ?? false,
     defeatedBy: fighter.defeatedBy ?? null,
+    encounteredCreatureIds: fighter.encounteredCreatureIds || [],
   };
 }
 
@@ -178,6 +180,7 @@ function mapDbDataToFighter(dbData: FighterDbData): Fighter {
     didNotUseConsumables: dbData.didNotUseConsumables ?? true,
     arenaDisclaimerAccepted: dbData.arenaDisclaimerAccepted ?? false,
     defeatedBy: dbData.defeatedBy ?? null,
+    encounteredCreatureIds: dbData.encounteredCreatureIds || [],
   };
   return fighter;
 }
@@ -269,6 +272,7 @@ async function createInitialPlayer(trainerName: string): Promise<Fighter> {
         didNotUseConsumables: true,
         arenaDisclaimerAccepted: false,
         defeatedBy: null,
+        encounteredCreatureIds: [],
     };
 
     await savePlayer(trainerName, newPlayer);
@@ -439,6 +443,22 @@ function generateRandomizedStatsAndHp(baseFighter: Fighter): Fighter {
 }
 
 
+async function addEncounteredCreature(trainerName: string, creatureBaseId: string): Promise<Fighter | null> {
+    const player = await getPlayerFromStore(trainerName);
+    if (!player) return null;
+
+    if (!player.encounteredCreatureIds) {
+        player.encounteredCreatureIds = [];
+    }
+
+    if (!player.encounteredCreatureIds.includes(creatureBaseId)) {
+        player.encounteredCreatureIds.push(creatureBaseId);
+        await savePlayer(trainerName, player);
+    }
+    return player;
+}
+
+
 export async function getFighterDataForBattle(
   trainerName: string,
   options?: { fighterType: 'player' | 'opponent', persistedState?: Fighter; fixedLevel?: number, opponentType?: 'covo' | 'gym' | 'prairie' | 'viandante' | 'arena' }
@@ -446,15 +466,21 @@ export async function getFighterDataForBattle(
   const { fighterType = 'player', ...restOptions } = options || {};
 
   if (fighterType === 'opponent') {
+      let opponent: Fighter | null = null;
       if (options?.opponentType === 'arena') {
-        const opponent = await getRandomOnlineOpponent(trainerName);
-        if (!opponent) return null;
-        return prepareFighterForBattleInstance(opponent, 'opponent', restOptions);
+        const randomOpponent = await getRandomOnlineOpponent(trainerName);
+        if (!randomOpponent) return null;
+        opponent = prepareFighterForBattleInstance(randomOpponent, 'opponent', restOptions);
+      } else {
+        const creaturePool = getCreaturePool();
+        const randomBase = creaturePool[Math.floor(Math.random() * creaturePool.length)];
+        opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
       }
       
-      const creaturePool = getCreaturePool();
-      const randomBase = creaturePool[Math.floor(Math.random() * creaturePool.length)];
-      return prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
+      if (opponent) {
+          await addEncounteredCreature(trainerName, opponent.baseId);
+      }
+      return opponent;
   }
 
   // Default to player logic
@@ -768,7 +794,7 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
 
   transformedPlayer.attacks = capturedOpponentData.attacks.map(a => ({ ...a }));
 
-
+  await addEncounteredCreature(trainerName, capturedOpponentData.baseId);
   await savePlayer(trainerName, transformedPlayer);
 
   return JSON.parse(JSON.stringify(transformedPlayer));
@@ -897,7 +923,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
 
-
+    await addEncounteredCreature(trainerName, chosenCreature.baseId);
     await savePlayer(trainerName, newPlayer);
     
     return newPlayer;

@@ -78,7 +78,8 @@ import {
   ItemsHubPage,
   ConsumablesPage,
   MovesPage,
-  ArcanePathPage
+  ArcanePathPage,
+  SbirudexPage
 } from './views';
 
 
@@ -1207,6 +1208,7 @@ function SbirumonApp() {
         case 'items_hub':
         case 'items_consumables':
         case 'items_moves':
+        case 'sbirudex':
             return 'bg-storage';
         case 'loading':
         case 'welcome':
@@ -1308,6 +1310,7 @@ function SbirumonApp() {
     sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} isMaster={false} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     master_sorcerer: <SorcererTentPage onNavigate={navigateTo} isMaster={true} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData}/>,
+    sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     battle: <></>
   };
 
