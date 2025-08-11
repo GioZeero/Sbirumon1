@@ -86,7 +86,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
         </div>
         
         <div 
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ perspective: 1000 }}
         >
             <motion.div
@@ -152,7 +152,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             </motion.div>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
