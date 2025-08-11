@@ -45,5 +45,3 @@ export const CityPage = ({ onNavigate }: CityPageProps) => {
         </div>
     );
 };
-
-    

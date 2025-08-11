@@ -161,7 +161,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             </motion.div>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center z-10">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
