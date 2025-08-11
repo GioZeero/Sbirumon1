@@ -16,8 +16,8 @@ interface NobleAreaPageProps {
 
 export const NobleAreaPage = ({ onNavigate, menuPlayerData, startViandanteMaestroBattle }: NobleAreaPageProps) => (
     <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
-        <Button onClick={() => onNavigate('main')} variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20">
-            <ChevronLeftCircle className="h-9 w-9" strokeWidth={2.5} />
+        <Button onClick={() => onNavigate('main')} variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-14 w-14 rounded-full hover:bg-background/20">
+            <ChevronLeftCircle className="h-12 w-12" strokeWidth={3} />
         </Button>
         <main className="flex w-full flex-col items-center p-4">
             <header className="w-full max-w-sm mb-8 mt-12 sm:mt-0">
