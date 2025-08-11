@@ -43,11 +43,6 @@ export const ItemsHubPage = ({ onNavigate, menuPlayerData }: ItemsHubPageProps) 
                 </CardContent>
             </Card>
         )}
-        <header className="w-full mb-8">
-          <h1 className="text-4xl font-headline text-primary text-center">
-            Casa
-          </h1>
-        </header>
         <div className="grid w-full max-w-sm grid-cols-1 gap-3">
             <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('items_consumables')}>
                 <div className="flex items-center gap-4">
