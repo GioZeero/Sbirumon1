@@ -39,7 +39,7 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4 text-foreground">
                 <p>Errore nel caricamento dei dati dell'allenatore.</p>
-                <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
                   <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
                 </button>
             </div>
@@ -60,7 +60,7 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
             <div className="w-full relative p-6">
-                <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
                     <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
                 </button>
                 <Button variant="ghost" size="icon" className="absolute top-6 right-6 z-10" onClick={onRequestFullscreen}>

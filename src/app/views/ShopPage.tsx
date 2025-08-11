@@ -108,7 +108,7 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
             <header className="w-full p-6 flex items-center justify-between">
-                <button onClick={() => onNavigate('main')} className="h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <button onClick={() => onNavigate('main')} className="h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
                     <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
                 </button>
                  <div className="flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md">
