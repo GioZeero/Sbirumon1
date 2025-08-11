@@ -41,6 +41,7 @@ interface BattleViewProps {
     opponentChosenAction: Attack | null;
     isPlayerTurn: boolean;
     isPaused: boolean;
+    setIsPaused: (paused: boolean) => void;
     isConfirmDisabled: boolean;
     covoConfig: { city: string; size: CovoSize; totalOpponents: number } | null;
     gymConfig: GymConfig | null;
@@ -108,7 +109,7 @@ interface BattleViewProps {
 const BattleView: React.FC<BattleViewProps> = (props) => {
     const {
         isInitializing, isLoading, player, opponent, winner, handleGoToMenu, playerChosenAction,
-        opponentChosenAction, isPlayerTurn, isPaused, isConfirmDisabled,
+        opponentChosenAction, isPlayerTurn, isPaused, setIsPaused, isConfirmDisabled,
         covoConfig, gymConfig, isArenaBattle, currentTurnMessage, handleCloseScoutAnalysis,
         showScoutAnalysis, scoutAnalysisResult, setOpponentCardCoords, setPlayerCardCoords,
         executePlayerChosenAttack, handleBlockAction, handleChargeAction, handleEscapeAttempt,
@@ -174,7 +175,9 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                     <div className="w-full flex flex-col items-center justify-center py-2 min-h-[148px]">
                          {!winner && <p className="text-sm font-semibold text-muted-foreground">È il turno di {turnOwnerName()}</p>}
                          {showScoutAnalysis && scoutAnalysisResult ? (
-                            <ScoutAnalysisDisplay analysis={scoutAnalysisResult} fighterName={opponent.name} level={opponent.level} />
+                            <div onClick={handleCloseScoutAnalysis} className="cursor-pointer">
+                                <ScoutAnalysisDisplay analysis={scoutAnalysisResult} fighterName={opponent.name} level={opponent.level} />
+                            </div>
                          ) : (
                             <ActionDisplay
                                 action={winner ? null : actionToDisplay}
@@ -222,7 +225,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover>
