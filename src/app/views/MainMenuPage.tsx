@@ -47,7 +47,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
       setActiveIndex(newIndex);
   };
   
-  const selectedIndex = activeIndex;
+  const selectedIndex = (activeIndex + Math.floor(mainMenuDestinations.length / 2)) % mainMenuDestinations.length;
   
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden">
@@ -152,7 +152,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             </motion.div>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
