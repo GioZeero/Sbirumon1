@@ -79,8 +79,12 @@ import {
   ConsumablesPage,
   MovesPage,
   ArcanePathPage,
-  SbirudexPage
+  SbirudexPage,
+  MessagesHubPage,
+  ChatPage,
 } from './views';
+
+import { hasUnreadMessages } from './messaging/actions';
 
 
 type ProjectileState = {
@@ -95,7 +99,7 @@ type ProjectileState = {
 type Coords = { x: number; y: number } | null;
 
 
-const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
+const AppFooter = ({ onNavigate, unreadMessages }: { onNavigate: (view: View) => void, unreadMessages: boolean }) => {
     return (
         <footer
             className="sticky bottom-0 w-full bg-background/80 backdrop-blur-sm border-t border-border shadow-t-lg z-20"
@@ -109,7 +113,8 @@ const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
                     <Backpack />
                     <span className="text-xs">Casa</span>
                 </Button>
-                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('trainer'); }}>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1 relative" onClick={(e) => { e.stopPropagation(); onNavigate('trainer'); }}>
+                    {unreadMessages && <span className="absolute top-1 right-1/2 translate-x-4 flex h-2 w-2 rounded-full bg-destructive" />}
                     <UserCircle />
                     <span className="text-xs">Allenatore</span>
                 </Button>
@@ -186,6 +191,9 @@ function SbirumonApp() {
   const chargeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const chargeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
+  const [unreadMessages, setUnreadMessages] = useState(false);
+  const [chatTarget, setChatTarget] = useState<string | null>(null);
+
   const playerRef = useRef(player);
   useEffect(() => { playerRef.current = player; }, [player]);
   
@@ -756,7 +764,12 @@ function SbirumonApp() {
     return data;
   }, []);
 
-  const navigateTo = (view: View) => {
+  const navigateTo = (view: View, data?: any) => {
+    if (view === 'chat' && data?.recipient) {
+      setChatTarget(data.recipient);
+    } else {
+      setChatTarget(null);
+    }
     if (currentView !== view) {
         setPreviousView(currentView);
     }
@@ -1138,6 +1151,18 @@ function SbirumonApp() {
     }
   }, [currentView, randomCovoCities]);
 
+  useEffect(() => {
+    const checkMessages = async () => {
+      if (activeTrainerName) {
+        const unread = await hasUnreadMessages(activeTrainerName);
+        setUnreadMessages(unread);
+      }
+    };
+    checkMessages();
+    const interval = setInterval(checkMessages, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
+  }, [activeTrainerName]);
+
   const handleAttackClickInLog = (attackId: string) => {
     const attack = allGameAttacks.find(a => a.id === attackId);
     if (attack) {
@@ -1209,6 +1234,8 @@ function SbirumonApp() {
         case 'items_consumables':
         case 'items_moves':
         case 'sbirudex':
+        case 'messages_hub':
+        case 'chat':
             return 'bg-storage';
         case 'loading':
         case 'welcome':
@@ -1305,12 +1332,14 @@ function SbirumonApp() {
     items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     items_moves: <MovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
-    trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} />,
+    trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} hasUnreadMessages={unreadMessages} />,
     black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} isMaster={false} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     master_sorcerer: <SorcererTentPage onNavigate={navigateTo} isMaster={true} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData}/>,
     sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    messages_hub: <MessagesHubPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
+    chat: <ChatPage onNavigate={navigateTo} trainerName={activeTrainerName!} recipientName={chatTarget!} />,
     battle: <></>
   };
 
@@ -1405,7 +1434,7 @@ function SbirumonApp() {
                               if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
                               setChargeProgress(0);
                               chargeIntervalRef.current = setInterval(() => {
-                                  setChargeProgress(prev => Math.min(prev + 10, 100));
+                                  setChargeProgress(prev => Math.min(prev + 100, 100));
                               }, 100);
                               chargeTimerRef.current = setTimeout(() => {
                                   if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
@@ -1427,7 +1456,7 @@ function SbirumonApp() {
                         />
                       ) : currentViewContent}
                   </main>
-                  {showFooter && <AppFooter onNavigate={navigateTo} />}
+                  {showFooter && <AppFooter onNavigate={navigateTo} unreadMessages={unreadMessages}/>}
               </div>
             </PageTransitionWrapper>
           </div>

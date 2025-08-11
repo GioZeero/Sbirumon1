@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, UserCircle, Repeat, Trophy, Skull, Crown, Maximize, ClipboardList, Medal } from 'lucide-react';
+import { ArrowLeft, UserCircle, Repeat, Trophy, Skull, Crown, Maximize, ClipboardList, Medal, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLeaderboard } from '@/lib/fighter-repository';
 import type { LeaderboardEntry } from '@/types/leaderboard';
@@ -31,9 +31,10 @@ interface TrainerViewProps {
     onResetProfile: () => void;
     onRequestFullscreen: () => void;
     previousView: any;
+    hasUnreadMessages: boolean;
 }
 
-const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetProfile, onRequestFullscreen }) => {
+const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetProfile, onRequestFullscreen, hasUnreadMessages }) => {
     
     if (!player) {
         return (
@@ -78,6 +79,16 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
             </div>
 
             <main className="w-full max-w-lg p-6 space-y-6">
+                 <Button variant="outline" className="w-full h-20 relative" onClick={() => onNavigate('messages_hub')}>
+                    {hasUnreadMessages && <span className="absolute top-2 right-2 flex h-3 w-3 rounded-full bg-destructive" />}
+                    <div className="flex items-center gap-4">
+                        <MessageSquare className="h-8 w-8 text-primary" />
+                        <div>
+                            <p className="text-xl font-bold">Messaggi</p>
+                            <p className="text-sm text-muted-foreground">Chatta con altri allenatori</p>
+                        </div>
+                    </div>
+                </Button>
                  <Button variant="outline" className="w-full h-20" onClick={() => onNavigate('arena_leaderboard')}>
                     <div className="flex items-center gap-4">
                         <ClipboardList className="h-8 w-8 text-primary" />

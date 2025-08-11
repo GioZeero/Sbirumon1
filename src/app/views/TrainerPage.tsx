@@ -14,10 +14,11 @@ interface TrainerPageProps {
   handleRequestFullscreen: () => void;
   previousView: View;
   menuPlayerData: Fighter | null;
+  hasUnreadMessages: boolean;
 }
 
-export const TrainerPage = ({ onNavigate, onResetProfile, handleRequestFullscreen, previousView, menuPlayerData }: TrainerPageProps) => {
+export const TrainerPage = ({ onNavigate, onResetProfile, handleRequestFullscreen, previousView, menuPlayerData, hasUnreadMessages }: TrainerPageProps) => {
     if (!menuPlayerData) return null;
     
-    return <TrainerView player={menuPlayerData} onNavigate={onNavigate} onResetProfile={onResetProfile} onRequestFullscreen={handleRequestFullscreen} previousView={previousView}/>;
+    return <TrainerView player={menuPlayerData} onNavigate={onNavigate} onResetProfile={onResetProfile} onRequestFullscreen={handleRequestFullscreen} previousView={previousView} hasUnreadMessages={hasUnreadMessages} />;
 };
