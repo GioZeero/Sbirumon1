@@ -83,9 +83,9 @@ export const MovesPage = ({ onNavigate, trainerName }: MovesPageProps) => {
 
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
-            <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('items_hub')}>
-                <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
-            </Button>
+            <button onClick={() => onNavigate('items_hub')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+            </button>
             <main className="w-full max-w-3xl p-4 sm:p-6">
                 <header className="w-full mb-12 mt-12 sm:mt-0"><div className="flex justify-center items-center"><h1 className="text-4xl sm:text-5xl font-headline text-primary text-center">Libro delle Mosse</h1></div></header>
                 <div className="grid grid-cols-2 gap-4">

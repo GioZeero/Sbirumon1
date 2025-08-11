@@ -40,9 +40,9 @@ export const ArenaLeaderboardPage = ({ onNavigate }: ArenaLeaderboardPageProps) 
 
     return (
         <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
-            <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
-            </Button>
+            <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+            </button>
             <main className="w-full max-w-lg p-4">
                 <header className="mb-8 mt-12 sm:mt-0">
                     

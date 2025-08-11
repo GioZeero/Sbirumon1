@@ -108,9 +108,9 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
             <header className="w-full p-6 flex items-center justify-between">
-                <Button variant="ghost" size="icon" className="h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                    <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
-                </Button>
+                <button onClick={() => onNavigate('main')} className="h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                    <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+                </button>
                  <div className="flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md">
                     <Coins className="h-6 w-6 text-yellow-400" />
                     <span className="font-bold text-lg text-foreground">{player.money ?? 0}</span>

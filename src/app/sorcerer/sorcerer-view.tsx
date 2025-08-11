@@ -85,9 +85,9 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
 
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
-      <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-          <ArrowLeft className="h-16 w-16" strokeWidth={3} />
-      </Button>
+      <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+          <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
+      </button>
       <main className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start p-6">
         <div className='md:mt-12'>
             <Card className="bg-card/70 backdrop-blur-sm">
@@ -180,3 +180,4 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
     </div>
   );
 }
+

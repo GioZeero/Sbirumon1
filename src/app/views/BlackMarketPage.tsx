@@ -56,9 +56,9 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData }: Bla
 
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
-            <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
-            </Button>
+            <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+                <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+            </button>
             <main className="w-full max-w-4xl p-4 sm:p-6">
                 <header className="w-full mb-8 mt-12 sm:mt-0 relative">
                     <div className="absolute top-0 right-0 flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md"><Coins className="h-6 w-6 text-yellow-400" /><span className="font-bold text-lg text-foreground">{player.money ?? 0}</span></div>

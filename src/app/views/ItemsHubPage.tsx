@@ -13,9 +13,9 @@ interface ItemsHubPageProps {
 export const ItemsHubPage = ({ onNavigate }: ItemsHubPageProps) => {
   return (
     <div className="relative flex min-h-screen flex-col items-center p-4 text-foreground">
-      <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-        <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
-      </Button>
+      <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+        <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+      </button>
       <main className="flex w-full flex-grow flex-col items-center justify-center">
         <header className="w-full mb-8">
           <h1 className="text-4xl font-headline text-primary text-center">
