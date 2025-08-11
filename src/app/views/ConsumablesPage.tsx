@@ -93,7 +93,7 @@ export const ConsumablesPage = ({ onNavigate, trainerName }: ConsumablesPageProp
     };
 
     if (isLoading) return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
-    if (!player) return <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-transparent"><p>Errore nel caricamento dei dati.</p><Button variant="outline" size="icon" className="mt-4" onClick={() => onNavigate('main')}><ArrowLeft /></Button></div>;
+    if (!player) return <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-transparent"><p>Errore nel caricamento dei dati.</p><Button variant="outline" size="icon" className="mt-4" onClick={() => onNavigate('items_hub')}><ArrowLeft /></Button></div>;
     
     const playerItems = player.inventory ? Object.values(player.inventory).map(invItem => invItem.item) : [];
     const categorizedItems = categorizeConsumables(playerItems.filter(item => item.category !== 'Potenziamenti Illegali'));
@@ -103,13 +103,11 @@ export const ConsumablesPage = ({ onNavigate, trainerName }: ConsumablesPageProp
     
     return (
       <div className="min-h-screen flex flex-col items-center text-foreground relative">
-        <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
+        <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('items_hub')}>
             <ChevronLeftCircle className="h-8 w-8" />
         </Button>
         <main className="w-full max-w-4xl p-4 sm:p-6">
-          <header className="w-full mb-12 mt-12 sm:mt-0">
-            <div className="flex justify-center items-center"><PackagePlus className="mr-4 h-10 w-10 text-primary" /><h1 className="text-4xl sm:text-5xl font-headline text-primary text-center">Elenco Consumabili</h1></div>
-          </header>
+          <header className="w-full mb-12 mt-12 sm:mt-0"><div className="flex justify-center items-center"><PackagePlus className="mr-4 h-10 w-10 text-primary" /><h1 className="text-4xl sm:text-5xl font-headline text-primary text-center">Elenco Consumabili</h1></div></header>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {categoryOrder.map(categoryName => {
                     const items = categorizedItems[categoryName];

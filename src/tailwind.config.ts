@@ -18,7 +18,7 @@ export default {
         'storage': "url('/magazzino.png')",
         'gym-menu': "url('/palestre.png')",
         'covo': "url('/covo.png')",
-        'shop-hub': "url('/stradaneg.png')",
+        'shop-hub': "url('/negozio.png')",
         'gym-combat': "url('/palestracombat.png')",
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",
@@ -145,5 +145,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    

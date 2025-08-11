@@ -74,7 +74,10 @@ import {
   JobBoardPage,
   SbirulinoPage,
   EditSbirulinoMovesPage,
-  TrainerPage
+  TrainerPage,
+  ItemsHubPage,
+  ConsumablesPage,
+  MovesPage
 } from './views';
 
 
@@ -100,7 +103,7 @@ const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
                     <BookOpenCheck />
                     <span className="text-xs">Sbirulino</span>
                 </Button>
-                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('shop_hub'); }}>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('items_hub'); }}>
                     <Backpack />
                     <span className="text-xs">Casa</span>
                 </Button>
@@ -1182,7 +1185,7 @@ function SbirumonApp() {
         case 'noble_area':
         case 'merchant_area':
             return 'bg-city';
-        case 'shop': return 'bg-shop';
+        case 'shop_hub': return 'bg-shop-hub';
         case 'items_moves_edit':
         case 'sbirulino':
         case 'trainer': return 'bg-home-menu';
@@ -1199,6 +1202,10 @@ function SbirumonApp() {
         case 'arena':
         case 'arena_leaderboard':
             return 'bg-gym-menu';
+        case 'items_hub':
+        case 'items_consumables':
+        case 'items_moves':
+            return 'bg-storage';
         case 'loading':
         case 'welcome':
         default: return '';
@@ -1206,7 +1213,7 @@ function SbirumonApp() {
   };
   
   const footerViews: View[] = [
-    'main', 'city', 'noble_area', 'merchant_area', 'shop',
+    'main', 'city', 'noble_area', 'merchant_area', 'shop_hub', 'items_hub',
     'covo_menu', 'gym_menu', 'arena', 'arena_leaderboard', 'job_board', 'black_market',
     'sorcerer_tent', 'master_sorcerer'
   ];
@@ -1288,7 +1295,10 @@ function SbirumonApp() {
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    items_hub: <ItemsHubPage onNavigate={navigateTo} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
+    items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
+    items_moves: <MovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} />,
     black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
@@ -1323,6 +1333,7 @@ function SbirumonApp() {
                           opponentChosenAction={opponentChosenAction}
                           isPlayerTurn={isPlayerTurn}
                           isPaused={isPaused}
+                          setIsPaused={setIsPaused}
                           isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn}
                           covoConfig={covoConfig}
                           gymConfig={gymConfig}
@@ -1445,7 +1456,3 @@ export default function Page() {
     </Suspense>
   )
 }
-
-    
-
-    

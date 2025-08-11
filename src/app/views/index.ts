@@ -18,3 +18,6 @@ export { TrainerPage } from './TrainerPage';
 export { WelcomePage } from './WelcomePage';
 export { ArenaPage } from './ArenaPage';
 export { JobBoardPage } from './JobBoardPage';
+export { ItemsHubPage } from './ItemsHubPage';
+export { ConsumablesPage } from './ConsumablesPage';
+export { MovesPage } from './MovesPage';

@@ -26,7 +26,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
     { name: 'Prateria', icon: Sprout, view: 'prairie', color: 'text-green-400', shadowColor: '#34d399' },
     { name: 'Arena', icon: ShieldQuestion, view: 'arena', color: 'text-red-400', shadowColor: '#f87171' },
     { name: 'Palestre', icon: Trophy, view: 'gym_menu', color: 'text-yellow-400', shadowColor: '#fbb_f' },
-    { name: 'Negozi', icon: Store, view: 'shop', color: 'text-teal-400', shadowColor: '#2dd4bf' },
+    { name: 'Negozi', icon: Store, view: 'shop_hub', color: 'text-teal-400', shadowColor: '#2dd4bf' },
     { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu', color: 'text-orange-400', shadowColor: '#fb923c' },
     { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board', color: 'text-blue-400', shadowColor: '#60a5fa' },
   ];
@@ -90,7 +90,8 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
-                    className="relative w-[40vw] h-[40vw]"
+                    className="relative w-[40vw] h-[40vw] cursor-pointer"
+                    onClick={() => navigateTo('sbirulino')}
                 >
                     <img
                         src={menuPlayerData.spriteUrl}
