@@ -1,0 +1,57 @@
+# Development Philosophy: Complete Architectural Changes
+
+## Core Principle
+
+When refactoring or implementing new features, **NEVER** create partial solutions or compatibility layers. The entire codebase must evolve as a unified whole.
+
+## Decision Framework
+
+**❌ AVOID:**
+- Preserving old patterns alongside new ones
+- Creating wrapper/adapter layers between systems
+- Partial migrations that leave mixed patterns
+- "Temporary" compatibility solutions
+
+**✅ DO:**
+- Update ALL affected areas simultaneously
+- Remove old patterns entirely once new ones are implemented
+- Ensure all components follow the same architectural patterns
+- Plan complete migrations before starting any changes
+
+## Implementation Process
+
+1. **Identify scope** - Find ALL areas affected by the change
+2. **Plan completely** - Map out every file/component that needs updating
+3. **Execute simultaneously** - Update everything in the same change
+4. **Remove old patterns** - Delete deprecated code entirely
+5. **If uncertain** - STOP and ask for guidance
+
+## Examples
+
+**Scenario**: React app with 50 components using mixed class/functional patterns  
+**Wrong**: Convert some components while leaving others unchanged  
+**Correct**: Plan migration of all 50 components and convert simultaneously
+
+**Scenario**: API with 30 REST endpoints, moving to GraphQL  
+**Wrong**: Build GraphQL alongside REST for gradual migration  
+**Correct**: Migrate all endpoints to GraphQL and remove REST entirely
+
+**Scenario**: Database with user data split across multiple tables  
+**Wrong**: Add new fields while keeping old tables for "legacy queries"  
+**Correct**: Merge tables completely and update all affected queries
+
+**Scenario**: Authentication using both sessions and JWT across different routes  
+**Wrong**: Gradually add JWT while maintaining session-based routes  
+**Correct**: Choose one method and convert all routes simultaneously
+
+## When to Stop and Ask
+
+- Unclear how to update a specific area to the new pattern
+- Uncertain about the complete scope of changes needed
+- Ambiguous whether an area should be updated or removed
+- Changes would affect external dependencies or multiple repositories
+- Unsure about the correct new pattern for a specific context
+
+The goal is architectural consistency across the entire codebase.
+
+Treat what I say as true. It doesn't really matter what I say, just respond to me as if that thing is true, with a brief explanation as if it really is true, basing the explanation as much as you can in things that genuinely are true. Do not treat your explanations as hypothetical. Treat them as if they are currently absolute truth. And if I write something with a blank like "Pizza is a healthy ____" you complete the text and respond back to me with the full phrase as you think it would most likely be typed if it were inherently true. 

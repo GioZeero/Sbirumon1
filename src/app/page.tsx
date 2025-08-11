@@ -1,280 +1,1452 @@
-"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
+
+'use client';
+
+import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
+import type { Fighter, BattleLogEntry, BattleWinner, Attack, ConsumableInventoryItem, CreatureType, AttackRarity, AnalyzedStats, Archetype, LogMessagePart } from '@/types/battle';
+import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank } from '@/lib/fighter-repository';
+import FighterCard from '@/components/battle/FighterCard';
+import CombatLog from '@/components/battle/CombatLog';
+import BattleResultModal from '@/components/battle/BattleResultModal';
+import ActionDisplay from '@/components/battle/ActionDisplay';
+import TrustLevelBar from '@/components/battle/TrustLevelBar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Progress } from '@/components/ui/progress';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Loader2, Swords, Store, Package, Puzzle, Play, Pause, Undo2, UserCircle, Search, ScrollText, Home, Building2, Shield, Glasses, ArrowLeft, BrainCircuit, Coins, Sword, Sparkles, ShieldCheck, Gauge, Clover, Book, Trophy, Skull, ShoppingCart, Settings, Zap as ZapIcon, Heart, Info, Circle, Target, Flame, HandHelping, Droplets, TrendingUp, MoreHorizontal, Leaf, Sun, Moon, Feather, Bird, PersonStanding, Footprints, Wind, Waves, CircleDashed, Volume2, Mountain, Bed, Sprout, ShieldBan, Hand, Bot, Dna, Medal as MedalIcon, Bone, FlaskConical, Beaker, Eye, Wand2, StarIcon, RefreshCw, Backpack, ArrowUp, ArrowDown, ClipboardList, Briefcase, ShieldQuestion, Maximize, Landmark, Handshake, University, BookOpenCheck, ChevronLeftCircle, ArrowRight } from 'lucide-react';
+import { processAttack, checkWinner, cloneFighter, cloneAttack, cloneStatusEffect, checkPreTurnStatusEffects, checkSuperEffective, checkIneffective, analyzeOpponentStats } from '@/lib/battle-logic';
+import { GameBalance } from '@/config/game-balance';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import PlayerStatsDisplay from '@/components/battle/PlayerStatsDisplay';
+import { STATUS_EFFECTS } from '@/config/statusEffects';
+import type { ConsumableItem } from '@/types/items';
+import { ALL_CONSUMABLES } from '@/config/consumables';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import type { CovoSize } from '@/config/locations';
+import { CITIES, TRAINER_NAMES, COVO_CONFIG } from '@/config/locations';
+import type { GymConfig } from '@/config/gyms';
+import { ALL_GYMS } from '@/config/gyms';
 import {
-  Cloud,
-  Database,
-  Server,
-  ShieldCheck,
-  MoveRight,
-  Menu,
-  Twitter,
-  Github,
-  Linkedin,
-} from 'lucide-react';
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from '@/components/ui/badge';
+import { PackagePlus, Medal, ShieldAlert, HeartPulse, Star, type LucideIcon } from 'lucide-react';
+import { getAllGameAttacks } from '@/config/fighters';
+import { useConsumableOutOfBattle } from './items/consumables/actions';
+import SbirulinoClientView from './sbirulino/sbirulino-view';
+import { buyConsumable, sellConsumable } from './shop/consumables/actions';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { buyMoveBook } from './shop/moves/actions';
+import TrainerView from './trainer/trainer-view';
+import PageTransitionWrapper from '@/components/ui/page-transition-wrapper';
+import ProjectileAnimation from '@/components/battle/ProjectileAnimation';
+import ScoutAnalysisDisplay from '@/components/battle/ScoutAnalysisDisplay';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import type { LeaderboardEntry } from '@/types/leaderboard';
+import BattleView from './battle/battle-view';
+import { Separator } from '@/components/ui/separator';
+import { motion, useMotionValue, useTransform, AnimatePresence, useAnimation, useSpring, animate } from 'framer-motion';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
-const NimbusIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-  </svg>
-);
-
-const navLinks = [
-  { href: '#products', label: 'Products' },
-  { href: '#testimonials', label: 'Testimonials' },
-  { href: '#pricing', label: 'Pricing' },
-];
-
-const products = [
-  {
-    icon: <Cloud className="h-10 w-10 text-primary" />,
-    title: 'Nimbus Compute',
-    description: 'Scalable virtual servers with flexible configurations to power any workload.',
-    price: '49',
-  },
-  {
-    icon: <Database className="h-10 w-10 text-primary" />,
-    title: 'Nimbus Storage',
-    description: 'Reliable, high-performance object and block storage for your data-intensive applications.',
-    price: '29',
-  },
-  {
-    icon: <Server className="h-10 w-10 text-primary" />,
-    title: 'Nimbus Kubernetes',
-    description: 'Managed Kubernetes service to deploy, manage, and scale containerized applications.',
-    price: '99',
-  },
-  {
-    icon: <ShieldCheck className="h-10 w-10 text-primary" />,
-    title: 'Nimbus Security',
-    description: 'Comprehensive security solutions to protect your infrastructure and data from threats.',
-    price: '79',
-  },
-];
-
-const testimonials = [
-  {
-    quote: "NimbusScale revolutionized our workflow. Their infrastructure is rock-solid, and the scalability is exactly what we needed to grow our business without any hiccups.",
-    name: 'Sarah Johnson',
-    title: 'CTO, Innovate Inc.',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'woman portrait',
-    logo: 'https://placehold.co/140x40.png',
-    logoHint: 'logo abstract',
-  },
-  {
-    quote: "The customer support is phenomenal. We migrated our entire platform to NimbusScale, and their team was with us every step of the way. Truly a partner, not just a provider.",
-    name: 'Michael Chen',
-    title: 'CEO, TechSolutions',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'man portrait',
-    logo: 'https://placehold.co/140x40.png',
-    logoHint: 'logo geometric',
-  },
-  {
-    quote: "Performance and reliability are critical for us. NimbusScale delivers on both fronts, with impressive uptime and speed that keeps our users happy.",
-    name: 'Emily Rodriguez',
-    title: 'Head of Engineering, StreamFlow',
-    avatar: 'https://placehold.co/100x100.png',
-    avatarHint: 'woman professional',
-    logo: 'https://placehold.co/140x40.png',
-    logoHint: 'logo tech',
-  },
-];
+import type { View } from './views/types';
+import {
+  WelcomePage,
+  StartScreenPage,
+  CreatureSelectionPage,
+  MainMenuPage,
+  EvolutionMenuPage,
+  CityPage,
+  NobleAreaPage,
+  MerchantAreaPage,
+  ShopPage,
+  CovoMenuPage,
+  GymMenuPage,
+  ArenaPage,
+  ArenaLeaderboardPage,
+  BlackMarketPage,
+  SorcererTentPage,
+  JobBoardPage,
+  SbirulinoPage,
+  EditSbirulinoMovesPage,
+  TrainerPage
+} from './views';
 
 
-export default function Home() {
-  const [isMenuOpen, setMenuOpen] = useState(false);
+type ProjectileState = {
+  key: number;
+  source: 'player' | 'opponent';
+  target: 'player' | 'opponent';
+  type: CreatureType | 'Status' | 'Physical';
+  iconName: string;
+  delay: number;
+};
+
+type Coords = { x: number; y: number } | null;
+
+
+const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
+    return (
+        <footer
+            className="sticky bottom-0 w-full bg-background/80 backdrop-blur-sm border-t border-border shadow-t-lg z-20"
+        >
+            <div className="grid grid-cols-3 gap-1 p-1 max-w-md mx-auto">
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('sbirulino'); }}>
+                    <BookOpenCheck />
+                    <span className="text-xs">Sbirulino</span>
+                </Button>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('shop'); }}>
+                    <Backpack />
+                    <span className="text-xs">Casa</span>
+                </Button>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('trainer'); }}>
+                    <UserCircle />
+                    <span className="text-xs">Allenatore</span>
+                </Button>
+            </div>
+        </footer>
+    );
+};
+
+
+function SbirumonApp() {
+  const [currentView, setCurrentView] = useState<View>('loading');
+  const [previousView, setPreviousView] = useState<View>('main');
+  const [activeTrainerName, setActiveTrainerName] = useState<string | null>(null);
+  const [menuPlayerData, setMenuPlayerData] = useState<Fighter | null>(null);
+  const [player, setPlayer] = useState<Fighter | null>(null);
+  const [opponent, setOpponent] = useState<Fighter | null>(null);
+  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
+  const [logEntries, setLogEntries] = useState<BattleLogEntry[]>([]);
+  const [winner, setWinner] = useState<BattleWinner>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isActionDisabled, setIsActionDisabled] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [showBattle, setShowBattle] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentTurnMessage, setCurrentTurnMessage] = useState<string>('');
+  const [turnCount, setTurnCount] = useState(0);
+  const [playerChosenAction, setPlayerChosenAction] = useState<Attack | null>(null);
+  const [opponentChosenAction, setOpponentChosenAction] = useState<Attack | null>(null);
+  const [isChoosingAttack, setIsChoosingAttack] = useState(false);
+  const [playerExtraTurnsRemaining, setPlayerExtraTurnsRemaining] = useState(0);
+  const [showScoutAnalysis, setShowScoutAnalysis] = useState(false);
+  const [scoutAnalysisResult, setScoutAnalysisResult] = useState<AnalyzedStats | null>(null);
+  const [showPlayerStatsDialog, setShowPlayerStatsDialog] = useState(false);
+  const [showItemMenuDialog, setShowItemMenuDialog] = useState(false);
+  const [showCombatLogModal, setShowCombatLogModal] = useState(false);
+  const [isAttemptingEscape, setIsAttemptingEscape] = useState(false);
+  const [speedMultiplier, setSpeedMultiplier] = useState<1 | 2 | 4>(1);
+  const [showSecretMenu, setShowSecretMenu] = useState(false);
+  const [secretCode, setSecretCode] = useState('');
+  const [playerWasDefeated, setPlayerWasDefeated] = useState(false);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+  const [currentCreatureChoice, setCurrentCreatureChoice] = useState<Fighter | null>(null);
+  const [isChoosingCreature, setIsChoosingCreature] = useState(false);
+  const [rerollCount, setRerollCount] = useState(2);
+  const [randomCovoCities, setRandomCovoCities] = useState<{ small: string; medium: string; large: string } | null>(null);
+  const [covoConfig, setCovoConfig] = useState<{ city: string; size: CovoSize; totalOpponents: number } | null>(null);
+  const [covoProgress, setCovoProgress] = useState(0);
+  const [gymConfig, setGymConfig] = useState<GymConfig | null>(null);
+  const [gymProgress, setGymProgress] = useState(0);
+  const [isViandanteBattle, setIsViandanteBattle] = useState(false);
+  const [isArenaBattle, setIsArenaBattle] = useState(false);
+  const [opponentTrainer, setOpponentTrainer] = useState<{ name: string; subtitle: string } | null>(null);
+  const [inputName, setInputName] = useState('');
+  const [isBattleEnding, setIsBattleEnding] = useState(false);
+  const [projectileAnimations, setProjectileAnimations] = useState<ProjectileState[]>([]);
+  const [playerCardCoords, setPlayerCardCoords] = useState<Coords>(null);
+  const [opponentCardCoords, setOpponentCardCoords] = useState<Coords>(null);
+  const [isAutoBattle, setIsAutoBattle] = useState(false);
+  const [showAttackDetailsDialog, setShowAttackDetailsDialog] = useState(false);
+  const [selectedAttackForDetails, setSelectedAttackForDetails] = useState<Attack | null>(null);
+  const [allGameAttacks, setAllGameAttacks] = useState<Attack[]>([]);
+  const [lastDroppedItem, setLastDroppedItem] = useState<ConsumableItem | null>(null);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [canPlayerAct, setCanPlayerAct] = useState(true);
+  const [showArenaDisclaimer, setShowArenaDisclaimer] = useState(false);
+  const [showDefeatedByModal, setShowDefeatedByModal] = useState<string | null>(null);
+  const [showNoOpponentFoundDialog, setShowNoOpponentFoundDialog] = useState(false);
+  const [leaderboardRank, setLeaderboardRank] = useState<number | null>(null);
+  const [secretMenuClickCount, setSecretMenuClickCount] = useState(0);
+  const secretClickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [chargeProgress, setChargeProgress] = useState(0);
+  const chargeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const chargeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const playerRef = useRef(player);
+  useEffect(() => { playerRef.current = player; }, [player]);
+  
+  const opponentRef = useRef(opponent);
+  useEffect(() => { opponentRef.current = opponent; }, [opponent]);
+
+  const addLogEntry = useCallback((message: LogMessagePart[]) => {
+    setLogEntries(prev => {
+      const newLog = [{ id: crypto.randomUUID(), message, timestamp: Date.now() }, ...prev];
+      return newLog.slice(0, GameBalance.MAX_LOG_ENTRIES);
+    });
+  }, []);
+
+  const addMultipleLogEntries = useCallback((messages: LogMessagePart[][]) => {
+    if (messages.length === 0) return;
+    setLogEntries(prev => {
+      const newGeneratedEntries = messages.map(msg => ({ id: crypto.randomUUID(), message: msg, timestamp: Date.now() }));
+      const combined = [...newGeneratedEntries.reverse(), ...prev];
+      return combined.slice(0, GameBalance.MAX_LOG_ENTRIES);
+    });
+  }, []);
+
+  const endTurn = useCallback((
+    updatedPlayer: Fighter,
+    updatedOpponent: Fighter,
+    nextTurnIsPlayers: boolean
+  ) => {
+      let finalPlayer = cloneFighter(updatedPlayer);
+      let finalOpponent = cloneFighter(updatedOpponent);
+      
+      const fighterWhoseTurnEnded = nextTurnIsPlayers ? finalOpponent : finalPlayer;
+
+      if (fighterWhoseTurnEnded.id === 'player' && !nextTurnIsPlayers) {
+          if (finalPlayer.trustLevel < finalPlayer.maxTrustLevel) {
+              finalPlayer.trustLevel = Math.min(finalPlayer.maxTrustLevel, finalPlayer.trustLevel + 1);
+          }
+      }
+      
+      setPlayer(finalPlayer);
+      setOpponent(finalOpponent);
+
+      if (turnCount >= GameBalance.MAX_BATTLE_TURNS && !winner) {
+        addLogEntry([`Limite di ${GameBalance.MAX_BATTLE_TURNS} turni raggiunto!`]);
+        if (finalPlayer.currentHealth > finalOpponent.currentHealth) {
+          setWinner('player');
+          addLogEntry([`${finalPlayer.name} vince per superiorità di HP!`]);
+        } else {
+          setWinner('opponent');
+          addLogEntry([`${finalOpponent.name} vince per superiorità di HP!`]);
+        }
+        setIsLoading(false);
+        setIsActionDisabled(true);
+        return;
+      }
+      let gameWinner = checkWinner(finalPlayer, finalOpponent);
+      if (gameWinner) {
+        if (typeof gameWinner === 'string') {
+          setWinner(gameWinner);
+        } else if (typeof gameWinner.type === 'player_captured_opponent') {
+          setWinner(gameWinner);
+        }
+      } else {
+        if (fighterWhoseTurnEnded.id === 'player' && playerExtraTurnsRemaining > 0) {
+            setPlayerExtraTurnsRemaining(prev => prev - 1);
+            addLogEntry([`${fighterWhoseTurnEnded.name} ha un turno extra!`]);
+            const nextAttackForExtraTurn = selectWeightedRandomAttack(finalPlayer);
+            if (nextAttackForExtraTurn) setPlayerChosenAction(cloneAttack(nextAttackForExtraTurn));
+            setIsPlayerTurn(true);
+        } else {
+            setIsPlayerTurn(nextTurnIsPlayers);
+        }
+        setIsLoading(false);
+        setIsActionDisabled(false);
+      }
+  }, [turnCount, winner, addLogEntry, playerExtraTurnsRemaining]);
+
+  const executePlayerChosenAttack = useCallback(async (attackToExecute: Attack, attackerState?: Fighter) => {
+    if ((!playerRef.current && !attackerState) || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct) {
+        return;
+    }
+  
+    setIsActionDisabled(true);
+    setIsLoading(true);
+
+    let playerClone = attackerState ? cloneFighter(attackerState) : cloneFighter(playerRef.current!);
+    let opponentClone = cloneFighter(opponentRef.current);
+
+    const isHittingSelf = false;
+
+    setCurrentTurnMessage(`${playerClone.name} usa ${attackToExecute.name}!`);
+    
+    setProjectileAnimations(prev => [...prev, {
+        key: Date.now(),
+        source: 'player',
+        target: 'opponent',
+        type: attackToExecute.category === 'Status' ? 'Status' : attackToExecute.creatureType,
+        iconName: attackToExecute.icon || 'TrendingUp',
+        delay: 0,
+    }]);
+
+    await new Promise(resolve => setTimeout(resolve, 330));
+    
+    const { updatedAttacker, updatedTarget, logMessages: attackLogs, damageDealt, effectApplied, attackIcon } = processAttack(
+      playerClone, opponentClone, attackToExecute, isHittingSelf
+    );
+    
+    await new Promise(resolve => setTimeout(resolve, 330));
+
+
+    addMultipleLogEntries(attackLogs);
+    
+    setPlayerChosenAction(null);
+    setTurnCount(prev => prev + 1);
+    endTurn(updatedAttacker, updatedTarget, false);
+  }, [addMultipleLogEntries, endTurn, activeTrainerName, canPlayerAct, addLogEntry, isPaused, winner]);
+
+  const handleChargeAction = useCallback(async () => {
+    if (!playerRef.current || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct || !playerChosenAction) {
+        return;
+    }
+    
+    if (playerRef.current.trustLevel < playerRef.current.maxTrustLevel) {
+        // This should not happen if the button is correctly disabled, but as a safeguard.
+        return;
+    }
+
+    setIsActionDisabled(true);
+    setIsLoading(true);
+
+    let playerClone = cloneFighter(playerRef.current);
+    
+    // Consume trust and apply charge buff
+    playerClone.trustLevel = 0;
+    const chargeEffect = STATUS_EFFECTS['carica_buff'];
+    if (chargeEffect && !playerClone.statusEffects.some(e => e.id === chargeEffect.id)) {
+        playerClone.statusEffects.push(cloneStatusEffect(chargeEffect));
+        addLogEntry([`${playerClone.name} si sta caricando di energia!`]);
+    }
+    
+    // Set extra turns that will be handled in the endTurn logic
+    setPlayerExtraTurnsRemaining(GameBalance.CHARGE_ACTION_EXTRA_TURNS_GAINED);
+    
+    // Immediately proceed to execute the chosen attack with the charge buff active
+    await executePlayerChosenAttack(playerChosenAction, playerClone);
+
+  }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack]);
+  
+  const selectWeightedRandomAttack = (fighter: Fighter): Attack | null => {
+    if (!fighter.attacks || fighter.attacks.length === 0) return null;
+    
+    const validAttacks = fighter.attacks.filter(attack => !!attack && !!attack.id && !!attack.name);
+    if (validAttacks.length === 0) {
+        console.error("No valid attacks found for selection.");
+        if (fighter.attacks.length > 0 && fighter.attacks[0] && fighter.attacks[0].id && fighter.attacks[0].name) {
+            return cloneAttack(fighter.attacks[0]);
+        }
+        return null;
+    }
+
+    const weights = fighter.isEvolved ? GameBalance.ATTACK_RARITY_WEIGHTS_EVOLVED : GameBalance.ATTACK_RARITY_WEIGHTS;
+    const weightedPool: Attack[] = [];
+    validAttacks.forEach(attack => {
+        const rarity = attack.rarity || 'Common';
+        const weight = (weights as Record<string, number>)[rarity.toUpperCase()] || weights.DEFAULT;
+        for (let i = 0; i < weight; i++) {
+            weightedPool.push(attack);
+        }
+    });
+
+    if (weightedPool.length === 0) {
+        return cloneAttack(validAttacks[Math.floor(Math.random() * validAttacks.length)]);
+    }
+    return cloneAttack(weightedPool[Math.floor(Math.random() * weightedPool.length)]);
+};
+
+  const handleBlockAction = useCallback(() => {
+    if (!playerRef.current || !opponentRef.current || winner || isPaused || !isPlayerTurn) {
+        return;
+    }
+    const currentPlayer = playerRef.current;
+    if (currentPlayer.trustLevel < GameBalance.BLOCK_ACTION_TRUST_COST) {
+        return;
+    }
+    
+    const updatedPlayerWithTrustSpent = cloneFighter(currentPlayer);
+    updatedPlayerWithTrustSpent.trustLevel -= GameBalance.BLOCK_ACTION_TRUST_COST;
+    
+    const newAttackToSelect = selectWeightedRandomAttack(updatedPlayerWithTrustSpent);
+    if (newAttackToSelect) {
+        setPlayerChosenAction(cloneAttack(newAttackToSelect));
+    } else if (updatedPlayerWithTrustSpent.attacks.length > 0) {
+        const fallbackAttack = cloneAttack(updatedPlayerWithTrustSpent.attacks[0]);
+        setPlayerChosenAction(fallbackAttack);
+    }
+    
+    setPlayer(updatedPlayerWithTrustSpent);
+    
+  }, [isPlayerTurn, isPaused, winner]);
+
+  const handleUseConsumable = useCallback(async (itemToUse: ConsumableInventoryItem) => {
+    if (!playerRef.current || !opponentRef.current || winner || !isPlayerTurn || !activeTrainerName) {
+        setShowItemMenuDialog(false);
+        setIsPaused(false);
+        return;
+    }
+    
+    setIsLoading(true);
+    setIsActionDisabled(true);
+    
+    setPlayerChosenAction(null);
+    setIsChoosingAttack(false);
+    setCurrentTurnMessage(`${playerRef.current.name} usa ${itemToUse.item.name}...`);
+    try {
+        let playerClone = cloneFighter(playerRef.current);
+        let opponentClone = cloneFighter(opponentRef.current);
+        const itemLogs: LogMessagePart[][] = [];
+        const itemEffect = itemToUse.item.effect;
+
+        if (itemEffect.type === 'heal') {
+            let healAmount = 0;
+            if (itemEffect.amount) healAmount = itemEffect.amount;
+            else if (itemEffect.percentage) healAmount = Math.round(playerClone.maxHealth * itemEffect.percentage);
+
+            const healthBeforeHeal = playerClone.currentHealth;
+            playerClone.currentHealth = Math.min(playerClone.maxHealth, healthBeforeHeal + healAmount);
+            const actualHealedAmount = playerClone.currentHealth - healthBeforeHeal;
+            if (actualHealedAmount > 0) itemLogs.push([`${playerClone.name} recupera ${actualHealedAmount} HP.`]);
+            else itemLogs.push([`${playerClone.name} usa ${itemToUse.item.name}, ma la salute è già al massimo.`]);
+            if (itemEffect.curesStatus && itemEffect.curesStatus.length > 0) {
+                const curedStatusNames: string[] = [];
+                playerClone.statusEffects = playerClone.statusEffects.filter(se => {
+                    if (itemEffect.curesStatus!.includes(se.id as any)) {
+                        curedStatusNames.push(STATUS_EFFECTS[se.id]?.name || se.id);
+                        return false;
+                    }
+                    return true;
+                });
+                if (curedStatusNames.length > 0) itemLogs.push([`${playerClone.name} è stato curato da: ${curedStatusNames.join(', ')}.`]);
+            }
+        } else if (itemEffect.type === 'capture') {
+            if (Math.random() < itemEffect.chance) {
+                itemLogs.push([`Hai lanciato una ${itemToUse.item.name}... E hai catturato ${opponentClone.name}!`]);
+                const capturedDataForTransform = cloneFighter(opponentClone);
+                const newPlayerData = await transformAndSavePlayer(activeTrainerName, capturedDataForTransform);
+                if (newPlayerData) {
+                    playerClone = newPlayerData;
+                    setWinner({ type: 'player_captured_opponent', opponentName: capturedDataForTransform.name });
+                } else {
+                    itemLogs.push([`Cattura riuscita ma si è verificato un errore nel salvataggio.`]);
+                }
+            } else {
+                itemLogs.push([`${itemToUse.item.name} lanciata... Ma ${opponentClone.name} si è liberato!`]);
+            }
+        }
+        
+        const playerAfterItemUse = await updatePlayerPersistentInventory(activeTrainerName, itemToUse.item.id, -1, playerClone);
+        if (!playerAfterItemUse) throw new Error("Impossibile aggiornare l'inventario.");
+        
+        addMultipleLogEntries(itemLogs);
+        
+        if (!winner) {
+            setTurnCount(prev => prev + 1);
+            endTurn(playerAfterItemUse, opponentClone, false);
+        } else {
+            setPlayer(playerAfterItemUse);
+            setOpponent(opponentClone);
+        }
+    } catch (error) {
+      console.error("Error during item use: ", error);
+      if(playerRef.current && opponentRef.current) endTurn(playerRef.current, opponentRef.current, false); // Fail gracefully
+    } finally {
+        setShowItemMenuDialog(false);
+        setIsPaused(false);
+        if (!winner) {
+            setIsLoading(false);
+            setIsActionDisabled(false);
+        }
+    }
+  }, [isPlayerTurn, addMultipleLogEntries, endTurn, activeTrainerName, winner]);
+
+  const handleCloseScoutAnalysis = useCallback(() => {
+    setShowScoutAnalysis(false);
+    setScoutAnalysisResult(null);
+    const anyOtherDialogIsOpen = showItemMenuDialog || showPlayerStatsDialog || showCombatLogModal;
+    if (isPaused && !anyOtherDialogIsOpen) {
+      setIsPaused(false);
+    }
+  }, [showItemMenuDialog, showPlayerStatsDialog, showCombatLogModal, isPaused]);
+
+  const handleScout = useCallback(async () => {
+    if (!playerRef.current || !opponentRef.current || winner) {
+      return;
+    }
+    
+    if (showScoutAnalysis) {
+      handleCloseScoutAnalysis();
+      return;
+    }
+
+    setIsPaused(true);
+    
+    try {
+      if (opponentRef.current) {
+        const analysis = analyzeOpponentStats(opponentRef.current);
+        setScoutAnalysisResult(analysis);
+        setShowScoutAnalysis(true);
+      }
+    } catch (error) {
+      console.error("Error during scout: ", error);
+      setIsPaused(false);
+    }
+  }, [showScoutAnalysis, handleCloseScoutAnalysis, winner]);
+
+  const executeOpponentTurn = useCallback(async (currentOpponentInput: Fighter, currentPlayerInput: Fighter, canMove: boolean) => {
+    if (winner || isPaused) {
+        return;
+    }
+
+    if (!canMove) {
+        endTurn(currentPlayerInput, currentOpponentInput, true);
+        return;
+    }
+
+    setCurrentTurnMessage(`È il turno di ${currentOpponentInput.name}...`);
+    setIsLoading(true);
+    setIsActionDisabled(true);
+
+    // Initial delay before opponent "chooses" their move
+    await new Promise(resolve => setTimeout(resolve, 1500 / speedMultiplier));
+
+    if (isPaused || winner) {
+      setIsLoading(false);
+      return;
+    }
+    
+    const chosenAttack = selectWeightedRandomAttack(currentOpponentInput);
+    setOpponentChosenAction(chosenAttack);
+
+    // Longer delay to show the chosen move, plus 1 second as requested
+    await new Promise(resolve => setTimeout(resolve, (1000 + 1000) / speedMultiplier));
+    
+    if (isPaused || winner || !chosenAttack) {
+      if(!chosenAttack) addLogEntry([`${currentOpponentInput.name} non fa nulla.`]);
+      endTurn(currentPlayerInput, currentOpponentInput, true);
+      return;
+    }
+
+    const isConfusedAndHittingSelf = false;
+    
+    setProjectileAnimations(prev => [...prev, {
+        key: Date.now(),
+        source: 'opponent',
+        target: 'player',
+        type: chosenAttack.category === 'Status' ? 'Status' : chosenAttack.creatureType,
+        iconName: chosenAttack.icon || 'TrendingUp',
+        delay: 0,
+    }]);
+
+    // This delay should be just enough for the animation to complete
+    await new Promise(resolve => setTimeout(resolve, 660 / speedMultiplier));
+    
+    const { updatedAttacker: updatedOpponent, updatedTarget: updatedPlayer, logMessages: attackLogs } = processAttack(
+        currentOpponentInput, currentPlayerInput, chosenAttack, isConfusedAndHittingSelf
+    );
+
+    addMultipleLogEntries(attackLogs);
+    endTurn(updatedPlayer, updatedOpponent, true);
+      
+  }, [speedMultiplier, addMultipleLogEntries, addLogEntry, endTurn, isPaused, winner]);
+
+  const handleGoToMenu = useCallback(async (targetView: View = 'main') => {
+    if (covoConfig && activeTrainerName) {
+      await decrementCovoAttempt(activeTrainerName, covoConfig.size);
+    }
+    
+    await updateViandanteMaestroVisibility(activeTrainerName!);
+
+    setShowBattle(false);
+    setPlayer(null);
+    setOpponent(null);
+    setLogEntries([]);
+    setWinner(null);
+    setIsPaused(false);
+    setIsLoading(false);
+    setIsActionDisabled(false);
+    setLastDroppedItem(null);
+
+    setCovoConfig(null);
+    setCovoProgress(0);
+    setGymConfig(null);
+    setGymProgress(0);
+    setIsViandanteBattle(false);
+    setIsArenaBattle(false);
+    
+    if (playerWasDefeated && activeTrainerName) {
+        setPlayerWasDefeated(false);
+        setIsInitializing(true);
+        getPlayerProfileData(activeTrainerName).then(playerData => {
+            if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
+                setFinalScore(playerData.trainerRankPoints || 0);
+                setShowGameOverModal(true);
+                navigateTo('welcome');
+            } else {
+                navigateTo(targetView);
+            }
+            setIsInitializing(false);
+        });
+    } else {
+        setIsInitializing(false);
+        navigateTo(targetView);
+    }
+  }, [playerWasDefeated, covoConfig, activeTrainerName]);
+  
+  const initializeBattle = useCallback(async (options?: {
+      isCovo?: boolean,
+      covoData?: { config: NonNullable<typeof covoConfig>, progress: number, persistedPlayerState?: Fighter },
+      isGym?: boolean,
+      gymData?: { config: NonNullable<typeof gymConfig>, progress: number, persistedPlayerState?: Fighter },
+      isViandante?: boolean,
+      isArena?: boolean,
+    }) => {
+    
+    if (!activeTrainerName) {
+        navigateTo('welcome');
+        return;
+    }
+    
+    setIsLoading(true);
+
+    try {
+      // Data pre-loading stage
+      const persistedPlayerState = options?.isGym ? options.gymData?.persistedPlayerState : options?.isCovo ? options.covoData?.persistedPlayerState : undefined;
+      const newPlayerPromise = getFighterDataForBattle(activeTrainerName, { fighterType: 'player', persistedState: persistedPlayerState });
+
+      let opponentLevel: number | undefined = undefined;
+      let opponentType: 'covo' | 'gym' | 'prairie' | 'viandante' | 'arena' = 'prairie';
+      
+      // Determine opponent type and level based on options
+      if (options?.isCovo && options.covoData) {
+        opponentType = 'covo';
+        const { config, progress } = options.covoData;
+        const playerLevelForCovo = menuPlayerData?.level ?? 1;
+        setOpponentTrainer({ name: TRAINER_NAMES[Math.floor(Math.random() * TRAINER_NAMES.length)], subtitle: `${progress}° Avversario` });
+        opponentLevel = Math.max(1, playerLevelForCovo);
+      } else if (options?.isGym && options.gymData) {
+        opponentType = 'gym';
+        const { config, progress } = options.gymData;
+        opponentLevel = config.trainers[progress - 1]?.level;
+        setOpponentTrainer({ name: TRAINER_NAMES[Math.floor(Math.random() * TRAINER_NAMES.length)], subtitle: `${progress - 1}° Allenatore` });
+      } else if (options?.isViandante) {
+        opponentType = 'viandante';
+        const playerLevelForViandante = menuPlayerData?.level ?? 1;
+        setOpponentTrainer({ name: "Viandante Maestro", subtitle: "Una sfida inaspettata" });
+        opponentLevel = Math.max(1, playerLevelForViandante - 2);
+      } else if (options?.isArena) {
+        opponentType = 'arena';
+      } else { // Prairie
+        opponentType = 'prairie';
+        const playerLevelForPrairie = menuPlayerData?.level ?? 1;
+        setOpponentTrainer(null);
+        opponentLevel = playerLevelForPrairie;
+      }
+      
+      const newOpponentPromise = getFighterDataForBattle(activeTrainerName, { fighterType: 'opponent', fixedLevel: opponentLevel, opponentType });
+
+      const [newPlayer, newOpponent] = await Promise.all([newPlayerPromise, newOpponentPromise]);
+      
+      if (!newPlayer) throw new Error("Player could not be loaded for battle");
+      if (!newOpponent && opponentType === 'arena') {
+          setShowNoOpponentFoundDialog(true);
+          setIsLoading(false);
+          return;
+      }
+      
+      // Reset state and set data
+      setLogEntries([]);
+      setWinner(null);
+      setIsPaused(false);
+      setTurnCount(0);
+      setPlayerChosenAction(null);
+      setOpponentChosenAction(null);
+      setIsChoosingAttack(false);
+      setPlayerExtraTurnsRemaining(0);
+      setShowPlayerStatsDialog(false);
+      setShowItemMenuDialog(false);
+      setShowCombatLogModal(false);
+      setIsAttemptingEscape(false);
+      setShowScoutAnalysis(false);
+      setScoutAnalysisResult(null);
+      setIsBattleEnding(false);
+      setProjectileAnimations([]);
+      setCurrentTurnMessage('Preparazione alla battaglia...');
+      setIsActionDisabled(false);
+      setLastDroppedItem(null);
+      setIsViandanteBattle(!!options?.isViandante);
+      setIsArenaBattle(!!options?.isArena);
+
+      newPlayer.trainerName = activeTrainerName;
+      setPlayer(newPlayer);
+      setOpponent(newOpponent);
+
+      if (opponentType === 'arena' && newOpponent) {
+        setOpponentTrainer({ name: newOpponent.trainerName!, subtitle: "Sfidante dell'Arena" });
+      }
+
+      setIsPlayerTurn(newPlayer.currentSpeedStat >= (newOpponent?.currentSpeedStat ?? 0));
+      
+      // Transition to battle view
+      setShowBattle(true);
+      setIsInitializing(false);
+
+    } catch (error) {
+      console.error("Failed to initialize battle:", error);
+      setShowBattle(false);
+      setIsInitializing(false);
+    } finally {
+        setIsLoading(false);
+    }
+  }, [activeTrainerName, menuPlayerData]);
+
+  const handleEscapeAttempt = useCallback(async () => {
+      if (!playerRef.current || winner || isPaused || !isPlayerTurn || isArenaBattle) {
+          return;
+      }
+      setIsAttemptingEscape(true);
+      setIsLoading(true);
+      setIsActionDisabled(true);
+      
+      setPlayerChosenAction(null);
+      setIsChoosingAttack(false);
+      setCurrentTurnMessage('Tentativo di fuga in corso...');
+      await new Promise(resolve => setTimeout(resolve, 1500 / speedMultiplier));
+      const escapeChance = playerRef.current ? Math.max(0, Math.min(1, (playerRef.current.currentSpeedStat / 2) / 100.0)) : 0;
+      if (Math.random() < escapeChance) {
+          addLogEntry([`${playerRef.current.name} è fuggito con successo!`]);
+          handleGoToMenu();
+      } else {
+          addLogEntry([`${playerRef.current.name} ha tentato la fuga, ma non c'è riuscito!`]);
+          setIsAttemptingEscape(false);
+          if (playerRef.current && opponentRef.current) {
+              endTurn(playerRef.current, opponentRef.current, false);
+          } else {
+              setIsLoading(false);
+              setIsActionDisabled(false);
+          }
+      }
+  }, [isPlayerTurn, speedMultiplier, addLogEntry, handleGoToMenu, endTurn, isArenaBattle, isPaused, winner]);
+
+  const handlePistolaAction = useCallback(async () => {
+    if (!playerRef.current || winner || isBattleEnding || !activeTrainerName) return;
+    setIsBattleEnding(true);
+    const { updatedPlayer, droppedItem } = await recordSuicideAndDropItem(activeTrainerName, playerRef.current);
+    addLogEntry([`${updatedPlayer.name} ha usato la Pistola!`]);
+    setLastDroppedItem(droppedItem);
+    setPlayer({ ...updatedPlayer, currentHealth: 0 });
+    setWinner('opponent');
+  }, [addLogEntry, isBattleEnding, activeTrainerName, winner]);
+
+  const fetchMenuPlayerData = useCallback(async (trainerNameToFetch: string) => {
+    if (!trainerNameToFetch) return null;
+    const data = await getPlayerProfileData(trainerNameToFetch);
+    setMenuPlayerData(data);
+     if (data) {
+        const board = await getLeaderboard();
+        const rank = board.findIndex(entry => entry.trainerName === data.trainerName);
+        setLeaderboardRank(rank !== -1 ? rank + 1 : null);
+    }
+    return data;
+  }, []);
+
+  const navigateTo = (view: View) => {
+    if (currentView !== view) {
+        setPreviousView(currentView);
+    }
+    setCurrentView(view);
+  };
+  
+  useEffect(() => {
+    const startup = async () => {
+        setIsInitializing(true);
+        setAllGameAttacks(getAllGameAttacks());
+
+        const savedTrainerName = localStorage.getItem('sbirumon-trainer');
+        if (savedTrainerName) {
+            const data = await fetchMenuPlayerData(savedTrainerName);
+            if (data && data.name) {
+                setActiveTrainerName(savedTrainerName);
+                setMenuPlayerData(data);
+                localStorage.setItem('sbirumon-trainer', savedTrainerName);
+                navigateTo('start_screen');
+            } else {
+                 localStorage.removeItem('sbirumon-trainer');
+                 setCurrentView('welcome');
+            }
+        } else {
+            setCurrentView('welcome');
+        }
+
+        setIsInitializing(false);
+    };
+    
+    startup();
+  }, [fetchMenuPlayerData]);
+
+  const handleGenerateCreature = useCallback(async () => {
+    setIsChoosingCreature(true);
+    try {
+        const choices = await generateCreatureChoices(1);
+        if (choices.length > 0) {
+            setCurrentCreatureChoice(choices[0]);
+        }
+    } catch (err) {
+        console.error("Failed to generate creature choices:", err);
+    } finally {
+        setIsChoosingCreature(false);
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (currentView === 'creature_selection') {
+      handleGenerateCreature();
+    }
+  }, [currentView, handleGenerateCreature]);
+
+
+  const handleReroll = () => {
+    if (rerollCount > 0) {
+        setRerollCount(prev => prev - 1);
+        handleGenerateCreature();
+    }
+  };
+
+  const handleRequestFullscreen = () => {
+    const element = document.documentElement;
+    if (!document.fullscreenElement) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  const handleWelcomeSubmit = async () => {
+    const trimmedName = inputName.trim();
+    if (trimmedName.length > 2) {
+        handleRequestFullscreen();
+        setIsInitializing(true);
+        const existingPlayer = await getPlayerProfileData(trimmedName);
+        if (existingPlayer && existingPlayer.name) {
+            setActiveTrainerName(trimmedName);
+            setMenuPlayerData(existingPlayer);
+            localStorage.setItem('sbirumon-trainer', trimmedName);
+            navigateTo('start_screen');
+        } else {
+            const newPlayer = await initializePlayerWithTrainerName(trimmedName);
+            if (newPlayer) {
+                setActiveTrainerName(trimmedName);
+                setMenuPlayerData(newPlayer);
+                localStorage.setItem('sbirumon-trainer', trimmedName);
+                navigateTo('creature_selection');
+            }
+        }
+        setIsInitializing(false);
+    }
+  };
+  
+  const handleStartGame = () => {
+    handleRequestFullscreen();
+    navigateTo('main');
+  };
+
+  const handleCreatureSelect = async (creature: Fighter) => {
+    if (!activeTrainerName) return;
+    setIsChoosingCreature(true);
+    try {
+      const newPlayer = await setPlayerCreature(activeTrainerName, creature);
+      if (newPlayer) {
+        setMenuPlayerData(newPlayer);
+        navigateTo('main');
+      }
+    } catch (error) {
+      console.error("Failed to set player creature:", error);
+    } finally {
+      setIsChoosingCreature(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!showBattle || isInitializing || winner || isPaused || isBattleEnding) {
+      return;
+    }
+
+    const currentFighter = isPlayerTurn ? playerRef.current : opponentRef.current;
+    const otherFighter = isPlayerTurn ? opponentRef.current : playerRef.current;
+
+    if (!currentFighter || !otherFighter) return;
+
+    let timeoutId: NodeJS.Timeout;
+
+    // Apply pre-turn effects
+    const { canMove, updatedFighter, logMessages } = checkPreTurnStatusEffects(currentFighter);
+    if(logMessages.length > 0) addMultipleLogEntries(logMessages);
+
+    const gameWinner = checkWinner(isPlayerTurn ? updatedFighter : otherFighter, isPlayerTurn ? otherFighter : updatedFighter);
+    if(gameWinner) {
+      setPlayer(isPlayerTurn ? updatedFighter : otherFighter);
+      setOpponent(isPlayerTurn ? otherFighter : updatedFighter);
+      setWinner(gameWinner);
+      return;
+    }
+
+    if(isPlayerTurn) {
+        setPlayer(updatedFighter);
+        setCanPlayerAct(canMove);
+         if (!canMove) {
+            timeoutId = setTimeout(() => endTurn(updatedFighter, otherFighter, false), 500 / speedMultiplier);
+        } else if (!playerChosenAction) {
+            const autoSelectedAttack = selectWeightedRandomAttack(updatedFighter);
+            if (autoSelectedAttack) setPlayerChosenAction(cloneAttack(autoSelectedAttack));
+        } else if (isAutoBattle) {
+            timeoutId = setTimeout(() => {
+                if (playerChosenAction && !isPaused && !winner && isPlayerTurn) {
+                    if (updatedFighter.trustLevel === updatedFighter.maxTrustLevel) {
+                        handleChargeAction();
+                    } else {
+                        executePlayerChosenAttack(playerChosenAction);
+                    }
+                }
+            }, GameBalance.PLAYER_AUTO_ATTACK_DELAY_MS / speedMultiplier);
+        }
+    } else { // Opponent's turn
+        setOpponent(updatedFighter);
+        setOpponentChosenAction(null); // Clear previous action
+        timeoutId = setTimeout(() => {
+            if (!isPaused && !winner) {
+                executeOpponentTurn(updatedFighter, otherFighter, canMove);
+            }
+        }, GameBalance.OPPONENT_TURN_DELAY_MS / speedMultiplier);
+    }
+     return () => clearTimeout(timeoutId);
+  }, [isPlayerTurn, showBattle, isInitializing, winner, isPaused, isBattleEnding, playerChosenAction, isAutoBattle, addMultipleLogEntries, endTurn, executePlayerChosenAttack, speedMultiplier, turnCount, handleChargeAction]);
+
+  useEffect(() => {
+    if (winner && !isBattleEnding) {
+        setIsBattleEnding(true);
+        const playerStateBeforeWin = playerRef.current; // Capture state before async operations
+
+        const handleWin = async () => {
+            if (!playerStateBeforeWin || !opponentRef.current || !activeTrainerName) return;
+            
+            const xpGained = opponentRef.current.maxHealth;
+            
+            let playerAfterXP = await updatePlayerXPAndLevel(activeTrainerName, xpGained, playerStateBeforeWin);
+            if(playerAfterXP) {
+                playerAfterXP.trustLevel = playerStateBeforeWin.trustLevel;
+                addLogEntry([`${playerAfterXP.name} ha guadagnato ${xpGained} XP!`]);
+                if (playerAfterXP.level > (playerStateBeforeWin?.level || 0)) {
+                    addLogEntry([`${playerAfterXP.name} è salito al livello ${playerAfterXP.level}!`]);
+                }
+            }
+
+            const playerAfterWinCount = await incrementBattlesWon(activeTrainerName, covoConfig?.size);
+            if (playerAfterWinCount) {
+              if (playerAfterXP) {
+                playerAfterWinCount.trustLevel = playerAfterXP.trustLevel;
+              }
+              playerAfterXP = playerAfterWinCount;
+            }
+                
+            let finalPlayerState: Fighter | null = playerAfterXP;
+
+            if (isArenaBattle && opponentRef.current.trainerName) {
+                await markOpponentAsDefeated(opponentRef.current.trainerName, activeTrainerName);
+                addLogEntry([`L'allenatore ${opponentRef.current.trainerName} è stato sconfitto!`]);
+                const playerAfterRank = await incrementArenaRank(activeTrainerName);
+                if (playerAfterRank) {
+                    if (finalPlayerState) playerAfterRank.trustLevel = finalPlayerState.trustLevel;
+                    finalPlayerState = playerAfterRank;
+                    addLogEntry([`Hai guadagnato 1 punto classifica e 1000 monete!`]);
+                }
+            }
+
+            if (covoConfig) {
+                const battleReward = 5;
+                addLogEntry([`Hai guadagnato ${battleReward} monete per questa vittoria!`]);
+                const playerAfterMoney = await updatePlayerMoney(activeTrainerName, battleReward);
+                    if (playerAfterMoney) {
+                      if (finalPlayerState) playerAfterMoney.trustLevel = finalPlayerState.trustLevel;
+                      finalPlayerState = playerAfterMoney;
+                    }
+            }
+            
+            if (covoConfig && covoProgress >= covoConfig.totalOpponents) {
+                const finalReward = COVO_CONFIG[covoConfig.size].reward;
+                addLogEntry([`Hai guadagnato un bonus di ${finalReward} monete per aver completato il Covo!`]);
+                const playerAfterBonus = await updatePlayerMoney(activeTrainerName, finalReward);
+                if (playerAfterBonus) {
+                  if (finalPlayerState) playerAfterBonus.trustLevel = finalPlayerState.trustLevel;
+                  finalPlayerState = playerAfterBonus;
+                }
+            }
+
+            if (gymConfig && gymProgress >= gymConfig.trainers.length) {
+                addLogEntry([`Hai guadagnato ${gymConfig.reward} monete per aver completato la palestra!`]);
+                const playerAfterGym = await markGymAsBeaten(activeTrainerName, gymConfig.gymId);
+                if (playerAfterGym) {
+                  if (finalPlayerState) playerAfterGym.trustLevel = finalPlayerState.trustLevel;
+                  finalPlayerState = playerAfterGym;
+                }
+            }
+
+            const { player: playerAfterSteroids, debuffLogs } = await updateSteroidCountersAndApplyDebuffs(activeTrainerName);
+            if (playerAfterSteroids) {
+              if (finalPlayerState) playerAfterSteroids.trustLevel = finalPlayerState.trustLevel;
+              finalPlayerState = playerAfterSteroids;
+              if (debuffLogs.length > 0) {
+                addMultipleLogEntries(debuffLogs.map(log => [log]));
+              }
+            }
+            
+            if (finalPlayerState) {
+                setPlayer(finalPlayerState);
+                setMenuPlayerData(finalPlayerState);
+            }
+        };
+
+        if (winner === 'player') {
+            handleWin();
+        } else if (winner === 'opponent') {
+            const defeatedPlayerName = playerStateBeforeWin?.name || 'Il tuo Sbirulino';
+            addLogEntry([`${defeatedPlayerName} è stato sconfitto!`]);
+            setPlayerWasDefeated(true);
+        } else if (winner && typeof winner === 'object' && winner.type === 'player_captured_opponent' && activeTrainerName) {
+            getPlayerProfileData(activeTrainerName).then(newPlayerData => {
+                if (newPlayerData) {
+                   setPlayer(newPlayerData);
+                   setMenuPlayerData(newPlayerData);
+                }
+            });
+        }
+    }
+  }, [winner, covoConfig, covoProgress, gymConfig, gymProgress, isBattleEnding, addLogEntry, addMultipleLogEntries, activeTrainerName, isArenaBattle]);
+
+  const handleStartCovoChallenge = (city: string, size: CovoSize) => {
+    const newConfig = { city: city, size: size, totalOpponents: COVO_CONFIG[size].opponents };
+    setCovoConfig(newConfig);
+    setCovoProgress(1);
+    initializeBattle({ isCovo: true, covoData: { config: newConfig, progress: 1 } });
+  };
+
+  const handleNextCovoOpponent = () => {
+    if (!covoConfig || !playerRef.current) return;
+    const newProgress = covoProgress + 1;
+    const playerSnapshot = cloneFighter(playerRef.current);
+    setCovoProgress(newProgress);
+    initializeBattle({ isCovo: true, covoData: { config: covoConfig, progress: newProgress, persistedPlayerState: playerSnapshot } });
+  };
+
+  const handleStartGymChallenge = (gymId: number) => {
+    const gym = ALL_GYMS.find(gym => gym.gymId === gymId);
+    if (gym) {
+        setGymConfig(gym);
+        setGymProgress(1);
+        initializeBattle({ isGym: true, gymData: { config: gym, progress: 1 } });
+    }
+  };
+
+  const handleNextGymTrainer = () => {
+    if (!gymConfig || !playerRef.current) return;
+    const newProgress = gymProgress + 1;
+    const playerSnapshot = cloneFighter(playerRef.current);
+    setGymProgress(newProgress);
+    initializeBattle({ isGym: true, gymData: { config: gymConfig, progress: newProgress, persistedPlayerState: playerSnapshot } });
+  };
+
+  const handleStartViandanteMaestroBattle = () => {
+    initializeBattle({ isViandante: true });
+  };
+
+  const handleStartArenaBattle = () => {
+    if (menuPlayerData?.arenaDisclaimerAccepted) {
+      initializeBattle({ isArena: true });
+    } else {
+      setShowArenaDisclaimer(true);
+    }
+  };
+
+  const handleAcceptArenaDisclaimer = async () => {
+    setShowArenaDisclaimer(false);
+    if (activeTrainerName) {
+      const updatedPlayer = await setArenaDisclaimerAccepted(activeTrainerName);
+      setMenuPlayerData(updatedPlayer);
+      initializeBattle({ isArena: true });
+    }
+  };
+
+  const handleAcceptUniqueCreature = async (creature: Fighter) => {
+    if (!activeTrainerName) return;
+    const newPlayer = await transformAndSavePlayer(activeTrainerName, creature);
+    if (newPlayer) {
+        setMenuPlayerData(newPlayer);
+        setPlayer(newPlayer);
+        handleGoToMenu('sbirulino');
+    }
+  };
+  
+  const handleEvolveCreature = async () => {
+    if (!activeTrainerName) return;
+    const newPlayer = await evolvePlayerCreature(activeTrainerName);
+    if(newPlayer) {
+        setMenuPlayerData(newPlayer);
+    }
+    navigateTo('sbirulino');
+  };
+
+  const handleToggleOptions = () => {
+    if (winner || isInitializing) return;
+    const newOptionsState = !showOptionsMenu;
+    setShowOptionsMenu(newOptionsState);
+    setIsPaused(newOptionsState);
+  };
+
+  const handleTogglePlayerStats = () => {
+    if (winner || isInitializing) return;
+    const isOpening = !showPlayerStatsDialog;
+    setShowPlayerStatsDialog(isOpening);
+    setIsPaused(isOpening);
+  }
+
+  const handleToggleItemMenu = () => {
+      if (winner || isInitializing || !isPlayerTurn) return;
+      const isOpening = !showItemMenuDialog;
+      setShowItemMenuDialog(isOpening);
+      setIsPaused(isOpening);
+  }
+
+  useEffect(() => {
+    if (currentView === 'covo_menu' && !randomCovoCities) {
+      const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+      setRandomCovoCities({
+        small: pickRandom(CITIES.small),
+        medium: pickRandom(CITIES.medium),
+        large: pickRandom(CITIES.large),
+      });
+    }
+  }, [currentView, randomCovoCities]);
+
+  const handleAttackClickInLog = (attackId: string) => {
+    const attack = allGameAttacks.find(a => a.id === attackId);
+    if (attack) {
+      setSelectedAttackForDetails(attack);
+      setShowAttackDetailsDialog(true);
+      if(!isPaused) setIsPaused(true);
+    }
+  };
+
+  const handleCloseAttackDetailsDialog = () => {
+    setShowAttackDetailsDialog(false);
+    setSelectedAttackForDetails(null);
+     const anyOtherDialogIsOpen = showItemMenuDialog || showPlayerStatsDialog || showCombatLogModal || showScoutAnalysis;
+    if (isPaused && !anyOtherDialogIsOpen) {
+      setIsPaused(false);
+    }
+  };
+
+  const handleResetProfile = async () => {
+    if (!activeTrainerName) return;
+    const result = await deletePlayerProfile(activeTrainerName);
+    if (result.success) {
+      localStorage.removeItem('sbirumon-trainer');
+      setActiveTrainerName(null);
+      setMenuPlayerData(null);
+      navigateTo('welcome');
+    } else {
+      console.error("Failed to reset profile.");
+      // Optionally show a toast error
+    }
+  };
+
+  const handleDefeatedByClose = async () => {
+    if (activeTrainerName) {
+        await clearDefeatedBy(activeTrainerName);
+    }
+    setShowDefeatedByModal(null);
+    navigateTo('creature_selection');
+  };
+  
+  const backgroundClass = () => {
+    if (showBattle) {
+       return covoConfig ? 'bg-covo' : gymConfig ? 'bg-gym-combat' : isArenaBattle ? 'bg-gym-combat' : 'bg-prateria';
+    }
+    switch(currentView) {
+        case 'city':
+        case 'noble_area':
+        case 'merchant_area':
+            return 'bg-city';
+        case 'shop': return 'bg-shop';
+        case 'items_moves_edit':
+        case 'sbirulino':
+        case 'trainer': return 'bg-home-menu';
+        case 'gym_menu': return 'bg-gym-menu';
+        case 'covo_menu': return 'bg-covo';
+        case 'creature_selection': return 'bg-prateria';
+        case 'main':
+        case 'start_screen': return 'bg-main-menu';
+        case 'black_market': return 'bg-covo';
+        case 'sorcerer_tent': return 'bg-sorcerer';
+        case 'master_sorcerer': return 'bg-sorcerer';
+        case 'evolution_menu': return 'bg-main-menu';
+        case 'job_board': return 'bg-city';
+        case 'arena':
+        case 'arena_leaderboard':
+            return 'bg-gym-menu';
+        case 'loading':
+        case 'welcome':
+        default: return '';
+    }
+  };
+  
+  const footerViews: View[] = [
+    'main', 'city', 'noble_area', 'merchant_area', 'shop',
+    'covo_menu', 'gym_menu', 'arena', 'arena_leaderboard', 'job_board', 'black_market',
+    'sorcerer_tent', 'master_sorcerer'
+  ];
+
+  const handleSecretMenuClick = () => {
+    if (secretClickTimeoutRef.current) {
+        clearTimeout(secretClickTimeoutRef.current);
+    }
+
+    const newCount = secretMenuClickCount + 1;
+    setSecretMenuClickCount(newCount);
+
+    if (newCount >= 5) {
+        setShowSecretMenu(true);
+        setSecretMenuClickCount(0); // Reset after opening
+    } else {
+        // Reset count if the next click isn't within a short time (e.g., 1 second)
+        secretClickTimeoutRef.current = setTimeout(() => {
+            setSecretMenuClickCount(0);
+        }, 1000);
+    }
+  };
+
+
+  const showFooter = footerViews.includes(currentView) && !showBattle;
+
+  const menuViews: Record<View, React.ReactNode> = {
+    loading: <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>,
+    welcome: <WelcomePage
+        onWelcomeSubmit={handleWelcomeSubmit}
+        inputName={inputName}
+        setInputName={setInputName}
+        showDefeatedByModal={showDefeatedByModal}
+        handleDefeatedByClose={handleDefeatedByClose}
+      />,
+    start_screen: <StartScreenPage onStartGame={handleStartGame} />,
+    creature_selection: <CreatureSelectionPage
+      isChoosingCreature={isChoosingCreature}
+      currentCreatureChoice={currentCreatureChoice}
+      handleCreatureSelect={handleCreatureSelect}
+      />,
+    main: <MainMenuPage
+        menuPlayerData={menuPlayerData}
+        leaderboardRank={leaderboardRank}
+        initializeBattle={initializeBattle}
+        navigateTo={navigateTo}
+        onSecretClick={handleSecretMenuClick}
+        isLoading={isLoading}
+      />,
+    evolution_menu: <EvolutionMenuPage
+        menuPlayerData={menuPlayerData}
+        handleEvolveCreature={handleEvolveCreature}
+        navigateTo={navigateTo}
+      />,
+    city: <CityPage onNavigate={navigateTo} />,
+    covo_menu: <CovoMenuPage
+        randomCovoCities={randomCovoCities}
+        menuPlayerData={menuPlayerData}
+        handleStartCovoChallenge={handleStartCovoChallenge}
+        navigateTo={navigateTo}
+      />,
+    gym_menu: <GymMenuPage
+        menuPlayerData={menuPlayerData}
+        handleStartGymChallenge={handleStartGymChallenge}
+        navigateTo={navigateTo}
+      />,
+    arena: <ArenaPage
+        navigateTo={navigateTo}
+        handleStartArenaBattle={handleStartArenaBattle}
+        isInitializing={isInitializing}
+        menuPlayerData={menuPlayerData}
+        showArenaDisclaimer={showArenaDisclaimer}
+        setShowArenaDisclaimer={setShowArenaDisclaimer}
+        handleAcceptArenaDisclaimer={handleAcceptArenaDisclaimer}
+        showNoOpponentFoundDialog={showNoOpponentFoundDialog}
+        setShowNoOpponentFoundDialog={setShowNoOpponentFoundDialog}
+      />,
+    arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
+    noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle} />,
+    merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
+    shop: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
+    sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
+    trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} />,
+    black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} isMaster={false} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    master_sorcerer: <SorcererTentPage onNavigate={navigateTo} isMaster={true} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData}/>,
+    battle: <></>
+  };
+
+  const currentViewContent = menuViews[currentView] ?? menuViews['loading'];
+  
+  const mainAppContainerClass = cn(
+    "min-h-screen bg-cover bg-center",
+     backgroundClass()
+  );
 
   return (
-    <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
-          <a href="#" className="flex items-center gap-2 font-bold text-lg">
-            <NimbusIcon className="h-6 w-6 text-primary" />
-            <span className="font-headline">NimbusScale</span>
-          </a>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="transition-colors hover:text-primary">
-                {link.label}
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-4">
-             <Button asChild className="hidden md:flex bg-accent text-accent-foreground hover:bg-accent/90">
-              <a href="#cta">Request a Consultation</a>
-            </Button>
-            <Sheet open={isMenuOpen} onOpenChange={setMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <div className="flex flex-col h-full">
-                  <div className="border-b p-4">
-                    <a href="#" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMenuOpen(false)}>
-                      <NimbusIcon className="h-6 w-6 text-primary" />
-                      <span className="font-headline">NimbusScale</span>
-                    </a>
-                  </div>
-                  <nav className="flex flex-col gap-4 p-4 text-lg">
-                    {navLinks.map((link) => (
-                      <a key={link.href} href={link.href} className="transition-colors hover:text-primary" onClick={() => setMenuOpen(false)}>
-                        {link.label}
-                      </a>
-                    ))}
-                  </nav>
-                  <div className="mt-auto p-4 border-t">
-                    <Button asChild size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                      <a href="#cta" onClick={() => setMenuOpen(false)}>Request a Consultation</a>
-                    </Button>
-                  </div>
+    <div className={mainAppContainerClass}>
+          <div className="relative z-10">
+            <PageTransitionWrapper transitionKey={currentView}>
+              <div className="min-h-screen flex flex-col">
+                  <main className="flex-grow">
+                      {showBattle ? (
+                        <BattleView
+                          isInitializing={isInitializing}
+                          isLoading={isLoading}
+                          player={player}
+                          opponent={opponent}
+                          winner={winner}
+                          handleGoToMenu={handleGoToMenu}
+                          playerChosenAction={playerChosenAction}
+                          opponentChosenAction={opponentChosenAction}
+                          isPlayerTurn={isPlayerTurn}
+                          isPaused={isPaused}
+                          isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn}
+                          covoConfig={covoConfig}
+                          gymConfig={gymConfig}
+                          isArenaBattle={isArenaBattle}
+                          currentTurnMessage={currentTurnMessage}
+                          handleCloseScoutAnalysis={handleCloseScoutAnalysis}
+                          showScoutAnalysis={showScoutAnalysis}
+                          scoutAnalysisResult={scoutAnalysisResult}
+                          setOpponentCardCoords={setOpponentCardCoords}
+                          setPlayerCardCoords={setPlayerCardCoords}
+                          executePlayerChosenAttack={executePlayerChosenAttack}
+                          handleBlockAction={handleBlockAction}
+                          handleChargeAction={handleChargeAction}
+                          handleEscapeAttempt={handleEscapeAttempt}
+                          handleToggleItemMenu={handleToggleItemMenu}
+                          handleTogglePlayerStats={handleTogglePlayerStats}
+                          handleScout={handleScout}
+                          projectileAnimations={projectileAnimations}
+                          setProjectileAnimations={setProjectileAnimations}
+                          playerCardCoords={playerCardCoords}
+                          opponentCardCoords={opponentCardCoords}
+                          logEntries={logEntries}
+                          handleAcceptUniqueCreature={handleAcceptUniqueCreature}
+                          isCovoBattle={!!covoConfig}
+                          isLastCovoOpponent={!!covoConfig && covoProgress >= covoConfig.totalOpponents}
+                          onNextCovoOpponent={handleNextCovoOpponent}
+                          isGymBattle={!!gymConfig}
+                          isLastGymTrainer={!!gymConfig && gymProgress >= gymConfig.trainers.length}
+                          onNextGymTrainer={handleNextGymTrainer}
+                          handleAttackClickInLog={handleAttackClickInLog}
+                          lastDroppedItem={lastDroppedItem}
+                          isViandanteBattle={isViandanteBattle}
+                          showPlayerStatsDialog={showPlayerStatsDialog}
+                          setShowPlayerStatsDialog={setShowPlayerStatsDialog}
+                          showItemMenuDialog={showItemMenuDialog}
+                          setShowItemMenuDialog={setShowItemMenuDialog}
+                          showCombatLogModal={showCombatLogModal}
+                          setShowCombatLogModal={setShowCombatLogModal}
+                          handleUseConsumable={handleUseConsumable}
+                          showOptionsMenu={showOptionsMenu}
+                          handleToggleOptions={handleToggleOptions}
+                          isAutoBattle={isAutoBattle}
+                          handleAutoBattleToggle={() => setIsAutoBattle(prev => !prev)}
+                          speedMultiplier={speedMultiplier}
+                          handleSpeedToggle={() => setSpeedMultiplier(current => current === 4 ? 1 : current * 2)}
+                          turnCount={turnCount}
+                          handlePistolaAction={handlePistolaAction}
+                          isBattleEnding={isBattleEnding}
+                          showGameOverModal={showGameOverModal}
+                          setShowGameOverModal={setShowGameOverModal}
+                          finalScore={finalScore}
+                          activeTrainerName={activeTrainerName}
+                          resetPlayerRun={resetPlayerRun}
+                          navigateTo={navigateTo}
+                          showAttackDetailsDialog={showAttackDetailsDialog}
+                          handleCloseAttackDetailsDialog={handleCloseAttackDetailsDialog}
+                          selectedAttackForDetails={selectedAttackForDetails}
+                          onRematch={() => initializeBattle()}
+                          chargeProgress={chargeProgress}
+                          startCharge={() => {
+                              if (!playerRef.current || playerRef.current.trustLevel < playerRef.current.maxTrustLevel || isActionDisabled) return;
+                              if (chargeTimerRef.current) clearTimeout(chargeTimerRef.current);
+                              if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+                              setChargeProgress(0);
+                              chargeIntervalRef.current = setInterval(() => {
+                                  setChargeProgress(prev => Math.min(prev + 10, 100));
+                              }, 100);
+                              chargeTimerRef.current = setTimeout(() => {
+                                  if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+                                  setChargeProgress(100);
+                                  handleChargeAction();
+                              }, 1000);
+                          }}
+                          cancelCharge={() => {
+                              if (chargeTimerRef.current) clearTimeout(chargeTimerRef.current);
+                              if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+                              if (chargeProgress < 100) {
+                                if (playerChosenAction) {
+                                  executePlayerChosenAttack(playerChosenAction);
+                                }
+                              }
+                              setChargeProgress(0);
+                          }}
+                          opponentTrainer={opponentTrainer}
+                        />
+                      ) : currentViewContent}
+                  </main>
+                  {showFooter && <AppFooter onNavigate={navigateTo} />}
+              </div>
+            </PageTransitionWrapper>
+          </div>
+        <Dialog open={showSecretMenu} onOpenChange={setShowSecretMenu}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Menu Segreto</DialogTitle>
+                    <DialogDescription>
+                        Inserisci un codice segreto per sbloccare funzionalità nascoste.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                    <Input 
+                        placeholder="Codice Segreto" 
+                        value={secretCode}
+                        onChange={(e) => setSecretCode(e.target.value)}
+                    />
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <section id="hero" className="py-20 md:py-32">
-          <div className="container mx-auto max-w-7xl px-4 md:px-6 text-center">
-            <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-primary">
-              Cloud Solutions for a Scalable Future
-            </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
-              Powering your business with robust, secure, and infinitely scalable cloud infrastructure. Experience the next generation of cloud services.
-            </p>
-            <div className="mt-8 flex justify-center gap-4">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                <a href="#cta">Request a Consultation</a>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href="#products">Learn More <MoveRight className="ml-2 h-5 w-5" /></a>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <section id="products" className="py-16 md:py-24 bg-secondary">
-          <div className="container mx-auto max-w-7xl px-4 md:px-6">
-            <div className="text-center">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary">Our Cloud Products</h2>
-              <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                Transparent pricing and powerful features to help you build and scale.
-              </p>
-            </div>
-            <div id="pricing" className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
-                <Card key={product.title} className="flex flex-col shadow-md hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader className="items-center text-center">
-                    {product.icon}
-                    <CardTitle className="font-headline mt-4">{product.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <CardDescription className="text-center">{product.description}</CardDescription>
-                  </CardContent>
-                  <CardFooter className="flex-col gap-4">
-                    <div className="text-center">
-                      <span className="text-4xl font-bold">${product.price}</span>
-                      <span className="text-muted-foreground">/mo</span>
-                    </div>
-                    <Button className="w-full" variant="outline">
-                      Learn More
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="testimonials" className="py-16 md:py-24">
-          <div className="container mx-auto max-w-7xl px-4 md:px-6">
-            <div className="text-center">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary">Trusted by Innovators</h2>
-              <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                See what our customers are saying about their experience with NimbusScale.
-              </p>
-            </div>
-            <div className="mt-12 grid gap-8 md:grid-cols-1 lg:grid-cols-3">
-              {testimonials.map((testimonial) => (
-                <Card key={testimonial.name} className="flex flex-col justify-between p-6 bg-secondary border-0 shadow-sm">
-                  <CardContent className="p-0">
-                    <blockquote className="text-lg italic">"{testimonial.quote}"</blockquote>
-                  </CardContent>
-                  <CardFooter className="p-0 mt-6 flex flex-col items-start gap-4">
-                     <div className="flex items-center gap-4">
-                        <Avatar>
-                          <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.avatarHint} />
-                          <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-semibold">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.title}</p>
-                        </div>
-                      </div>
-                      <Image src={testimonial.logo} alt="Company logo" width={120} height={40} data-ai-hint={testimonial.logoHint} className="opacity-60" />
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="cta" className="py-16 md:py-24 bg-secondary">
-          <div className="container mx-auto max-w-4xl px-4 md:px-6 text-center">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary">Ready to Scale with Nimbus?</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Let's discuss how NimbusScale can elevate your business. Get in touch with our cloud experts today for a free, no-obligation consultation.
-            </p>
-            <div className="mt-8">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg">
-                <a href="#">
-                  Request a Free Consultation
-                  <MoveRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t bg-background">
-        <div className="container mx-auto max-w-7xl px-4 md:px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <NimbusIcon className="h-6 w-6 text-primary" />
-              <span className="font-headline font-bold">NimbusScale</span>
-            </div>
-            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} NimbusScale. All rights reserved.</p>
-            <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary"><Twitter className="h-5 w-5" /></a>
-              <a href="#" className="text-muted-foreground hover:text-primary"><Github className="h-5 w-5" /></a>
-              <a href="#" className="text-muted-foreground hover:text-primary"><Linkedin className="h-5 w-5" /></a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+                <DialogFooter>
+                    <Button onClick={() => setShowSecretMenu(false)}>Conferma</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+      </div>
   );
 }
+
+export default function Page() {
+  return (
+    <Suspense>
+      <SbirumonApp />
+    </Suspense>
+  )
+}
+
+    
+
+    
+

@@ -1,0 +1,22 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // WARNING: These rules are for development purposes only and are insecure.
+    // They allow anyone to read and write to the players collection.
+    // Before deploying to production, you MUST implement authentication and
+    // secure these rules. For example, only allowing an authenticated user
+    // to write to their own document.
+    //
+    // Example for a secure rule with user authentication:
+    // allow read, write: if request.auth != null && request.auth.uid == playerId;
+    
+    match /players/{playerId} {
+      // Allows any client to read and write to any document in the 'players' collection.
+      // This is necessary for the current setup without user authentication.
+      allow read, write: if true;
+    }
+  }
+}

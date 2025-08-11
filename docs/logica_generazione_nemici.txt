@@ -1,0 +1,35 @@
+Logica di Generazione degli Avversari in Sbirumon
+
+Questa documentazione riassume come vengono create le creature nemiche nei diversi scenari di gioco (Prateria, Covo di Nerd, Palestre) per offrire una sfida equilibrata e appropriata.
+
+### 1. Prateria (Esplorazione Libera)
+
+Questo è lo scenario più casuale, pensato per l'allenamento e per incontri imprevedibili.
+
+- **Creatura Base**: Viene scelta una creatura **completamente a caso** dal "pool" di tutte le creature non uniche disponibili (`getCreaturePool`).
+- **Livello**: Il livello dell'avversario è calcolato in base al **livello del giocatore**, con una piccola variazione casuale (solitamente da 2 livelli in meno a 2 livelli in più).
+- **Statistiche**: Le statistiche base vengono randomizzate per rendere ogni incontro unico.
+- **Mosse**: Le mosse vengono selezionate casualmente dal set di mosse disponibili per quella specie.
+- **Evoluzione**: C'è una probabilità crescente che l'avversario sia già evoluto in base al suo livello (es. una piccola chance al livello 15, una molto più alta al livello 30).
+
+**In sintesi**: Incontri casuali e vari, ideali per allenarsi e fare esperienza.
+
+### 2. Covo di Nerd
+
+Qui la sfida è più strutturata. Si affronta una serie di allenatori di fila.
+
+- **Creatura Base**: Come in prateria, la creatura è scelta **a caso** dal pool.
+- **Livello**: Il livello è calcolato in modo da essere **leggermente inferiore a quello del giocatore** (`livello del giocatore - 2`). Questo è pensato per rendere la sfida una maratona di resistenza piuttosto che un singolo scontro difficile.
+- **Statistiche e Mosse**: Anche qui, le statistiche sono randomizzate e le mosse scelte casualmente per garantire varietà.
+
+**In sintesi**: Una sfida di resistenza contro nemici leggermente più deboli, dove la gestione delle risorse è fondamentale.
+
+### 3. Palestre
+
+Le palestre sono le sfide più prevedibili e difficili, veri e propri test di abilità.
+
+- **Creatura Base**: La creatura è scelta **a caso** dal pool.
+- **Livello**: Il livello è **fisso e predeterminato** per ogni allenatore della palestra, come definito nel file di configurazione (`src/config/gyms.ts`). Non dipende dal livello del giocatore.
+- **Statistiche e Mosse**: Le statistiche sono randomizzate, ma il livello fisso rende la sfida consistente. Le mosse sono scelte casualmente.
+
+**In sintesi**: Sfide con un livello di difficoltà fisso e crescente, che richiedono preparazione strategica per essere superate.
