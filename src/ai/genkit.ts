@@ -1,9 +1,9 @@
 import {genkit} from 'genkit';
-// import {googleAI} from '@genkit-ai/googleai'; // Removed Google AI
+import {googleAI} from '@genkit-ai/googleai';
 
 export const ai = genkit({
   plugins: [
-    // googleAI() // Removed Google AI plugin
+    googleAI()
   ],
   // model: 'googleai/gemini-2.0-flash', // Removed default Gemini model
 });
