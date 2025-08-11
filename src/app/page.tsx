@@ -100,9 +100,9 @@ const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
             className="sticky bottom-0 w-full bg-background/80 backdrop-blur-sm border-t border-border shadow-t-lg z-20"
         >
             <div className="grid grid-cols-3 gap-1 p-1 max-w-md mx-auto">
-                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('sbirulino'); }}>
-                    <BookOpenCheck />
-                    <span className="text-xs">Sbirulino</span>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('shop_hub'); }}>
+                    <Store />
+                    <span className="text-xs">Negozio</span>
                 </Button>
                 <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('items_hub'); }}>
                     <Backpack />
