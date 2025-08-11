@@ -14,8 +14,8 @@ interface CityPageProps {
 export const CityPage = ({ onNavigate }: CityPageProps) => {
     return (
         <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
-             <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-14 w-14 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-12 w-12" strokeWidth={3} />
+             <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
+                <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
             </Button>
             <main className="w-full max-w-sm p-4">
                 <header className="w-full mb-8 mt-12 sm:mt-0">

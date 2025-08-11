@@ -103,8 +103,8 @@ export const ConsumablesPage = ({ onNavigate, trainerName }: ConsumablesPageProp
     
     return (
       <div className="min-h-screen flex flex-col items-center text-foreground relative">
-        <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-14 w-14 rounded-full hover:bg-background/20" onClick={() => onNavigate('items_hub')}>
-            <ChevronLeftCircle className="h-12 w-12" strokeWidth={3} />
+        <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20" onClick={() => onNavigate('items_hub')}>
+            <ChevronLeftCircle className="h-16 w-16" strokeWidth={3} />
         </Button>
         <main className="w-full max-w-4xl p-4 sm:p-6">
           <header className="w-full mb-12 mt-12 sm:mt-0"><div className="flex justify-center items-center"><PackagePlus className="mr-4 h-10 w-10 text-primary" /><h1 className="text-4xl sm:text-5xl font-headline text-primary text-center">Elenco Consumabili</h1></div></header>
