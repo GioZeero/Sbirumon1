@@ -84,23 +84,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 </Card>
             )}
         </div>
-        <div className="absolute inset-0 flex items-center justify-center z-0">
-            {menuPlayerData && (
-                <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
-                    className="relative w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
-                    onClick={() => navigateTo('sbirulino')}
-                >
-                    <img
-                        src={menuPlayerData.spriteUrl}
-                        alt={menuPlayerData.name}
-                        className="object-contain w-full h-full"
-                    />
-                </motion.div>
-            )}
-        </div>
+        
         <div 
             className="absolute inset-0 flex items-center justify-center"
             style={{ perspective: 1000 }}
@@ -167,6 +151,25 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 })}
             </motion.div>
         </div>
+
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {menuPlayerData && (
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
+                    className="relative w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
+                    onClick={() => navigateTo('sbirulino')}
+                >
+                    <img
+                        src={menuPlayerData.spriteUrl}
+                        alt={menuPlayerData.name}
+                        className="object-contain w-full h-full"
+                    />
+                </motion.div>
+            )}
+        </div>
+
          <div className="absolute bottom-[20vh] w-full flex items-center justify-center z-20">
              <div className="flex items-center justify-center gap-4 bg-background/50 backdrop-blur-sm rounded-full px-2 shadow-lg">
                 <Button variant="default" className="w-14 h-14 rounded-full bg-transparent hover:bg-transparent text-foreground" onClick={() => handleArrowClick('left')}>
