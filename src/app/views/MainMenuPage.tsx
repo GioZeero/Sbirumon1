@@ -23,21 +23,16 @@ interface MainMenuPageProps {
 export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle, navigateTo, onSecretClick, isLoading }: MainMenuPageProps) => {
 
   const mainMenuDestinations = useMemo(() => {
-    const baseDestinations = [
+    return [
       { name: 'Prateria', icon: Sprout, view: 'prairie' as View, color: 'text-green-400', shadowColor: '#34d399' },
       { name: 'Arena', icon: ShieldQuestion, view: 'arena' as View, color: 'text-red-400', shadowColor: '#f87171' },
       { name: 'Palestre', icon: Trophy, view: 'gym_menu' as View, color: 'text-yellow-400', shadowColor: '#fbb_f' },
       { name: 'Negozi', icon: Store, view: 'shop_hub' as View, color: 'text-teal-400', shadowColor: '#2dd4bf' },
       { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu' as View, color: 'text-orange-400', shadowColor: '#fb923c' },
       { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board' as View, color: 'text-blue-400', shadowColor: '#60a5fa' },
+      { name: 'Sentiero Arcano', icon: Wand2, view: 'arcane_path' as View, color: 'text-purple-400', shadowColor: '#a855f7' },
     ];
-    
-    if ((menuPlayerData?.highestGymBeaten ?? 0) >= 3) {
-      baseDestinations.push({ name: 'Sentiero Arcano', icon: Wand2, view: 'arcane_path' as View, color: 'text-purple-400', shadowColor: '#a855f7' });
-    }
-
-    return baseDestinations;
-  }, [menuPlayerData]);
+  }, []);
 
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -161,7 +156,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             </motion.div>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center z-10">
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
