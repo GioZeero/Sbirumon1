@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, UserCircle, Repeat, Trophy, Skull, Crown, Maximize, ClipboardList } from 'lucide-react';
+import { ArrowLeft, UserCircle, Repeat, Trophy, Skull, Crown, Maximize, ClipboardList, Medal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLeaderboard } from '@/lib/fighter-repository';
 import type { LeaderboardEntry } from '@/types/leaderboard';
@@ -46,6 +46,17 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
         );
     }
     
+    const getRankInfo = (points: number): { name: string; color: string; icon: React.ElementType } => {
+        if (points >= 100) return { name: 'Diamante', color: 'text-cyan-400', icon: Crown };
+        if (points >= 50) return { name: 'Platino', color: 'text-teal-400', icon: Crown };
+        if (points >= 25) return { name: 'Oro', color: 'text-yellow-500', icon: Trophy };
+        if (points >= 10) return { name: 'Argento', color: 'text-slate-400', icon: Medal };
+        return { name: 'Bronzo', color: 'text-orange-400', icon: Medal };
+    };
+
+    const rankInfo = getRankInfo(player.trainerRankPoints || 0);
+    const RankIcon = rankInfo.icon;
+    
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
             <div className="w-full relative p-6">
@@ -58,6 +69,10 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                 <header className="w-full max-w-4xl pt-12 sm:pt-0">
                     <div className="text-center">
                       <h1 className="text-4xl md:text-5xl font-headline text-primary">{player.trainerName}</h1>
+                       <div className={cn("flex items-center justify-center gap-2 mt-2 text-xl font-semibold", rankInfo.color)}>
+                          <RankIcon className="h-6 w-6" />
+                          <span>Rango {rankInfo.name}</span>
+                       </div>
                     </div>
                 </header>
             </div>
