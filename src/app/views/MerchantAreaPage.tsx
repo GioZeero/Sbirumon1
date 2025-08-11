@@ -14,8 +14,7 @@ interface MerchantAreaPageProps {
 }
 
 export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPageProps) => {
-    const canSeeSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.sorcererTentVisible;
-    const canSeeMasterSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.masterSorcererTentVisible;
+    const canSeeArcanePath = (menuPlayerData?.highestGymBeaten ?? 0) >= 3;
 
     return (
         <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
@@ -54,24 +53,13 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                             </div>
                         </div>
                     </Button>
-                     {canSeeSorcerer && (
-                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('sorcerer_tent')}>
+                     {canSeeArcanePath && (
+                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('arcane_path')}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-purple-500/20 p-3"><Wand2 className="h-6 w-6 text-purple-400" /></div>
                                 <div>
-                                    <p className="text-base font-bold">Tenda dello Stregone</p>
-                                    <p className="text-sm text-muted-foreground">Altera il destino del tuo Sbirumon</p>
-                                </div>
-                            </div>
-                        </Button>
-                    )}
-                    {canSeeMasterSorcerer && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-fuchsia-500/50" onClick={() => onNavigate('master_sorcerer')}>
-                            <div className="flex items-center gap-4">
-                                <div className="rounded-lg bg-fuchsia-500/20 p-3"><Sparkles className="h-6 w-6 text-fuchsia-400" /></div>
-                                <div>
-                                    <p className="text-base font-bold">Maestro Stregone</p>
-                                    <p className="text-sm text-muted-foreground">Forza un'evoluzione... a tuo rischio</p>
+                                    <p className="text-base font-bold">Sentiero Arcano</p>
+                                    <p className="text-sm text-muted-foreground">Svela i segreti del potere</p>
                                 </div>
                             </div>
                         </Button>
@@ -92,5 +80,3 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
         </div>
     );
 };
-
-    

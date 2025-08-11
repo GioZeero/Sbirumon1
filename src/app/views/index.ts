@@ -21,3 +21,4 @@ export { JobBoardPage } from './JobBoardPage';
 export { ItemsHubPage } from './ItemsHubPage';
 export { ConsumablesPage } from './ConsumablesPage';
 export { MovesPage } from './MovesPage';
+export { ArcanePathPage } from './ArcanePathPage';

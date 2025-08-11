@@ -77,7 +77,8 @@ import {
   TrainerPage,
   ItemsHubPage,
   ConsumablesPage,
-  MovesPage
+  MovesPage,
+  ArcanePathPage
 } from './views';
 
 
@@ -1184,6 +1185,7 @@ function SbirumonApp() {
         case 'city':
         case 'noble_area':
         case 'merchant_area':
+        case 'arcane_path':
             return 'bg-city';
         case 'shop_hub': return 'bg-shop-hub';
         case 'items_moves_edit':
@@ -1215,7 +1217,7 @@ function SbirumonApp() {
   const footerViews: View[] = [
     'main', 'city', 'noble_area', 'merchant_area', 'shop_hub', 'items_hub',
     'covo_menu', 'gym_menu', 'arena', 'arena_leaderboard', 'job_board', 'black_market',
-    'sorcerer_tent', 'master_sorcerer'
+    'sorcerer_tent', 'master_sorcerer', 'arcane_path'
   ];
 
   const handleSecretMenuClick = () => {
@@ -1294,6 +1296,7 @@ function SbirumonApp() {
     arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
+    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     items_hub: <ItemsHubPage onNavigate={navigateTo} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
