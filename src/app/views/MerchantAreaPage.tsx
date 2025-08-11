@@ -53,17 +53,6 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                             </div>
                         </div>
                     </Button>
-                     {canSeeArcanePath && (
-                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('arcane_path')}>
-                            <div className="flex items-center gap-4">
-                                <div className="rounded-lg bg-purple-500/20 p-3"><Wand2 className="h-6 w-6 text-purple-400" /></div>
-                                <div>
-                                    <p className="text-base font-bold">Sentiero Arcano</p>
-                                    <p className="text-sm text-muted-foreground">Svela i segreti del potere</p>
-                                </div>
-                            </div>
-                        </Button>
-                    )}
                     {(menuPlayerData?.suicideCount ?? 0) >= 10 && (
                         <Button variant="destructive" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('black_market')}>
                             <div className="flex items-center gap-4">

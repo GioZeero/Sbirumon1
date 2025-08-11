@@ -1,14 +1,13 @@
 
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Fighter } from '@/types/battle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Sprout, ShieldQuestion, Trophy, Store, Glasses, Briefcase, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { Sprout, ShieldQuestion, Trophy, Store, Glasses, Briefcase, ArrowLeft, ArrowRight, Loader2, Wand2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { View } from './types';
 
@@ -22,14 +21,24 @@ interface MainMenuPageProps {
 }
 
 export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle, navigateTo, onSecretClick, isLoading }: MainMenuPageProps) => {
-  const mainMenuDestinations = [
-    { name: 'Prateria', icon: Sprout, view: 'prairie', color: 'text-green-400', shadowColor: '#34d399' },
-    { name: 'Arena', icon: ShieldQuestion, view: 'arena', color: 'text-red-400', shadowColor: '#f87171' },
-    { name: 'Palestre', icon: Trophy, view: 'gym_menu', color: 'text-yellow-400', shadowColor: '#fbb_f' },
-    { name: 'Negozi', icon: Store, view: 'shop_hub', color: 'text-teal-400', shadowColor: '#2dd4bf' },
-    { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu', color: 'text-orange-400', shadowColor: '#fb923c' },
-    { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board', color: 'text-blue-400', shadowColor: '#60a5fa' },
-  ];
+
+  const mainMenuDestinations = useMemo(() => {
+    const baseDestinations = [
+      { name: 'Prateria', icon: Sprout, view: 'prairie' as View, color: 'text-green-400', shadowColor: '#34d399' },
+      { name: 'Arena', icon: ShieldQuestion, view: 'arena' as View, color: 'text-red-400', shadowColor: '#f87171' },
+      { name: 'Palestre', icon: Trophy, view: 'gym_menu' as View, color: 'text-yellow-400', shadowColor: '#fbb_f' },
+      { name: 'Negozi', icon: Store, view: 'shop_hub' as View, color: 'text-teal-400', shadowColor: '#2dd4bf' },
+      { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu' as View, color: 'text-orange-400', shadowColor: '#fb923c' },
+      { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board' as View, color: 'text-blue-400', shadowColor: '#60a5fa' },
+    ];
+    
+    if ((menuPlayerData?.highestGymBeaten ?? 0) >= 3) {
+      baseDestinations.push({ name: 'Sentiero Arcano', icon: Wand2, view: 'arcane_path' as View, color: 'text-purple-400', shadowColor: '#a855f7' });
+    }
+
+    return baseDestinations;
+  }, [menuPlayerData]);
+
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [rotation, setRotation] = useState(0);
@@ -119,7 +128,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                                 )}
                                 onClick={() => {
                                     if (dest.view === 'prairie') initializeBattle();
-                                    else navigateTo(dest.view as View);
+                                    else navigateTo(dest.view);
                                 }}
                                 disabled={isLoading}
                             >
@@ -152,7 +161,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             </motion.div>
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
