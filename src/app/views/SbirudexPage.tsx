@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import type { Fighter, CreatureType } from '@/types/battle';
+import type { Fighter, CreatureType, Archetype } from '@/types/battle';
 import { getCreaturePool } from '@/config/fighters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,6 +12,9 @@ import { Loader2, ChevronLeftCircle, Dna, Flame, Droplets, Leaf, Sun, Moon } fro
 import { cn } from '@/lib/utils';
 import type { View } from './types';
 import type { LucideIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const creatureTypeIconMap: Record<CreatureType, LucideIcon> = {
   Fire: Flame,
@@ -29,6 +32,20 @@ interface SbirudexPageProps {
 
 export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: SbirudexPageProps) => {
   const [allCreatures] = useState(() => getCreaturePool().sort((a, b) => a.name.localeCompare(b.name)));
+  const [selectedCreature, setSelectedCreature] = useState<Fighter | null>(null);
+
+  const getArchetypeDescription = (archetype?: Archetype): string => {
+    switch (archetype) {
+      case 'Physical':
+        return "Un attaccante fisico che eccelle nel combattimento ravvicinato, infliggendo danni ingenti con la sua forza bruta.";
+      case 'Special':
+        return "Uno specialista a distanza che sfrutta poteri elementali per colpire le debolezze dei nemici.";
+      case 'Balanced':
+        return "Una creatura versatile, capace di adattarsi a diversi stili di combattimento senza eccellere in un'unica area specifica.";
+      default:
+        return "Archetipo non definito.";
+    }
+  };
 
   if (!menuPlayerData) {
     return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
@@ -55,12 +72,20 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
 
         <ScrollArea className="h-[70vh]">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
-                {allCreatures.map((creature, index) => {
+                {allCreatures.map((creature) => {
                     const isEncountered = encounteredIds.has(creature.id);
                     const TypeIcon = creatureTypeIconMap[creature.creatureType];
 
                     return (
-                        <Card key={creature.id} className={cn("bg-card/70 backdrop-blur-sm transition-all", !isEncountered && "bg-background/30")}>
+                        <Card 
+                            key={creature.id} 
+                            className={cn(
+                                "bg-card/70 backdrop-blur-sm transition-all", 
+                                !isEncountered && "bg-background/30",
+                                isEncountered && "cursor-pointer hover:border-primary/80 hover:shadow-lg"
+                            )}
+                            onClick={() => isEncountered && setSelectedCreature(creature)}
+                        >
                             <CardHeader className="p-3 pb-2 items-center">
                                 <div className={cn("relative w-24 h-24 rounded-full border-2 bg-background/50", isEncountered ? "border-primary/50" : "border-border/50")}>
                                     <Image
@@ -95,6 +120,37 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
             </div>
         </ScrollArea>
       </main>
+
+      {selectedCreature && (
+        <Dialog open={!!selectedCreature} onOpenChange={() => setSelectedCreature(null)}>
+            <DialogContent>
+                <DialogHeader className="items-center">
+                    <div className="relative w-32 h-32 rounded-full border-4 border-primary bg-background/50 mb-4">
+                        <Image
+                            src={selectedCreature.spriteUrl}
+                            alt={selectedCreature.name}
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-contain"
+                            unoptimized
+                        />
+                    </div>
+                    <DialogTitle className="text-3xl text-primary">{selectedCreature.name}</DialogTitle>
+                </DialogHeader>
+                <div className="py-2 space-y-3">
+                    <div className="flex justify-center items-center gap-4">
+                        <Badge variant="outline">Tipo: {selectedCreature.creatureType}</Badge>
+                        <Badge variant="secondary">Archetipo: {selectedCreature.archetype || 'N/A'}</Badge>
+                    </div>
+                    <Separator/>
+                    <p className="text-sm text-muted-foreground text-center px-2">
+                        {getArchetypeDescription(selectedCreature.archetype)}
+                    </p>
+                </div>
+            </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 };
