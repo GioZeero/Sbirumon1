@@ -86,7 +86,7 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
       <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-          <ArrowLeft className="h-7 w-7" />
+          <ArrowLeft className="h-9 w-9" />
       </Button>
       <main className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start p-6">
         <div className='md:mt-12'>
@@ -95,7 +95,7 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
                 <CardTitle className="text-center text-primary text-2xl">{player.name}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center">
-                <div className="relative w-40 h-40 rounded-full border-4 border-primary bg-background/50 mb-4">
+                <div className="relative w-40 h-40 rounded-full border-4 border-primary bg-background/50 mb-4 cursor-pointer" onClick={() => onNavigate('sbirulino')}>
                   <Image
                     src={player.spriteUrl}
                     alt={player.name}

@@ -100,7 +100,7 @@ const AppFooter = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
                     <BookOpenCheck />
                     <span className="text-xs">Sbirulino</span>
                 </Button>
-                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('shop'); }}>
+                <Button variant="ghost" className="flex flex-col h-auto py-2 space-y-1" onClick={(e) => { e.stopPropagation(); onNavigate('shop_hub'); }}>
                     <Backpack />
                     <span className="text-xs">Casa</span>
                 </Button>
@@ -1287,7 +1287,7 @@ function SbirumonApp() {
     arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
-    shop: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} />,
@@ -1449,4 +1449,3 @@ export default function Page() {
     
 
     
-

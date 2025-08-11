@@ -107,14 +107,16 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
 
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
-            <Button variant="ghost" size="icon" className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
-                <ChevronLeftCircle className="h-8 w-8" />
-            </Button>
-             <header className="w-full mb-8 mt-12 sm:mt-0 relative px-4 sm:px-6">
-                <div className="absolute top-0 right-4 sm:right-6 flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md"><Coins className="h-6 w-6 text-yellow-400" /><span className="font-bold text-lg text-foreground">{player.money ?? 0}</span></div>
-                
+            <header className="w-full p-6 flex items-center justify-between">
+                <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full hover:bg-background/20" onClick={() => onNavigate('main')}>
+                    <ChevronLeftCircle className="h-9 w-9" />
+                </Button>
+                 <div className="flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md">
+                    <Coins className="h-6 w-6 text-yellow-400" />
+                    <span className="font-bold text-lg text-foreground">{player.money ?? 0}</span>
+                </div>
             </header>
-            <main className="w-full max-w-4xl p-4 sm:p-6">
+            <main className="w-full max-w-4xl p-4 sm:p-6 pt-0">
                 <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
                   <CardHeader><CardTitle className="text-2xl text-center text-accent">Libri delle Mosse</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-0">

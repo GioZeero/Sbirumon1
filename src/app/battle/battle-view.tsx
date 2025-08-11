@@ -153,15 +153,11 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
             <main className="relative flex-grow flex flex-col p-2 w-full mx-auto bg-background">
                 
                 {/* Top Half - Creatures */}
-                <div className={cn("h-1/2 w-full flex items-end justify-center gap-0 relative bg-black bg-bottom bg-[length:140%_140%] bg-no-repeat", battleBgClass)}>
+                <div className={cn("h-1/2 w-full flex items-end justify-center gap-0 relative bg-black bg-bottom bg-[length:140%_140%] bg-no-repeat border-4 border-foreground/30 rounded-lg", battleBgClass)}>
                     <div className='absolute inset-0 flex flex-col justify-end'>
                         {opponent && (
-                            <div className="w-full relative" onClick={handleCloseScoutAnalysis}>
-                                {showScoutAnalysis && scoutAnalysisResult ? (
-                                    <ScoutAnalysisDisplay analysis={scoutAnalysisResult} fighterName={opponent.name} level={opponent.level} />
-                                ) : (
-                                    <FighterCard fighter={opponent} isTurn={!isPlayerTurn && !winner && !isPaused} layout="horizontal-right" setCoords={setOpponentCardCoords} />
-                                )}
+                            <div className="w-full relative">
+                                <FighterCard fighter={opponent} isTurn={!isPlayerTurn && !winner && !isPaused} layout="horizontal-right" setCoords={setOpponentCardCoords} />
                             </div>
                         )}
                         {player && (
@@ -177,13 +173,17 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                     
                     <div className="w-full flex flex-col items-center justify-center py-2 min-h-[148px]">
                          {!winner && <p className="text-sm font-semibold text-muted-foreground">È il turno di {turnOwnerName()}</p>}
-                         <ActionDisplay
-                            action={winner ? null : actionToDisplay}
-                            isSuperEffective={opponent && actionToDisplay ? checkSuperEffective(actionToDisplay.creatureType, opponent.creatureType) : false}
-                            isIneffective={opponent && actionToDisplay ? checkIneffective(actionToDisplay.creatureType, opponent.creatureType) : false}
-                            currentTurnMessage={currentTurnMessage}
-                            isWinner={!!winner}
-                        />
+                         {showScoutAnalysis && scoutAnalysisResult ? (
+                            <ScoutAnalysisDisplay analysis={scoutAnalysisResult} fighterName={opponent.name} level={opponent.level} />
+                         ) : (
+                            <ActionDisplay
+                                action={winner ? null : actionToDisplay}
+                                isSuperEffective={opponent && actionToDisplay ? checkSuperEffective(actionToDisplay.creatureType, opponent.creatureType) : false}
+                                isIneffective={opponent && actionToDisplay ? checkIneffective(actionToDisplay.creatureType, opponent.creatureType) : false}
+                                currentTurnMessage={currentTurnMessage}
+                                isWinner={!!winner}
+                            />
+                         )}
                     </div>
                     
                     {/* Controls Block */}
@@ -222,7 +222,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="outline" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover>
@@ -302,7 +302,15 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                     <div className="mt-4">{player && <PlayerStatsDisplay fighter={player} opponent={opponent} className="p-0 shadow-none border-none bg-transparent" onAttackClick={handleAttackClickInLog} />}</div>
                 </DialogContent>
             </Dialog>
-            <Dialog open={showItemMenuDialog} onOpenChange={setShowItemMenuDialog}>
+            <Dialog open={showItemMenuDialog} onOpenChange={(open) => {
+                setShowItemMenuDialog(open);
+                if (!open && isPaused) {
+                    const anyOtherDialogIsOpen = showPlayerStatsDialog || showCombatLogModal || showScoutAnalysis;
+                    if (!anyOtherDialogIsOpen) {
+                        setIsPaused(false);
+                    }
+                }
+            }}>
                 <DialogContent className="max-w-md bg-card border-border text-foreground">
                     <DialogHeader><DialogTitle className="text-primary text-center">Usa Oggetto</DialogTitle></DialogHeader>
                     <div className="mt-4 max-h-[60vh] overflow-y-auto p-1">
