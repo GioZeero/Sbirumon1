@@ -23,16 +23,17 @@ interface MainMenuPageProps {
 export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle, navigateTo, onSecretClick, isLoading }: MainMenuPageProps) => {
 
   const mainMenuDestinations = useMemo(() => {
-    return [
+    const destinations: { name: string; icon: React.ElementType; view: View; color: string; shadowColor: string; }[] = [
       { name: 'Prateria', icon: Sprout, view: 'prairie' as View, color: 'text-green-400', shadowColor: '#34d399' },
       { name: 'Arena', icon: ShieldQuestion, view: 'arena' as View, color: 'text-red-400', shadowColor: '#f87171' },
       { name: 'Palestre', icon: Trophy, view: 'gym_menu' as View, color: 'text-yellow-400', shadowColor: '#fbb_f' },
-      { name: 'Città', icon: Building, view: 'city' as View, color: 'text-teal-400', shadowColor: '#2dd4bf' },
       { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu' as View, color: 'text-orange-400', shadowColor: '#fb923c' },
       { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board' as View, color: 'text-blue-400', shadowColor: '#60a5fa' },
       { name: 'Sentiero Arcano', icon: Wand2, view: 'arcane_path' as View, color: 'text-purple-400', shadowColor: '#a855f7' },
     ];
-  }, []);
+    
+    return destinations;
+  }, [menuPlayerData]);
 
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -93,6 +94,21 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
             style={{ perspective: 1000 }}
         >
+             <div
+                className="absolute z-10 w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
+                onClick={() => navigateTo('sbirulino')}
+            >
+                {menuPlayerData && (
+                    <motion.img
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
+                        src={menuPlayerData.spriteUrl}
+                        alt={menuPlayerData.name}
+                        className="object-contain w-full h-full"
+                    />
+                )}
+            </div>
             <motion.div
                 className="relative w-[230px] h-[230px] border-4 border-primary/20 rounded-full"
                 animate={{ rotate: rotation }}
@@ -155,25 +171,6 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 })}
             </motion.div>
         </div>
-
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-            {menuPlayerData && (
-                <div
-                    className="relative w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
-                    onClick={() => navigateTo('sbirulino')}
-                >
-                    <motion.img
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
-                        src={menuPlayerData.spriteUrl}
-                        alt={menuPlayerData.name}
-                        className="object-contain w-full h-full"
-                    />
-                </div>
-            )}
-        </div>
-
          <div className="absolute bottom-[20vh] w-full flex items-center justify-center z-20">
              <div className="flex items-center justify-center gap-4 bg-background/50 backdrop-blur-sm rounded-full px-2 shadow-lg">
                 <Button variant="default" className="w-14 h-14 rounded-full bg-transparent hover:bg-transparent text-foreground" onClick={() => handleArrowClick('left')}>
