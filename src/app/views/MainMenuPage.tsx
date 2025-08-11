@@ -7,7 +7,7 @@ import type { Fighter } from '@/types/battle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Sprout, ShieldQuestion, Trophy, Store, Glasses, Briefcase, ArrowLeft, ArrowRight, Loader2, Wand2 } from 'lucide-react';
+import { Sprout, ShieldQuestion, Trophy, Store, Glasses, Briefcase, ArrowLeft, ArrowRight, Loader2, Wand2, Building } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { View } from './types';
 
@@ -27,7 +27,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
       { name: 'Prateria', icon: Sprout, view: 'prairie' as View, color: 'text-green-400', shadowColor: '#34d399' },
       { name: 'Arena', icon: ShieldQuestion, view: 'arena' as View, color: 'text-red-400', shadowColor: '#f87171' },
       { name: 'Palestre', icon: Trophy, view: 'gym_menu' as View, color: 'text-yellow-400', shadowColor: '#fbb_f' },
-      { name: 'Negozi', icon: Store, view: 'shop_hub' as View, color: 'text-teal-400', shadowColor: '#2dd4bf' },
+      { name: 'Città', icon: Building, view: 'city' as View, color: 'text-teal-400', shadowColor: '#2dd4bf' },
       { name: 'Covo dei Nerd', icon: Glasses, view: 'covo_menu' as View, color: 'text-orange-400', shadowColor: '#fb923c' },
       { name: 'Bacheca Lavori', icon: Briefcase, view: 'job_board' as View, color: 'text-blue-400', shadowColor: '#60a5fa' },
       { name: 'Sentiero Arcano', icon: Wand2, view: 'arcane_path' as View, color: 'text-purple-400', shadowColor: '#a855f7' },
@@ -110,7 +110,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                     return (
                          <div
                             key={dest.name}
-                            className="absolute top-1/2 left-1/2 -mt-6 -ml-6"
+                            className="absolute top-1/2 left-1/2 -mt-6 -ml-6 pointer-events-auto"
                             style={{
                               transform: `rotate(${angle}deg) translateY(-${radiusLg}px)`,
                             }}
@@ -158,19 +158,19 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
 
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             {menuPlayerData && (
-                <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
+                <div
                     className="relative w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
                     onClick={() => navigateTo('sbirulino')}
                 >
-                    <img
+                    <motion.img
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
                         src={menuPlayerData.spriteUrl}
                         alt={menuPlayerData.name}
                         className="object-contain w-full h-full"
                     />
-                </motion.div>
+                </div>
             )}
         </div>
 
