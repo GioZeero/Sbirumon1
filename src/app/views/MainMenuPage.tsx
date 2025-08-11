@@ -84,13 +84,13 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 </Card>
             )}
         </div>
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute inset-0 flex items-center justify-center z-0">
             {menuPlayerData && (
                 <motion.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5, type: 'spring' }}
-                    className="relative w-[40vw] h-[40vw] cursor-pointer"
+                    className="relative w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
                     onClick={() => navigateTo('sbirulino')}
                 >
                     <img
