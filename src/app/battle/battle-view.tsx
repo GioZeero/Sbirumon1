@@ -128,6 +128,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
         opponentTrainer
     } = props;
     
+    const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
     if (isInitializing || (!player && !opponent && !winner)) {
         return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
@@ -228,7 +229,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
-                            <Popover>
+                            <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
                                     <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
@@ -242,7 +243,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                         <Button variant="ghost" size="sm" onClick={handleTogglePlayerStats} disabled={isConfirmDisabled}>
                                             <UserCircle className="mr-2 h-4 w-4" /> Statistiche
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={handleScout} disabled={isConfirmDisabled}>
+                                        <Button variant="ghost" size="sm" onClick={() => { handleScout(); setIsMoreMenuOpen(false); }} disabled={isConfirmDisabled}>
                                             <Search className="mr-2 h-4 w-4" /> Analisi
                                         </Button>
                                     </div>
