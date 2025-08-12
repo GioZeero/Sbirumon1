@@ -101,6 +101,9 @@ interface BattleViewProps {
     selectedAttackForDetails: Attack | null;
     onRematch: () => void;
     opponentTrainer: { name: string; subtitle: string; } | null;
+    chargeProgress: number;
+    handleChargeMouseDown: () => void;
+    handleChargeMouseUp: () => void;
 }
 
 const BattleView: React.FC<BattleViewProps> = (props) => {
@@ -121,7 +124,8 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
         handleSpeedToggle, turnCount, handlePistolaAction, isBattleEnding,
         showGameOverModal, setShowGameOverModal, finalScore, activeTrainerName,
         resetPlayerRun, navigateTo, showAttackDetailsDialog, handleCloseAttackDetailsDialog,
-        selectedAttackForDetails, onRematch, opponentTrainer
+        selectedAttackForDetails, onRematch, opponentTrainer,
+        chargeProgress, handleChargeMouseDown, handleChargeMouseUp
     } = props;
     
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -193,18 +197,25 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                              <div className="relative">
                                 {canCharge ? (
                                     <Button
-                                        onClick={handleChargeAction}
-                                        disabled={isConfirmDisabled || !playerChosenAction}
+                                        onMouseDown={handleChargeMouseDown}
+                                        onMouseUp={handleChargeMouseUp}
+                                        onMouseLeave={handleChargeMouseUp}
+                                        onTouchStart={handleChargeMouseDown}
+                                        onTouchEnd={handleChargeMouseUp}
+                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}
                                         size="lg"
-                                        className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95 bg-purple-600 hover:bg-purple-700 text-white"
+                                        className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95 bg-purple-600 hover:bg-purple-700 text-white relative overflow-hidden"
                                     >
-                                        <BatteryCharging className="mr-2 h-5 w-5" />
-                                        Carica!
+                                        <div className="absolute top-0 left-0 h-full bg-purple-400/50" style={{ width: `${chargeProgress}%`, transition: 'width 0.1s linear' }} />
+                                        <div className="relative z-10 flex items-center">
+                                            <BatteryCharging className="mr-2 h-5 w-5" />
+                                            Carica!
+                                        </div>
                                     </Button>
                                 ) : (
                                     <Button
                                         onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
-                                        disabled={isConfirmDisabled}
+                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}
                                         variant="destructive"
                                         size="lg"
                                         className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -229,7 +240,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled || isHypnotized}>
+                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
                                     </Button>
                                 </PopoverTrigger>

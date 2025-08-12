@@ -45,7 +45,7 @@ import { buyMoveBook } from './shop/moves/actions';
 import TrainerView from './trainer/trainer-view';
 import PageTransitionWrapper from '@/components/ui/page-transition-wrapper';
 import ProjectileAnimation from '@/components/battle/ProjectileAnimation';
-import ScoutAnalysisDisplay from '@/components/battle/ScoutAnalysisDisplay';
+import ScoutAnalysisDisplay from '@/components/battle/ProjectileAnimation';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import type { LeaderboardEntry } from '@/types/leaderboard';
@@ -285,6 +285,10 @@ function SbirumonApp() {
 
     setCurrentTurnMessage(`${playerClone.name} usa ${attackToExecute.name}!`);
     
+    // Opponent selects move for next turn while player animation is happening
+    const nextOpponentMove = selectWeightedRandomAttack(opponentClone);
+    setOpponentChosenAction(nextOpponentMove);
+    
     setProjectileAnimations(prev => [...prev, {
         key: Date.now(),
         source: 'player',
@@ -311,12 +315,11 @@ function SbirumonApp() {
   }, [addMultipleLogEntries, endTurn, activeTrainerName, canPlayerAct, addLogEntry, isPaused, winner]);
 
   const handleChargeAction = useCallback(async () => {
-    if (!playerRef.current || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct || !playerChosenAction) {
+    if (!playerRef.current || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct) {
         return;
     }
     
     if (playerRef.current.trustLevel < playerRef.current.maxTrustLevel) {
-        // This should not happen if the button is correctly disabled, but as a safeguard.
         return;
     }
 
@@ -325,7 +328,6 @@ function SbirumonApp() {
 
     let playerClone = cloneFighter(playerRef.current);
     
-    // Consume trust and apply charge buff
     playerClone.trustLevel = 0;
     const chargeEffect = STATUS_EFFECTS['carica_buff'];
     if (chargeEffect && !playerClone.statusEffects.some(e => e.id === chargeEffect.id)) {
@@ -333,13 +335,49 @@ function SbirumonApp() {
         addLogEntry([`${playerClone.name} si sta caricando di energia!`]);
     }
     
-    // Set extra turns that will be handled in the endTurn logic
     setPlayerExtraTurnsRemaining(GameBalance.CHARGE_ACTION_EXTRA_TURNS_GAINED);
     
-    // Immediately proceed to execute the chosen attack with the charge buff active
-    await executePlayerChosenAttack(playerChosenAction, playerClone);
+    const attackToExecute = playerChosenAction || selectWeightedRandomAttack(playerClone);
 
-  }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack]);
+    if (attackToExecute) {
+      await executePlayerChosenAttack(attackToExecute, playerClone);
+    } else {
+        addLogEntry([`${playerClone.name} non è riuscito a scegliere una mossa da caricare!`]);
+        endTurn(playerClone, opponentRef.current, false);
+    }
+
+  }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack, endTurn]);
+  
+  const handleChargeMouseDown = () => {
+    if (!canPlayerAct || isPaused || winner || isConfirmDisabled) return;
+
+    chargeTimerRef.current = setTimeout(() => {
+        handleChargeAction();
+        setChargeProgress(0);
+        if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+    }, 1000); // 1 second hold to activate
+
+    let progress = 0;
+    chargeIntervalRef.current = setInterval(() => {
+        progress += 10;
+        setChargeProgress(progress);
+        if (progress >= 100) {
+            if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+        }
+    }, 100);
+  };
+
+  const handleChargeMouseUp = () => {
+    if (chargeTimerRef.current) {
+        clearTimeout(chargeTimerRef.current);
+        chargeTimerRef.current = null;
+    }
+    if (chargeIntervalRef.current) {
+        clearInterval(chargeIntervalRef.current);
+        chargeIntervalRef.current = null;
+    }
+    setChargeProgress(0);
+  };
   
   const selectWeightedRandomAttack = (fighter: Fighter): Attack | null => {
     if (!fighter.attacks || fighter.attacks.length === 0) return null;
@@ -520,35 +558,23 @@ function SbirumonApp() {
     setIsLoading(true);
     setIsActionDisabled(true);
 
-    // Phase 1: Announce turn and "thinking"
-    setCurrentTurnMessage(`${currentOpponentInput.name} sta pensando...`);
-    await new Promise(resolve => setTimeout(resolve, 1500 / speedMultiplier));
-
-    if (isPaused || winner) {
-      setIsLoading(false);
-      return;
-    }
-    
-    // Phase 2: Choose move and display it
-    const chosenAttack = selectWeightedRandomAttack(currentOpponentInput);
-    setOpponentChosenAction(chosenAttack);
+    const chosenAttack = opponentChosenAction;
 
     if (chosenAttack) {
       setCurrentTurnMessage(`${currentOpponentInput.name} usa ${chosenAttack.name}!`);
     } else {
       setCurrentTurnMessage(`${currentOpponentInput.name} non sa cosa fare...`);
-    }
-
-    // Delay to show the chosen move
-    await new Promise(resolve => setTimeout(resolve, (1000 + 1000) / speedMultiplier));
-    
-    if (isPaused || winner || !chosenAttack) {
-      if(!chosenAttack) addLogEntry([`${currentOpponentInput.name} non fa nulla.`]);
       endTurn(currentPlayerInput, currentOpponentInput, true);
       return;
     }
+    
+    await new Promise(resolve => setTimeout(resolve, 600 / speedMultiplier));
+    
+    if (isPaused || winner) {
+      setIsLoading(false);
+      return;
+    }
 
-    // Phase 3: Execute attack animation and logic
     const isConfusedAndHittingSelf = false;
     
     setProjectileAnimations(prev => [...prev, {
@@ -560,7 +586,6 @@ function SbirumonApp() {
         delay: 0,
     }]);
 
-    // Delay for projectile animation
     await new Promise(resolve => setTimeout(resolve, 660 / speedMultiplier));
     
     const { updatedAttacker: updatedOpponent, updatedTarget: updatedPlayer, logMessages: attackLogs } = processAttack(
@@ -571,7 +596,7 @@ function SbirumonApp() {
     setTurnCount(prev => prev + 1);
     endTurn(updatedPlayer, updatedOpponent, true);
       
-  }, [speedMultiplier, addMultipleLogEntries, addLogEntry, endTurn, isPaused, winner]);
+  }, [speedMultiplier, addMultipleLogEntries, endTurn, isPaused, winner, opponentChosenAction]);
 
   const handleGoToMenu = useCallback(async (targetView: View = 'main') => {
     if (covoConfig && activeTrainerName) {
@@ -913,24 +938,24 @@ function SbirumonApp() {
     let timeoutId: NodeJS.Timeout;
 
     // Apply pre-turn effects
-    const { canMove, isConfused, logMessages } = checkPreTurnStatusEffects(currentFighter);
+    const { canMove, isConfused, logMessages, updatedFighter } = checkPreTurnStatusEffects(currentFighter);
     if(logMessages.length > 0) addMultipleLogEntries(logMessages);
 
-    const gameWinner = checkWinner(isPlayerTurn ? currentFighter : otherFighter, isPlayerTurn ? otherFighter : currentFighter);
+    const gameWinner = checkWinner(isPlayerTurn ? updatedFighter : otherFighter, isPlayerTurn ? otherFighter : updatedFighter);
     if(gameWinner) {
-      setPlayer(isPlayerTurn ? currentFighter : otherFighter);
-      setOpponent(isPlayerTurn ? otherFighter : currentFighter);
+      setPlayer(isPlayerTurn ? updatedFighter : otherFighter);
+      setOpponent(isPlayerTurn ? otherFighter : updatedFighter);
       setWinner(gameWinner);
       return;
     }
 
     if(isPlayerTurn) {
-        setPlayer(currentFighter);
+        setPlayer(updatedFighter);
         setCanPlayerAct(canMove);
         if (!canMove) {
-            timeoutId = setTimeout(() => endTurn(currentFighter, otherFighter, false), 500 / speedMultiplier);
+            timeoutId = setTimeout(() => endTurn(updatedFighter, otherFighter, false), 500 / speedMultiplier);
         } else if (!playerChosenAction) {
-            const autoSelectedAttack = selectWeightedRandomAttack(currentFighter);
+            const autoSelectedAttack = selectWeightedRandomAttack(updatedFighter);
             if (autoSelectedAttack) setPlayerChosenAction(cloneAttack(autoSelectedAttack));
         } else if (isAutoBattle) {
             timeoutId = setTimeout(() => {
@@ -940,11 +965,10 @@ function SbirumonApp() {
             }, GameBalance.PLAYER_AUTO_ATTACK_DELAY_MS / speedMultiplier);
         }
     } else { // Opponent's turn
-        setOpponent(currentFighter);
-        setOpponentChosenAction(null); // Clear previous action
+        setOpponent(updatedFighter);
         timeoutId = setTimeout(() => {
             if (!isPaused && !winner) {
-                executeOpponentTurn(currentFighter, otherFighter, canMove);
+                executeOpponentTurn(updatedFighter, otherFighter, canMove);
             }
         }, GameBalance.OPPONENT_TURN_DELAY_MS / speedMultiplier);
     }
@@ -1453,6 +1477,9 @@ function SbirumonApp() {
                           selectedAttackForDetails={selectedAttackForDetails}
                           onRematch={() => initializeBattle()}
                           opponentTrainer={opponentTrainer}
+                          chargeProgress={chargeProgress}
+                          handleChargeMouseDown={handleChargeMouseDown}
+                          handleChargeMouseUp={handleChargeMouseUp}
                         />
                       ) : currentViewContent}
                   </main>
@@ -1491,5 +1518,7 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
 
     
