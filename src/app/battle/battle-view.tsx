@@ -203,7 +203,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                         onMouseLeave={handleChargeMouseUp}
                                         onTouchStart={handleChargeMouseDown}
                                         onTouchEnd={handleChargeMouseUp}
-                                        disabled={isConfirmDisabled || !canPlayerAct}
+                                        disabled={isConfirmDisabled || !canPlayerAct || !isPlayerTurn}
                                         size="lg"
                                         className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95 bg-purple-600 hover:bg-purple-700 text-white relative overflow-hidden"
                                     >
@@ -216,7 +216,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 ) : (
                                     <Button
                                         onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
-                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}
+                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized || !isPlayerTurn}
                                         variant="destructive"
                                         size="lg"
                                         className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -228,7 +228,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             </div>
                             <Button
                                 onClick={handleBlockAction}
-                                disabled={isConfirmDisabled || !player || player.trustLevel < 1 || !canPlayerAct || isHypnotized}
+                                disabled={isConfirmDisabled || !player || player.trustLevel < 1 || !canPlayerAct || isHypnotized || !isPlayerTurn}
                                 variant="secondary"
                                 size="lg"
                                 className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -236,12 +236,12 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle || !canPlayerAct || isHypnotized}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle || !canPlayerAct || isHypnotized || !isPlayerTurn}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}>
+                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled || !canPlayerAct || isHypnotized || !isPlayerTurn}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
                                     </Button>
                                 </PopoverTrigger>
