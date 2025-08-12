@@ -137,6 +137,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
     const battleBgClass = covoConfig ? 'bg-covo' : gymConfig ? 'bg-gym-combat' : isArenaBattle ? 'bg-gym-combat' : 'bg-prateria';
 
     const canCharge = player && player.trustLevel >= player.maxTrustLevel;
+    const isHypnotized = player.statusEffects.some(e => e.id === 'sleep');
     
     const turnOwnerName = () => {
         if (isPlayerTurn) return player.trainerName || player.name;
@@ -215,7 +216,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             </div>
                             <Button
                                 onClick={handleBlockAction}
-                                disabled={isConfirmDisabled || !player || player.trustLevel < 1 || !canPlayerAct}
+                                disabled={isConfirmDisabled || !player || player.trustLevel < 1 || !canPlayerAct || isHypnotized}
                                 variant="secondary"
                                 size="lg"
                                 className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -223,12 +224,12 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle || !canPlayerAct}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle || !canPlayerAct || isHypnotized}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled}>
+                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled || isHypnotized}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
                                     </Button>
                                 </PopoverTrigger>

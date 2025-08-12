@@ -59,12 +59,16 @@ export const STATUS_EFFECTS: Record<string, StatusEffect> = {
   sleep: {
     id: 'sleep',
     name: 'Ipnotizzato',
-    description: 'Impedisce alla creatura di compiere qualsiasi azione per alcuni turni.',
+    description: 'La creatura può solo attaccare. Le azioni di Blocco, Fuga e Altro sono disabilitate.',
     duration: 2,
     icon: 'Moon',
     onTurnStartCheck: (target, effect) => {
-        // The check happens here, duration is decremented in the main logic. If duration > 0, they are asleep.
-        return { canMove: false, isConfused: false, logMessage: [`${target.name} è ipnotizzato.`], updatedEffect: effect };
+        // This effect no longer prevents movement on its own.
+        // The UI will check for this effect's ID to disable specific buttons.
+        if (effect.duration <= 1) { // Check if it's the last turn
+             return { canMove: true, isConfused: false, logMessage: [`${target.name} si sta per svegliare!`], updatedEffect: effect };
+        }
+        return { canMove: true, isConfused: false, logMessage: [`${target.name} è ipnotizzato.`], updatedEffect: effect };
     }
   },
   confusion: {
