@@ -43,6 +43,7 @@ interface BattleViewProps {
     isPaused: boolean;
     setIsPaused: (paused: boolean) => void;
     isConfirmDisabled: boolean;
+    canPlayerAct: boolean;
     covoConfig: { city: string; size: CovoSize; totalOpponents: number } | null;
     gymConfig: GymConfig | null;
     isArenaBattle: boolean;
@@ -109,7 +110,7 @@ interface BattleViewProps {
 const BattleView: React.FC<BattleViewProps> = (props) => {
     const {
         isInitializing, isLoading, player, opponent, winner, handleGoToMenu, playerChosenAction,
-        opponentChosenAction, isPlayerTurn, isPaused, setIsPaused, isConfirmDisabled,
+        opponentChosenAction, isPlayerTurn, isPaused, setIsPaused, isConfirmDisabled, canPlayerAct,
         covoConfig, gymConfig, isArenaBattle, currentTurnMessage, handleCloseScoutAnalysis,
         showScoutAnalysis, scoutAnalysisResult, setOpponentCardCoords, setPlayerCardCoords,
         executePlayerChosenAttack, handleBlockAction, handleChargeAction, handleEscapeAttempt,
@@ -195,30 +196,24 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                         <div className="grid grid-cols-2 grid-rows-2 gap-2">
                              <div className="relative">
                                 <Button
-                                    onMouseDown={canCharge ? startCharge : () => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
+                                    onMouseDown={canCharge ? startCharge : undefined}
                                     onMouseUp={canCharge ? cancelCharge : undefined}
                                     onMouseLeave={canCharge ? cancelCharge : undefined}
-                                    onTouchStart={canCharge ? startCharge : () => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
+                                    onTouchStart={canCharge ? startCharge : undefined}
                                     onTouchEnd={canCharge ? cancelCharge : undefined}
+                                    onClick={!canCharge ? () => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); } : undefined}
                                     disabled={isConfirmDisabled}
                                     variant={canCharge ? "default" : "destructive"}
                                     size="lg"
                                     className={cn("w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95", canCharge && "bg-accent hover:bg-accent/80")}
                                 >
-                                    {isConfirmDisabled && isPlayerTurn ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sword className="mr-2 h-5 w-5" />}
+                                    {isConfirmDisabled && canPlayerAct ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sword className="mr-2 h-5 w-5" />}
                                     {canCharge ? "Carica!" : "Attacca!"}
                                 </Button>
-                                {canCharge && chargeProgress > 0 && (
-                                    <Progress
-                                        value={chargeProgress}
-                                        className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-1.5"
-                                        indicatorClassName="bg-primary"
-                                    />
-                                )}
                             </div>
                             <Button
                                 onClick={handleBlockAction}
-                                disabled={isConfirmDisabled || !player || player.trustLevel < 1}
+                                disabled={isConfirmDisabled && canPlayerAct || !player || player.trustLevel < 1}
                                 variant="secondary"
                                 size="lg"
                                 className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -226,24 +221,24 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={(isConfirmDisabled && canPlayerAct) || isArenaBattle}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled}>
+                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled && canPlayerAct}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-2">
                                     <div className="flex flex-col gap-2">
-                                        <Button variant="ghost" size="sm" onClick={handleToggleItemMenu} disabled={isConfirmDisabled}>
+                                        <Button variant="ghost" size="sm" onClick={handleToggleItemMenu} disabled={isConfirmDisabled && canPlayerAct}>
                                             <Package className="mr-2 h-4 w-4" /> Zaino
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={handleTogglePlayerStats} disabled={isConfirmDisabled}>
+                                        <Button variant="ghost" size="sm" onClick={handleTogglePlayerStats} disabled={isConfirmDisabled && canPlayerAct}>
                                             <UserCircle className="mr-2 h-4 w-4" /> Statistiche
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={() => { handleScout(); setIsMoreMenuOpen(false); }} disabled={isConfirmDisabled}>
+                                        <Button variant="ghost" size="sm" onClick={() => { handleScout(); setIsMoreMenuOpen(false); }} disabled={isConfirmDisabled && canPlayerAct}>
                                             <Search className="mr-2 h-4 w-4" /> Analisi
                                         </Button>
                                     </div>

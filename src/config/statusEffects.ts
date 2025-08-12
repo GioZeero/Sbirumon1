@@ -50,7 +50,7 @@ export const STATUS_EFFECTS: Record<string, StatusEffect> = {
     duration: 4,
     icon: 'Zap',
     onTurnStartCheck: (target, effect) => {
-        if (Math.random() < 0.5) { // 50% chance to be fully paralyzed
+        if (Math.random() < 0.3) { // 30% chance to be fully paralyzed
             return { canMove: false, isConfused: false, logMessage: [`${target.name} è paralizzato e non può muoversi!`], updatedEffect: effect };
         }
         return { canMove: true, isConfused: false, updatedEffect: effect };
@@ -58,13 +58,13 @@ export const STATUS_EFFECTS: Record<string, StatusEffect> = {
   },
   sleep: {
     id: 'sleep',
-    name: 'Sonno',
-    description: 'Impedisce alla creatura di attaccare per alcuni turni.',
+    name: 'Ipnotizzato',
+    description: 'Impedisce alla creatura di attaccare per alcuni turni, ma può comunque difendersi o fuggire.',
     duration: 2,
     icon: 'Moon',
     onTurnStartCheck: (target, effect) => {
         // The check happens here, duration is decremented in the main logic. If duration > 0, they are asleep.
-        return { canMove: false, isConfused: false, logMessage: [`${target.name} sta dormendo.`], updatedEffect: effect };
+        return { canMove: false, isConfused: false, logMessage: [`${target.name} è ipnotizzato.`], updatedEffect: effect };
     }
   },
   confusion: {

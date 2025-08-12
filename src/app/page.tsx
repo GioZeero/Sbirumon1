@@ -370,7 +370,7 @@ function SbirumonApp() {
 };
 
   const handleBlockAction = useCallback(() => {
-    if (!playerRef.current || !opponentRef.current || winner || isPaused || !isPlayerTurn) {
+    if (!playerRef.current || !opponentRef.current || winner || isPaused || (!isPlayerTurn && !canPlayerAct)) {
         return;
     }
     const currentPlayer = playerRef.current;
@@ -391,7 +391,7 @@ function SbirumonApp() {
     
     setPlayer(updatedPlayerWithTrustSpent);
     
-  }, [isPlayerTurn, isPaused, winner]);
+  }, [isPlayerTurn, canPlayerAct, isPaused, winner]);
 
   const handleUseConsumable = useCallback(async (itemToUse: ConsumableInventoryItem) => {
     if (!playerRef.current || !opponentRef.current || winner || !isPlayerTurn || !activeTrainerName) {
@@ -715,7 +715,7 @@ function SbirumonApp() {
   }, [activeTrainerName, menuPlayerData]);
 
   const handleEscapeAttempt = useCallback(async () => {
-      if (!playerRef.current || winner || isPaused || !isPlayerTurn || isArenaBattle) {
+      if (!playerRef.current || winner || isPaused || (!isPlayerTurn && !canPlayerAct) || isArenaBattle) {
           return;
       }
       setIsAttemptingEscape(true);
@@ -740,7 +740,7 @@ function SbirumonApp() {
               setIsActionDisabled(false);
           }
       }
-  }, [isPlayerTurn, speedMultiplier, addLogEntry, handleGoToMenu, endTurn, isArenaBattle, isPaused, winner]);
+  }, [isPlayerTurn, canPlayerAct, speedMultiplier, addLogEntry, handleGoToMenu, endTurn, isArenaBattle, isPaused, winner]);
 
   const handlePistolaAction = useCallback(async () => {
     if (!playerRef.current || winner || isBattleEnding || !activeTrainerName) return;
@@ -904,29 +904,29 @@ function SbirumonApp() {
     let timeoutId: NodeJS.Timeout;
 
     // Apply pre-turn effects
-    const { canMove, updatedFighter, logMessages } = checkPreTurnStatusEffects(currentFighter);
+    const { canMove, isConfused, logMessages } = checkPreTurnStatusEffects(currentFighter);
     if(logMessages.length > 0) addMultipleLogEntries(logMessages);
 
-    const gameWinner = checkWinner(isPlayerTurn ? updatedFighter : otherFighter, isPlayerTurn ? otherFighter : updatedFighter);
+    const gameWinner = checkWinner(isPlayerTurn ? currentFighter : otherFighter, isPlayerTurn ? otherFighter : currentFighter);
     if(gameWinner) {
-      setPlayer(isPlayerTurn ? updatedFighter : otherFighter);
-      setOpponent(isPlayerTurn ? otherFighter : updatedFighter);
+      setPlayer(isPlayerTurn ? currentFighter : otherFighter);
+      setOpponent(isPlayerTurn ? otherFighter : currentFighter);
       setWinner(gameWinner);
       return;
     }
 
     if(isPlayerTurn) {
-        setPlayer(updatedFighter);
+        setPlayer(currentFighter);
         setCanPlayerAct(canMove);
          if (!canMove) {
-            timeoutId = setTimeout(() => endTurn(updatedFighter, otherFighter, false), 500 / speedMultiplier);
+            timeoutId = setTimeout(() => endTurn(currentFighter, otherFighter, false), 500 / speedMultiplier);
         } else if (!playerChosenAction) {
-            const autoSelectedAttack = selectWeightedRandomAttack(updatedFighter);
+            const autoSelectedAttack = selectWeightedRandomAttack(currentFighter);
             if (autoSelectedAttack) setPlayerChosenAction(cloneAttack(autoSelectedAttack));
         } else if (isAutoBattle) {
             timeoutId = setTimeout(() => {
                 if (playerChosenAction && !isPaused && !winner && isPlayerTurn) {
-                    if (updatedFighter.trustLevel === updatedFighter.maxTrustLevel) {
+                    if (currentFighter.trustLevel === currentFighter.maxTrustLevel) {
                         handleChargeAction();
                     } else {
                         executePlayerChosenAttack(playerChosenAction);
@@ -935,11 +935,11 @@ function SbirumonApp() {
             }, GameBalance.PLAYER_AUTO_ATTACK_DELAY_MS / speedMultiplier);
         }
     } else { // Opponent's turn
-        setOpponent(updatedFighter);
+        setOpponent(currentFighter);
         setOpponentChosenAction(null); // Clear previous action
         timeoutId = setTimeout(() => {
             if (!isPaused && !winner) {
-                executeOpponentTurn(updatedFighter, otherFighter, canMove);
+                executeOpponentTurn(currentFighter, otherFighter, canMove);
             }
         }, GameBalance.OPPONENT_TURN_DELAY_MS / speedMultiplier);
     }
@@ -1054,12 +1054,31 @@ function SbirumonApp() {
     initializeBattle({ isCovo: true, covoData: { config: newConfig, progress: 1 } });
   };
 
-  const handleNextCovoOpponent = () => {
+  const handleNextCovoOpponent = async () => {
     if (!covoConfig || !playerRef.current) return;
     const newProgress = covoProgress + 1;
     const playerSnapshot = cloneFighter(playerRef.current);
     setCovoProgress(newProgress);
-    initializeBattle({ isCovo: true, covoData: { config: covoConfig, progress: newProgress, persistedPlayerState: playerSnapshot } });
+    setIsInitializing(true); // Show loader while preparing next opponent
+    
+    // Explicitly call to get the next opponent to ensure it's ready
+    await getFighterDataForBattle(activeTrainerName!, {
+      fighterType: 'opponent',
+      fixedLevel: playerSnapshot.level,
+      opponentType: 'covo'
+    });
+    
+    // A short delay to make the transition feel more deliberate
+    await new Promise(resolve => setTimeout(resolve, 500)); 
+    
+    initializeBattle({ 
+        isCovo: true, 
+        covoData: { 
+            config: covoConfig, 
+            progress: newProgress, 
+            persistedPlayerState: playerSnapshot 
+        } 
+    });
   };
 
   const handleStartGymChallenge = (gymId: number) => {
@@ -1134,7 +1153,7 @@ function SbirumonApp() {
   }
 
   const handleToggleItemMenu = () => {
-      if (winner || isInitializing || !isPlayerTurn) return;
+      if (winner || isInitializing || (!isPlayerTurn && !canPlayerAct)) return;
       const isOpening = !showItemMenuDialog;
       setShowItemMenuDialog(isOpening);
       setIsPaused(isOpening);
@@ -1369,7 +1388,8 @@ function SbirumonApp() {
                           isPlayerTurn={isPlayerTurn}
                           isPaused={isPaused}
                           setIsPaused={setIsPaused}
-                          isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn}
+                          isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct}
+                          canPlayerAct={canPlayerAct}
                           covoConfig={covoConfig}
                           gymConfig={gymConfig}
                           isArenaBattle={isArenaBattle}
@@ -1429,7 +1449,7 @@ function SbirumonApp() {
                           onRematch={() => initializeBattle()}
                           chargeProgress={chargeProgress}
                           startCharge={() => {
-                              if (!playerRef.current || playerRef.current.trustLevel < playerRef.current.maxTrustLevel || isActionDisabled) return;
+                              if (!playerRef.current || playerRef.current.trustLevel < playerRef.current.maxTrustLevel || (isActionDisabled || !canPlayerAct)) return;
                               if (chargeTimerRef.current) clearTimeout(chargeTimerRef.current);
                               if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
                               setChargeProgress(0);
