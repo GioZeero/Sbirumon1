@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -11,7 +10,7 @@ import ActionDisplay from '@/components/battle/ActionDisplay';
 import TrustLevelBar from '@/components/battle/TrustLevelBar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Loader2, Swords, Undo2, UserCircle, Search, ScrollText, Settings, Sword, ShieldBan, MoreHorizontal, Package, Skull } from 'lucide-react';
+import { Loader2, Swords, Undo2, UserCircle, Search, ScrollText, Settings, Sword, ShieldBan, MoreHorizontal, Package, Skull, BatteryCharging } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import PlayerStatsDisplay from '@/components/battle/PlayerStatsDisplay';
 import ProjectileAnimation from '@/components/battle/ProjectileAnimation';
@@ -191,16 +190,28 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                     <div className="w-full flex-grow flex flex-col justify-center">
                         <div className="grid grid-cols-2 grid-rows-2 gap-2">
                              <div className="relative">
-                                <Button
-                                    onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
-                                    disabled={isConfirmDisabled}
-                                    variant="destructive"
-                                    size="lg"
-                                    className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
-                                >
-                                    {isConfirmDisabled && canPlayerAct ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sword className="mr-2 h-5 w-5" />}
-                                    Attacca!
-                                </Button>
+                                {canCharge ? (
+                                    <Button
+                                        onClick={handleChargeAction}
+                                        disabled={isConfirmDisabled || !playerChosenAction}
+                                        size="lg"
+                                        className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95 bg-purple-600 hover:bg-purple-700 text-white"
+                                    >
+                                        <BatteryCharging className="mr-2 h-5 w-5" />
+                                        Carica!
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
+                                        disabled={isConfirmDisabled}
+                                        variant="destructive"
+                                        size="lg"
+                                        className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
+                                    >
+                                        {isConfirmDisabled && canPlayerAct ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sword className="mr-2 h-5 w-5" />}
+                                        Attacca!
+                                    </Button>
+                                )}
                             </div>
                             <Button
                                 onClick={handleBlockAction}
