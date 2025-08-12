@@ -380,8 +380,8 @@ function SbirumonApp() {
   }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack, endTurn]);
   
   const handleChargeMouseDown = () => {
-    const isConfirmDisabled = isActionDisabled || isPaused || !canPlayerAct;
-    if (isConfirmDisabled || winner) return;
+    const isActionDisabledNow = isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn;
+    if (isActionDisabledNow || winner) return;
 
     chargeTimerRef.current = setTimeout(() => {
         handleChargeAction();
@@ -807,15 +807,19 @@ function SbirumonApp() {
   }, []);
 
   const navigateTo = (view: View, data?: any) => {
-    if (view === 'chat' && data?.recipient) {
-      setChatTarget(data.recipient);
-    } else {
-      setChatTarget(null);
-    }
-    if (currentView !== view) {
-        setPreviousView(currentView);
-    }
-    setCurrentView(view);
+    setIsLoading(true);
+    setTimeout(() => {
+        if (view === 'chat' && data?.recipient) {
+          setChatTarget(data.recipient);
+        } else {
+          setChatTarget(null);
+        }
+        if (currentView !== view) {
+            setPreviousView(currentView);
+        }
+        setCurrentView(view);
+        setIsLoading(false);
+    }, 150); // Short delay to allow loader to show and assets to potentially load
   };
   
   useEffect(() => {
@@ -1399,7 +1403,7 @@ function SbirumonApp() {
     battle: <></>
   };
 
-  const currentViewContent = menuViews[currentView] ?? menuViews['loading'];
+  const currentViewContent = isLoading ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
     "min-h-screen bg-cover bg-center",
@@ -1425,7 +1429,7 @@ function SbirumonApp() {
                           isPlayerTurn={isPlayerTurn}
                           isPaused={isPaused}
                           setIsPaused={setIsPaused}
-                          isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct}
+                          isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn}
                           canPlayerAct={canPlayerAct}
                           covoConfig={covoConfig}
                           covoProgress={covoProgress}
@@ -1530,3 +1534,4 @@ export default function Page() {
     
 
     
+
