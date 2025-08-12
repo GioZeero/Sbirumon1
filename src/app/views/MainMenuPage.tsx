@@ -43,11 +43,11 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
   const handleArrowClick = (direction: 'left' | 'right') => {
       let newIndex;
       if (direction === 'left') {
-          newIndex = (activeIndex - 1 + mainMenuDestinations.length) % mainMenuDestinations.length;
-          setRotation(prev => prev + anglePerItem);
-      } else {
           newIndex = (activeIndex + 1) % mainMenuDestinations.length;
           setRotation(prev => prev - anglePerItem);
+      } else {
+          newIndex = (activeIndex - 1 + mainMenuDestinations.length) % mainMenuDestinations.length;
+          setRotation(prev => prev + anglePerItem);
       }
       setActiveIndex(newIndex);
   };
