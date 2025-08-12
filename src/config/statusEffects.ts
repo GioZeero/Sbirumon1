@@ -59,7 +59,7 @@ export const STATUS_EFFECTS: Record<string, StatusEffect> = {
   sleep: {
     id: 'sleep',
     name: 'Ipnotizzato',
-    description: 'Impedisce alla creatura di attaccare per alcuni turni, ma può comunque difendersi o fuggire.',
+    description: 'Impedisce alla creatura di compiere qualsiasi azione per alcuni turni.',
     duration: 2,
     icon: 'Moon',
     onTurnStartCheck: (target, effect) => {

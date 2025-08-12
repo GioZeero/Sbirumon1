@@ -213,7 +213,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             </div>
                             <Button
                                 onClick={handleBlockAction}
-                                disabled={isConfirmDisabled && canPlayerAct || !player || player.trustLevel < 1}
+                                disabled={isConfirmDisabled || !player || player.trustLevel < 1}
                                 variant="secondary"
                                 size="lg"
                                 className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -221,24 +221,24 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={(isConfirmDisabled && canPlayerAct) || isArenaBattle}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled && canPlayerAct}>
+                                    <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" disabled={isConfirmDisabled}>
                                         <MoreHorizontal className="mr-2 h-5 w-5" /> Altro
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-2">
                                     <div className="flex flex-col gap-2">
-                                        <Button variant="ghost" size="sm" onClick={handleToggleItemMenu} disabled={isConfirmDisabled && canPlayerAct}>
+                                        <Button variant="ghost" size="sm" onClick={handleToggleItemMenu} disabled={isConfirmDisabled}>
                                             <Package className="mr-2 h-4 w-4" /> Zaino
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={handleTogglePlayerStats} disabled={isConfirmDisabled && canPlayerAct}>
+                                        <Button variant="ghost" size="sm" onClick={handleTogglePlayerStats} disabled={isConfirmDisabled}>
                                             <UserCircle className="mr-2 h-4 w-4" /> Statistiche
                                         </Button>
-                                        <Button variant="ghost" size="sm" onClick={() => { handleScout(); setIsMoreMenuOpen(false); }} disabled={isConfirmDisabled && canPlayerAct}>
+                                        <Button variant="ghost" size="sm" onClick={() => { handleScout(); setIsMoreMenuOpen(false); }} disabled={isConfirmDisabled}>
                                             <Search className="mr-2 h-4 w-4" /> Analisi
                                         </Button>
                                     </div>
@@ -283,11 +283,11 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                 opponentFighter={opponent}
                 onAcceptCreature={handleAcceptUniqueCreature}
                 isCovoBattle={isCovoBattle}
-                isLastCovoOpponent={isLastCovoOpponent}
+                isLastCovoOpponent={!!covoConfig && covoProgress >= covoConfig.totalOpponents}
                 onNextCovoOpponent={onNextCovoOpponent}
                 covoCityName={covoConfig?.city}
                 isGymBattle={isGymBattle}
-                isLastGymTrainer={isLastGymTrainer}
+                isLastGymTrainer={!!gymConfig && gymProgress >= gymConfig.trainers.length}
                 onNextGymTrainer={onNextGymTrainer}
                 gymName={gymConfig?.name}
                 onAttackClick={handleAttackClickInLog}
