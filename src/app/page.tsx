@@ -517,11 +517,11 @@ function SbirumonApp() {
         return;
     }
 
-    setCurrentTurnMessage(`È il turno di ${currentOpponentInput.name}...`);
     setIsLoading(true);
     setIsActionDisabled(true);
 
-    // Initial delay before opponent "chooses" their move
+    // Phase 1: Announce turn and "thinking"
+    setCurrentTurnMessage(`${currentOpponentInput.name} sta pensando...`);
     await new Promise(resolve => setTimeout(resolve, 1500 / speedMultiplier));
 
     if (isPaused || winner) {
@@ -529,10 +529,17 @@ function SbirumonApp() {
       return;
     }
     
+    // Phase 2: Choose move and display it
     const chosenAttack = selectWeightedRandomAttack(currentOpponentInput);
     setOpponentChosenAction(chosenAttack);
 
-    // Longer delay to show the chosen move, plus 1 second as requested
+    if (chosenAttack) {
+      setCurrentTurnMessage(`${currentOpponentInput.name} usa ${chosenAttack.name}!`);
+    } else {
+      setCurrentTurnMessage(`${currentOpponentInput.name} non sa cosa fare...`);
+    }
+
+    // Delay to show the chosen move
     await new Promise(resolve => setTimeout(resolve, (1000 + 1000) / speedMultiplier));
     
     if (isPaused || winner || !chosenAttack) {
@@ -541,6 +548,7 @@ function SbirumonApp() {
       return;
     }
 
+    // Phase 3: Execute attack animation and logic
     const isConfusedAndHittingSelf = false;
     
     setProjectileAnimations(prev => [...prev, {
@@ -552,7 +560,7 @@ function SbirumonApp() {
         delay: 0,
     }]);
 
-    // This delay should be just enough for the animation to complete
+    // Delay for projectile animation
     await new Promise(resolve => setTimeout(resolve, 660 / speedMultiplier));
     
     const { updatedAttacker: updatedOpponent, updatedTarget: updatedPlayer, logMessages: attackLogs } = processAttack(
@@ -560,6 +568,7 @@ function SbirumonApp() {
     );
 
     addMultipleLogEntries(attackLogs);
+    setTurnCount(prev => prev + 1);
     endTurn(updatedPlayer, updatedOpponent, true);
       
   }, [speedMultiplier, addMultipleLogEntries, addLogEntry, endTurn, isPaused, winner]);
@@ -918,7 +927,7 @@ function SbirumonApp() {
     if(isPlayerTurn) {
         setPlayer(currentFighter);
         setCanPlayerAct(canMove);
-         if (!canMove) {
+        if (!canMove) {
             timeoutId = setTimeout(() => endTurn(currentFighter, otherFighter, false), 500 / speedMultiplier);
         } else if (!playerChosenAction) {
             const autoSelectedAttack = selectWeightedRandomAttack(currentFighter);
