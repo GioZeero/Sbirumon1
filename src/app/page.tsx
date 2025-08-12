@@ -270,6 +270,34 @@ function SbirumonApp() {
       }
   }, [turnCount, winner, addLogEntry, playerExtraTurnsRemaining]);
 
+  const selectWeightedRandomAttack = (fighter: Fighter): Attack | null => {
+    if (!fighter.attacks || fighter.attacks.length === 0) return null;
+    
+    const validAttacks = fighter.attacks.filter(attack => !!attack && !!attack.id && !!attack.name);
+    if (validAttacks.length === 0) {
+        console.error("No valid attacks found for selection.");
+        if (fighter.attacks.length > 0 && fighter.attacks[0] && fighter.attacks[0].id && fighter.attacks[0].name) {
+            return cloneAttack(fighter.attacks[0]);
+        }
+        return null;
+    }
+
+    const weights = fighter.isEvolved ? GameBalance.ATTACK_RARITY_WEIGHTS_EVOLVED : GameBalance.ATTACK_RARITY_WEIGHTS;
+    const weightedPool: Attack[] = [];
+    validAttacks.forEach(attack => {
+        const rarity = attack.rarity || 'Common';
+        const weight = (weights as Record<string, number>)[rarity.toUpperCase()] || weights.DEFAULT;
+        for (let i = 0; i < weight; i++) {
+            weightedPool.push(attack);
+        }
+    });
+
+    if (weightedPool.length === 0) {
+        return cloneAttack(validAttacks[Math.floor(Math.random() * validAttacks.length)]);
+    }
+    return cloneAttack(weightedPool[Math.floor(Math.random() * weightedPool.length)]);
+};
+
   const executePlayerChosenAttack = useCallback(async (attackToExecute: Attack, attackerState?: Fighter) => {
     if ((!playerRef.current && !attackerState) || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct) {
         return;
@@ -277,17 +305,20 @@ function SbirumonApp() {
   
     setIsActionDisabled(true);
     setIsLoading(true);
+    setCurrentTurnMessage(`Scelta di ${opponentRef.current.name}...`);
 
     let playerClone = attackerState ? cloneFighter(attackerState) : cloneFighter(playerRef.current!);
     let opponentClone = cloneFighter(opponentRef.current);
 
     const isHittingSelf = false;
-
-    setCurrentTurnMessage(`${playerClone.name} usa ${attackToExecute.name}!`);
     
     // Opponent selects move for next turn while player animation is happening
     const nextOpponentMove = selectWeightedRandomAttack(opponentClone);
     setOpponentChosenAction(nextOpponentMove);
+    
+    await new Promise(resolve => setTimeout(resolve, 500 / speedMultiplier));
+
+    setCurrentTurnMessage(`${playerClone.name} usa ${attackToExecute.name}!`);
     
     setProjectileAnimations(prev => [...prev, {
         key: Date.now(),
@@ -312,7 +343,7 @@ function SbirumonApp() {
     setPlayerChosenAction(null);
     setTurnCount(prev => prev + 1);
     endTurn(updatedAttacker, updatedTarget, false);
-  }, [addMultipleLogEntries, endTurn, activeTrainerName, canPlayerAct, addLogEntry, isPaused, winner]);
+  }, [addMultipleLogEntries, endTurn, activeTrainerName, canPlayerAct, addLogEntry, isPaused, winner, speedMultiplier]);
 
   const handleChargeAction = useCallback(async () => {
     if (!playerRef.current || !opponentRef.current || winner || isPaused || !activeTrainerName || !canPlayerAct) {
@@ -349,7 +380,8 @@ function SbirumonApp() {
   }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack, endTurn]);
   
   const handleChargeMouseDown = () => {
-    if (!canPlayerAct || isPaused || winner || isConfirmDisabled) return;
+    const isConfirmDisabled = isActionDisabled || isPaused || !canPlayerAct;
+    if (isConfirmDisabled || winner) return;
 
     chargeTimerRef.current = setTimeout(() => {
         handleChargeAction();
@@ -368,9 +400,13 @@ function SbirumonApp() {
   };
 
   const handleChargeMouseUp = () => {
-    if (chargeTimerRef.current) {
+      // If the timer was running for less than the hold duration, it's a "click"
+      if (chargeTimerRef.current) {
         clearTimeout(chargeTimerRef.current);
         chargeTimerRef.current = null;
+        if (playerChosenAction && !isActionDisabled && !isPaused && canPlayerAct && !winner) {
+            executePlayerChosenAttack(playerChosenAction);
+        }
     }
     if (chargeIntervalRef.current) {
         clearInterval(chargeIntervalRef.current);
@@ -379,34 +415,6 @@ function SbirumonApp() {
     setChargeProgress(0);
   };
   
-  const selectWeightedRandomAttack = (fighter: Fighter): Attack | null => {
-    if (!fighter.attacks || fighter.attacks.length === 0) return null;
-    
-    const validAttacks = fighter.attacks.filter(attack => !!attack && !!attack.id && !!attack.name);
-    if (validAttacks.length === 0) {
-        console.error("No valid attacks found for selection.");
-        if (fighter.attacks.length > 0 && fighter.attacks[0] && fighter.attacks[0].id && fighter.attacks[0].name) {
-            return cloneAttack(fighter.attacks[0]);
-        }
-        return null;
-    }
-
-    const weights = fighter.isEvolved ? GameBalance.ATTACK_RARITY_WEIGHTS_EVOLVED : GameBalance.ATTACK_RARITY_WEIGHTS;
-    const weightedPool: Attack[] = [];
-    validAttacks.forEach(attack => {
-        const rarity = attack.rarity || 'Common';
-        const weight = (weights as Record<string, number>)[rarity.toUpperCase()] || weights.DEFAULT;
-        for (let i = 0; i < weight; i++) {
-            weightedPool.push(attack);
-        }
-    });
-
-    if (weightedPool.length === 0) {
-        return cloneAttack(validAttacks[Math.floor(Math.random() * validAttacks.length)]);
-    }
-    return cloneAttack(weightedPool[Math.floor(Math.random() * weightedPool.length)]);
-};
-
   const handleBlockAction = useCallback(() => {
     if (!playerRef.current || !opponentRef.current || winner || isPaused || (!isPlayerTurn && !canPlayerAct)) {
         return;
@@ -559,7 +567,7 @@ function SbirumonApp() {
     setIsActionDisabled(true);
 
     const chosenAttack = opponentChosenAction;
-
+    
     if (chosenAttack) {
       setCurrentTurnMessage(`${currentOpponentInput.name} usa ${chosenAttack.name}!`);
     } else {

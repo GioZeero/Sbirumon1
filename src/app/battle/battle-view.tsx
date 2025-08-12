@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -195,14 +196,14 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                     <div className="w-full flex-grow flex flex-col justify-center">
                         <div className="grid grid-cols-2 grid-rows-2 gap-2">
                              <div className="relative">
-                                {canCharge ? (
+                                {canCharge && !isHypnotized ? (
                                     <Button
                                         onMouseDown={handleChargeMouseDown}
                                         onMouseUp={handleChargeMouseUp}
                                         onMouseLeave={handleChargeMouseUp}
                                         onTouchStart={handleChargeMouseDown}
                                         onTouchEnd={handleChargeMouseUp}
-                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized}
+                                        disabled={isConfirmDisabled || !canPlayerAct}
                                         size="lg"
                                         className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95 bg-purple-600 hover:bg-purple-700 text-white relative overflow-hidden"
                                     >
