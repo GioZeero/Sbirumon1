@@ -45,7 +45,9 @@ interface BattleViewProps {
     isConfirmDisabled: boolean;
     canPlayerAct: boolean;
     covoConfig: { city: string; size: CovoSize; totalOpponents: number } | null;
+    covoProgress: number;
     gymConfig: GymConfig | null;
+    gymProgress: number;
     isArenaBattle: boolean;
     currentTurnMessage: string;
     handleCloseScoutAnalysis: () => void;
@@ -67,10 +69,8 @@ interface BattleViewProps {
     logEntries: BattleLogEntry[];
     handleAcceptUniqueCreature: (creature: Fighter) => void;
     isCovoBattle: boolean;
-    isLastCovoOpponent: boolean;
     onNextCovoOpponent: () => void;
     isGymBattle: boolean;
-    isLastGymTrainer: boolean;
     onNextGymTrainer: () => void;
     handleAttackClickInLog: (attackId: string) => void;
     lastDroppedItem: ConsumableItem | null;
@@ -101,9 +101,6 @@ interface BattleViewProps {
     handleCloseAttackDetailsDialog: () => void;
     selectedAttackForDetails: Attack | null;
     onRematch: () => void;
-    chargeProgress: number;
-    startCharge: () => void;
-    cancelCharge: () => void;
     opponentTrainer: { name: string; subtitle: string; } | null;
 }
 
@@ -111,13 +108,13 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
     const {
         isInitializing, isLoading, player, opponent, winner, handleGoToMenu, playerChosenAction,
         opponentChosenAction, isPlayerTurn, isPaused, setIsPaused, isConfirmDisabled, canPlayerAct,
-        covoConfig, gymConfig, isArenaBattle, currentTurnMessage, handleCloseScoutAnalysis,
+        covoConfig, covoProgress, gymConfig, gymProgress, isArenaBattle, currentTurnMessage, handleCloseScoutAnalysis,
         showScoutAnalysis, scoutAnalysisResult, setOpponentCardCoords, setPlayerCardCoords,
         executePlayerChosenAttack, handleBlockAction, handleChargeAction, handleEscapeAttempt,
         handleToggleItemMenu, handleTogglePlayerStats, handleScout, projectileAnimations,
         setProjectileAnimations, playerCardCoords, opponentCardCoords, logEntries,
-        handleAcceptUniqueCreature, isCovoBattle, isLastCovoOpponent, onNextCovoOpponent,
-        isGymBattle, isLastGymTrainer, onNextGymTrainer, handleAttackClickInLog,
+        handleAcceptUniqueCreature, isCovoBattle, onNextCovoOpponent,
+        isGymBattle, onNextGymTrainer, handleAttackClickInLog,
         lastDroppedItem, isViandanteBattle, showPlayerStatsDialog, setShowPlayerStatsDialog,
         showItemMenuDialog, setShowItemMenuDialog,
         showCombatLogModal, handleUseConsumable, setShowCombatLogModal, showOptionsMenu,
@@ -125,8 +122,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
         handleSpeedToggle, turnCount, handlePistolaAction, isBattleEnding,
         showGameOverModal, setShowGameOverModal, finalScore, activeTrainerName,
         resetPlayerRun, navigateTo, showAttackDetailsDialog, handleCloseAttackDetailsDialog,
-        selectedAttackForDetails, onRematch, chargeProgress, startCharge, cancelCharge,
-        opponentTrainer
+        selectedAttackForDetails, onRematch, opponentTrainer
     } = props;
     
     const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -196,24 +192,19 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                         <div className="grid grid-cols-2 grid-rows-2 gap-2">
                              <div className="relative">
                                 <Button
-                                    onMouseDown={canCharge ? startCharge : undefined}
-                                    onMouseUp={canCharge ? cancelCharge : undefined}
-                                    onMouseLeave={canCharge ? cancelCharge : undefined}
-                                    onTouchStart={canCharge ? startCharge : undefined}
-                                    onTouchEnd={canCharge ? cancelCharge : undefined}
-                                    onClick={!canCharge ? () => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); } : undefined}
+                                    onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
                                     disabled={isConfirmDisabled}
-                                    variant={canCharge ? "default" : "destructive"}
+                                    variant="destructive"
                                     size="lg"
-                                    className={cn("w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95", canCharge && "bg-accent hover:bg-accent/80")}
+                                    className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
                                 >
                                     {isConfirmDisabled && canPlayerAct ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sword className="mr-2 h-5 w-5" />}
-                                    {canCharge ? "Carica!" : "Attacca!"}
+                                    Attacca!
                                 </Button>
                             </div>
                             <Button
                                 onClick={handleBlockAction}
-                                disabled={isConfirmDisabled || !player || player.trustLevel < 1}
+                                disabled={isConfirmDisabled || !player || player.trustLevel < 1 || !canPlayerAct}
                                 variant="secondary"
                                 size="lg"
                                 className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -221,7 +212,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 <ShieldBan className="mr-2 h-5 w-5" />
                                 Blocca
                             </Button>
-                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle}>
+                            <Button variant="secondary" size="lg" className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95" onClick={handleEscapeAttempt} disabled={isConfirmDisabled || isArenaBattle || !canPlayerAct}>
                                 <Undo2 className="mr-2 h-5 w-5" /> Scappa {player && !isArenaBattle && `(${(player.currentSpeedStat / 200 * 100).toFixed(0)}%)`}
                             </Button>
                             <Popover open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen}>
@@ -412,3 +403,5 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
 };
 
 export default BattleView;
+
+    

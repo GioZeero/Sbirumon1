@@ -926,11 +926,7 @@ function SbirumonApp() {
         } else if (isAutoBattle) {
             timeoutId = setTimeout(() => {
                 if (playerChosenAction && !isPaused && !winner && isPlayerTurn) {
-                    if (currentFighter.trustLevel === currentFighter.maxTrustLevel) {
-                        handleChargeAction();
-                    } else {
-                        executePlayerChosenAttack(playerChosenAction);
-                    }
+                    executePlayerChosenAttack(playerChosenAction);
                 }
             }, GameBalance.PLAYER_AUTO_ATTACK_DELAY_MS / speedMultiplier);
         }
@@ -944,7 +940,7 @@ function SbirumonApp() {
         }, GameBalance.OPPONENT_TURN_DELAY_MS / speedMultiplier);
     }
      return () => clearTimeout(timeoutId);
-  }, [isPlayerTurn, showBattle, isInitializing, winner, isPaused, isBattleEnding, playerChosenAction, isAutoBattle, addMultipleLogEntries, endTurn, executePlayerChosenAttack, speedMultiplier, turnCount, handleChargeAction]);
+  }, [isPlayerTurn, showBattle, isInitializing, winner, isPaused, isBattleEnding, playerChosenAction, isAutoBattle, addMultipleLogEntries, endTurn, executePlayerChosenAttack, speedMultiplier, turnCount]);
 
   useEffect(() => {
     if (winner && !isBattleEnding) {
@@ -1391,7 +1387,9 @@ function SbirumonApp() {
                           isConfirmDisabled={isActionDisabled || isPaused || !canPlayerAct}
                           canPlayerAct={canPlayerAct}
                           covoConfig={covoConfig}
+                          covoProgress={covoProgress}
                           gymConfig={gymConfig}
+                          gymProgress={gymProgress}
                           isArenaBattle={isArenaBattle}
                           currentTurnMessage={currentTurnMessage}
                           handleCloseScoutAnalysis={handleCloseScoutAnalysis}
@@ -1413,10 +1411,8 @@ function SbirumonApp() {
                           logEntries={logEntries}
                           handleAcceptUniqueCreature={handleAcceptUniqueCreature}
                           isCovoBattle={!!covoConfig}
-                          isLastCovoOpponent={!!covoConfig && covoProgress >= covoConfig.totalOpponents}
                           onNextCovoOpponent={handleNextCovoOpponent}
                           isGymBattle={!!gymConfig}
-                          isLastGymTrainer={!!gymConfig && gymProgress >= gymConfig.trainers.length}
                           onNextGymTrainer={handleNextGymTrainer}
                           handleAttackClickInLog={handleAttackClickInLog}
                           lastDroppedItem={lastDroppedItem}
@@ -1447,31 +1443,6 @@ function SbirumonApp() {
                           handleCloseAttackDetailsDialog={handleCloseAttackDetailsDialog}
                           selectedAttackForDetails={selectedAttackForDetails}
                           onRematch={() => initializeBattle()}
-                          chargeProgress={chargeProgress}
-                          startCharge={() => {
-                              if (!playerRef.current || playerRef.current.trustLevel < playerRef.current.maxTrustLevel || (isActionDisabled || !canPlayerAct)) return;
-                              if (chargeTimerRef.current) clearTimeout(chargeTimerRef.current);
-                              if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
-                              setChargeProgress(0);
-                              chargeIntervalRef.current = setInterval(() => {
-                                  setChargeProgress(prev => Math.min(prev + 100, 100));
-                              }, 100);
-                              chargeTimerRef.current = setTimeout(() => {
-                                  if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
-                                  setChargeProgress(100);
-                                  handleChargeAction();
-                              }, 1000);
-                          }}
-                          cancelCharge={() => {
-                              if (chargeTimerRef.current) clearTimeout(chargeTimerRef.current);
-                              if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
-                              if (chargeProgress < 100) {
-                                if (playerChosenAction) {
-                                  executePlayerChosenAttack(playerChosenAction);
-                                }
-                              }
-                              setChargeProgress(0);
-                          }}
                           opponentTrainer={opponentTrainer}
                         />
                       ) : currentViewContent}
@@ -1511,3 +1482,5 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
