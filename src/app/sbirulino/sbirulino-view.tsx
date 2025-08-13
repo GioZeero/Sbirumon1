@@ -335,3 +335,4 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
             )}
         </div>
     );
+}
