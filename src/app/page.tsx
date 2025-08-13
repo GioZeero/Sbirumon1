@@ -639,9 +639,8 @@ function SbirumonApp() {
             if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
                 setFinalScore(playerData.trainerRankPoints || 0);
                 setShowGameOverModal(true);
-                navigateTo('welcome');
             } else {
-                navigateTo(targetView);
+                navigateTo('creature_selection');
             }
             setIsInitializing(false);
         });
@@ -1587,11 +1586,3 @@ export default function Page() {
     </Suspense>
   )
 }
-
-    
-
-    
-
-
-
-

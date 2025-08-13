@@ -477,12 +477,6 @@ export async function getFighterDataForBattle(
         opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
       }
       
-      // Add opponent to Sbirudex upon encounter
-      if (opponent && opponent.baseId) {
-        // This is now done only on capture/transform
-        // await addEncounteredCreature(trainerName, opponent.baseId);
-      }
-      
       return opponent;
   }
 
@@ -820,7 +814,10 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
 
   transformedPlayer.attacks = capturedOpponentData.attacks.map(a => ({ ...a }));
 
-  await addEncounteredCreature(trainerName, capturedOpponentData.baseId);
+  if (!transformedPlayer.encounteredCreatureIds.includes(capturedOpponentData.baseId)) {
+      transformedPlayer.encounteredCreatureIds.push(capturedOpponentData.baseId);
+  }
+
   await savePlayer(trainerName, transformedPlayer);
 
   return JSON.parse(JSON.stringify(transformedPlayer));
@@ -941,7 +938,13 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
-    await addEncounteredCreature(trainerName, newPlayer.baseId);
+    // Add the new creature to the Sbirudex
+    if (!newPlayer.encounteredCreatureIds) {
+      newPlayer.encounteredCreatureIds = [];
+    }
+    if (!newPlayer.encounteredCreatureIds.includes(newPlayer.baseId)) {
+        newPlayer.encounteredCreatureIds.push(newPlayer.baseId);
+    }
 
     await savePlayer(trainerName, newPlayer);
     

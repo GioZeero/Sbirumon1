@@ -216,7 +216,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                                 ) : (
                                     <Button
                                         onClick={() => { if (playerChosenAction) executePlayerChosenAttack(playerChosenAction); }}
-                                        disabled={isConfirmDisabled || !canPlayerAct || isHypnotized || !isPlayerTurn}
+                                        disabled={isConfirmDisabled || !canPlayerAct || !isPlayerTurn}
                                         variant="destructive"
                                         size="lg"
                                         className="w-full text-lg h-16 transition-transform duration-75 ease-in-out active:scale-95"
@@ -427,5 +427,3 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
 };
 
 export default BattleView;
-
-    
