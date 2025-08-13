@@ -69,7 +69,6 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
   const totalStats = player.attackStat + player.defenseStat + player.specialAttackStat + player.specialDefenseStat + player.speedStat + player.luckStat;
   
   const pageTitle = isMaster ? "Tenda del Maestro Stregone" : "Tenda dello Stregone";
-  const pageDescription = isMaster ? "Usa un Resto potente per forzare un'evoluzione... a tuo rischio e pericolo." : "Ribilancia il destino del tuo Sbirumon.";
   const buttonText = isMaster ? "Forza Evoluzione" : "Randomizza Statistiche";
   const buttonIcon = isMaster ? Sparkles : Wand2;
   const actionDescription = isMaster 
@@ -85,11 +84,15 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
 
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
-      <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-16 w-16 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+      <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
           <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
       </button>
-      <main className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start p-6">
-        <div className='md:mt-12'>
+       <header className="w-full text-center mt-12 mb-4">
+            <h1 className="text-4xl md:text-5xl font-headline text-primary">{pageTitle}</h1>
+        </header>
+
+      <main className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start p-6">
+        <div>
             <Card className="bg-card/70 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-center text-primary text-2xl">{player.name}</CardTitle>
@@ -124,26 +127,18 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
         </div>
 
         <div className="flex flex-col">
-            <header className="w-full mb-8 relative">
-                <div className="absolute top-0 right-0 flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md">
-                    <Coins className="h-6 w-6 text-yellow-400" />
-                    <span className="font-bold text-lg text-foreground">{player.money ?? 0}</span>
-                </div>
-                <div className="text-center">
-                  
-                  
-                </div>
-            </header>
             <Card className="bg-card/70 backdrop-blur-sm sticky top-8">
                 <CardHeader>
                     <CardTitle className="text-center text-accent text-2xl">Rito Arcano</CardTitle>
-                    <CardDescription className="text-center text-muted-foreground">
+                    <CardDescription className="text-center text-muted-foreground mt-2">
                        {actionDescription}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center space-y-6">
                     <div className="p-4 rounded-lg bg-background/50 border border-border w-full text-center">
-                        <p className="text-lg font-semibold">Costo: <span className="text-yellow-400 flex items-center justify-center gap-1.5">{cost} <Coins className="w-5 h-5"/></span></p>
+                         <p className="text-lg font-semibold text-muted-foreground">Costo Rito</p>
+                         <p className="text-2xl font-bold text-yellow-400 flex items-center justify-center gap-1.5">{cost} <Coins className="w-6 h-6"/></p>
+                         <p className="text-xs text-muted-foreground">Tus fondos: {player.money ?? 0}</p>
                     </div>
 
                     {isMaster && (
