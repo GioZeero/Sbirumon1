@@ -254,3 +254,4 @@ export const SorcererTentPage = ({ onNavigate, isMaster, trainerName, menuPlayer
     </div>
   );
 };
+
