@@ -81,6 +81,7 @@ import {
   ChatPage,
   GameOverPage,
   JobBoardPage,
+  SorcererTentPage,
 } from './views';
 
 
@@ -1303,6 +1304,8 @@ function SbirumonApp() {
         case 'messages_hub':
         case 'chat':
             return 'bg-storage';
+        case 'sorcerer_tent':
+            return viewData?.isMaster ? 'bg-master-sorcerer' : 'bg-sorcerer';
         case 'loading':
         case 'welcome':
         default: return '';
@@ -1463,6 +1466,7 @@ function SbirumonApp() {
     sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     messages_hub: <MessagesHubPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     chat: <ChatPage onNavigate={navigateTo} trainerName={activeTrainerName!} recipientName={chatTarget!} />,
+    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} isMaster={viewData?.isMaster} />,
     battle: <></>
   };
 

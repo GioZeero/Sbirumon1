@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -21,6 +22,8 @@ export default {
         'gym-combat': "url('/palestracombat.png')",
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",
+        'sorcerer': "url('/stregone.png')",
+        'master-sorcerer': "url('/granstregone.png')",
       },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
