@@ -12,7 +12,7 @@ import { COVO_CONFIG } from '@/config/locations';
 import type { ConsumableItem } from '@/types/items';
 import { STATUS_EFFECTS } from '@/config/statusEffects';
 import { db } from './firebase';
-import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, limit, orderBy } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, limit, orderBy, writeBatch } from "firebase/firestore";
 import type { Quest, QuestState, QuestDbData, QuestGiver } from '@/types/quests';
 import { initializeQuestsForPlayer } from './quests';
 import { Book, Skull, Store, Wand2, Users, type LucideIcon } from 'lucide-react';
@@ -815,7 +815,7 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
     didNotUseConsumables: true,
     arenaDisclaimerAccepted: false,
     defeatedBy: null,
-    encounteredCreatureIds: encounteredCreatureIds, // Keep the existing Sbirudex
+    encounteredCreatureIds: encounteredCreatureIds || [], // Keep Sbirudex persistent
   };
 
   transformedPlayer.attacks = capturedOpponentData.attacks.map(a => ({ ...a }));
@@ -941,8 +941,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
-    // Reset Sbirudex for the new creature's life
-    newPlayer.encounteredCreatureIds = [newPlayer.baseId];
+    await addEncounteredCreature(trainerName, newPlayer.baseId);
 
     await savePlayer(trainerName, newPlayer);
     
@@ -1258,11 +1257,22 @@ export async function randomizePlayerStats(trainerName: string): Promise<{succes
 }
 
 export async function updatePlayerAttempts(trainerName: string, newAttempts: number): Promise<Fighter | null> {
-    const player = await getPlayerFromStore(trainerName);
-    if (!player) return null;
-    player.attemptsRemaining = newAttempts;
-    await savePlayer(trainerName, player);
-    return JSON.parse(JSON.stringify(player));
+    const playersRef = collection(db, "players");
+    const querySnapshot = await getDocs(playersRef);
+    
+    const batch = writeBatch(db);
+
+    querySnapshot.forEach((doc) => {
+        const playerRef = doc.ref;
+        batch.update(playerRef, { attemptsRemaining: newAttempts });
+    });
+
+    await batch.commit();
+
+    // The function now affects all users, but the UI might expect an updated player object
+    // for the *current* user to refresh its state. We will fetch and return the current user's data.
+    const currentPlayer = await getPlayerFromStore(trainerName);
+    return currentPlayer;
 }
 
 
@@ -1343,4 +1353,3 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
-
