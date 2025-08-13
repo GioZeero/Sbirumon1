@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle as DialogTitleComponent } from "@/components/ui/dialog";
 import { ArrowLeft, UserCircle, Repeat, Trophy, Skull, Crown, Maximize, ClipboardList, Medal, MessageSquare, Loader2, Star, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLeaderboard } from '@/lib/fighter-repository';
@@ -73,6 +74,7 @@ const getRankInfo = (points: number) => {
 const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetProfile, onRequestFullscreen, hasUnreadMessages }) => {
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isRankInfoOpen, setIsRankInfoOpen] = useState(false);
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
@@ -164,14 +166,15 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                 transition={{ delay: 0.1, duration: 0.5, type: 'spring' }}
             >
                 <h1 className="text-3xl md:text-4xl font-headline text-primary mb-2">{player.trainerName}</h1>
-                <motion.div 
+                <motion.button 
                     className={cn("flex items-center gap-2 text-lg font-semibold", rankInfo.color)}
                     whileHover={{ scale: 1.05 }}
+                    onClick={() => setIsRankInfoOpen(true)}
                 >
                     <RankIcon className="h-6 w-6" />
                     <span>Rango {rankInfo.name}</span>
                     <Sparkles className="h-5 w-5" />
-                </motion.div>
+                </motion.button>
             </motion.div>
 
             {/* Main Content */}
@@ -344,10 +347,31 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                     </AlertDialog>
                 </motion.div>
             </main>
+
+            <Dialog open={isRankInfoOpen} onOpenChange={setIsRankInfoOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitleComponent className="text-2xl text-center text-primary">Sistema di Ranghi</DialogTitleComponent>
+                    </DialogHeader>
+                    <div className="mt-4 space-y-3">
+                        {rankTiers.map(tier => {
+                            const TierIcon = tier.icon;
+                            return (
+                                <div key={tier.name} className="flex items-center p-2 rounded-md bg-card/50">
+                                    <TierIcon className={cn("h-6 w-6 mr-4", tier.color)} />
+                                    <div className="flex-grow">
+                                        <p className={cn("font-bold", tier.color)}>{tier.name}</p>
+                                    </div>
+                                    <Badge variant="secondary" className="text-sm">{tier.points} PTS</Badge>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 };
 
 export default TrainerView;
-
-    
