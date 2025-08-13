@@ -22,7 +22,7 @@ export default {
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",
         'sorcerer': "url('/stregone.png')",
-        'master-sorcerer': "url('/granmaestro.png')",
+        'master-sorcerer': "url('/granstregone.png')",
       },
       fontFamily: {
         body: ['Inter', 'sans-serif'],
