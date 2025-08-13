@@ -38,11 +38,9 @@ import { Badge } from '@/components/ui/badge';
 import { PackagePlus, Medal, ShieldAlert, HeartPulse, Star, type LucideIcon } from 'lucide-react';
 import { getAllGameAttacks } from '@/config/fighters';
 import { useConsumableOutOfBattle } from './items/consumables/actions';
-import SbirulinoClientView from './sbirulino/sbirulino-view';
 import { buyConsumable, sellConsumable } from './shop/consumables/actions';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { buyMoveBook } from './shop/moves/actions';
-import TrainerView from './trainer/trainer-view';
 import PageTransitionWrapper from '@/components/ui/page-transition-wrapper';
 import ProjectileAnimation from '@/components/battle/ProjectileAnimation';
 import ScoutAnalysisDisplay from '@/components/battle/ProjectileAnimation';
@@ -1594,5 +1592,7 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
 
     
