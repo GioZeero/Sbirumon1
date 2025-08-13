@@ -605,12 +605,12 @@ function SbirumonApp() {
   }, [speedMultiplier, addMultipleLogEntries, endTurn, isPaused, winner, opponentChosenAction]);
 
   const handleGoToMenu = useCallback(async (targetView: View = 'main') => {
-    if (covoConfig && activeTrainerName) {
-      await decrementCovoAttempt(activeTrainerName, covoConfig.size);
-    }
-    
-    await updateViandanteMaestroVisibility(activeTrainerName!);
+    // This function is the exit point from a battle.
+    // We check for defeat status here.
 
+    const wasDefeated = winner === 'opponent';
+
+    // Reset battle state first
     setShowBattle(false);
     setPlayer(null);
     setOpponent(null);
@@ -627,23 +627,25 @@ function SbirumonApp() {
     setGymProgress(0);
     setIsViandanteBattle(false);
     setIsArenaBattle(false);
-    
-    if (playerWasDefeated && activeTrainerName) {
-        setPlayerWasDefeated(false);
+
+    if (wasDefeated && activeTrainerName) {
         setIsInitializing(true);
         const playerData = await getPlayerProfileData(activeTrainerName);
         if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
             setFinalScore(playerData.trainerRankPoints || 0);
-            setShowGameOverModal(true);
+            setShowGameOverModal(true); // Game Over Logic
         } else {
-            navigateTo('creature_selection');
+            navigateTo('creature_selection'); // Still has attempts, go select a new creature
         }
         setIsInitializing(false);
     } else {
-        setIsInitializing(false);
+        // This path is for wins, or escapes
+        if (activeTrainerName) {
+            await updateViandanteMaestroVisibility(activeTrainerName);
+        }
         navigateTo(targetView);
     }
-  }, [playerWasDefeated, covoConfig, activeTrainerName]);
+}, [winner, activeTrainerName]);
   
   const initializeBattle = useCallback(async (options?: {
       isCovo?: boolean,
@@ -926,6 +928,8 @@ function SbirumonApp() {
         setMenuPlayerData(newPlayer);
         navigateTo('main');
       } else {
+        // This case is now handled by the check in handleGoToMenu.
+        // This is a fallback in case the flow is entered differently.
         const finalPlayerData = await getPlayerProfileData(activeTrainerName);
         setFinalScore(finalPlayerData?.trainerRankPoints || 0);
         setShowGameOverModal(true);
