@@ -59,7 +59,7 @@ export const CreatureSelectionPage = ({ isChoosingCreature, currentCreatureChoic
                         </CardContent>
                     </Card>
                     <div className="mt-6 w-full max-w-sm flex flex-col space-y-3">
-                         <Button size="lg" onClick={() => handleCreatureSelect(currentCreatureChoice)} disabled={isChoosingCreature}>
+                         <Button size="lg" onClick={() => handleCreatureSelect(currentCreatureChoice)} disabled={isChoosingCreature} className="transition-transform duration-75 ease-in-out active:scale-95">
                              Accetta il regalo e inizia l'avventura
                          </Button>
                     </div>

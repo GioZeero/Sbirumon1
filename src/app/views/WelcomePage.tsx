@@ -23,7 +23,7 @@ export const WelcomePage = ({ onWelcomeSubmit, inputName, setInputName, showDefe
                 <DialogHeader><DialogTitle className="text-primary text-center text-3xl sm:text-4xl font-display">Benvenuto</DialogTitle><DialogDescription className="text-center pt-2">Come ti chiami, allenatore?</DialogDescription></DialogHeader>
                 <div className="mt-4 flex flex-col gap-4">
                     <Input placeholder="Inserisci il tuo nome" value={inputName} onChange={(e) => setInputName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') onWelcomeSubmit(); }} autoFocus />
-                    <Button onClick={onWelcomeSubmit} className="bg-accent hover:bg-accent/80 text-accent-foreground">Inizia l'Avventura</Button>
+                    <Button onClick={onWelcomeSubmit} className="bg-accent hover:bg-accent/80 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Inizia l'Avventura</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -38,7 +38,7 @@ export const WelcomePage = ({ onWelcomeSubmit, inputName, setInputName, showDefe
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <Button onClick={() => handleDefeatedByClose()}>Scegli una nuova creatura</Button>
+                        <Button onClick={() => handleDefeatedByClose()} className="transition-transform duration-75 ease-in-out active:scale-95">Scegli una nuova creatura</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

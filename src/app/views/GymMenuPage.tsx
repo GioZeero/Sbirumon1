@@ -52,7 +52,7 @@ export const GymMenuPage = ({ menuPlayerData, handleStartGymChallenge, navigateT
                         return nextGym ? (
                             <div>
                                 <h2 className="mb-2 text-center text-lg font-semibold text-primary">Prossima Palestra</h2>
-                                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => handleStartGymChallenge(nextGym.gymId)}>
+                                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleStartGymChallenge(nextGym.gymId)}>
                                     <div className="flex items-center gap-4">
                                         <div className="rounded-lg bg-yellow-500/20 p-3"><Trophy className="h-6 w-6 text-yellow-400" /></div>
                                         <div>

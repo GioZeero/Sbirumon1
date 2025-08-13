@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -94,7 +95,7 @@ export const MovesPage = ({ onNavigate, trainerName }: MovesPageProps) => {
                             key={category.title}
                             variant="outline"
                             size="lg"
-                            className="h-24 text-xl sm:text-2xl"
+                            className="h-24 text-xl sm:text-2xl transition-transform duration-75 ease-in-out active:scale-95"
                             onClick={() => handleOpenCategory(category)}
                             disabled={category.moves.length === 0}
                         >

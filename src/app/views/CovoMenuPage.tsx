@@ -29,7 +29,7 @@ export const CovoMenuPage = ({ randomCovoCities, menuPlayerData, handleStartCovo
             </header>
             {!randomCovoCities ? <Loader2 className="mx-auto h-8 w-8 animate-spin" /> : (
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => handleStartCovoChallenge(randomCovoCities.small, 'small')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.small <= 0}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleStartCovoChallenge(randomCovoCities.small, 'small')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.small <= 0}>
                         <div className="flex items-center gap-4">
                            <div className="rounded-lg bg-green-500/20 p-3"><BrainCircuit className="h-6 w-6 text-green-400" /></div>
                            <div>
@@ -38,7 +38,7 @@ export const CovoMenuPage = ({ randomCovoCities, menuPlayerData, handleStartCovo
                            </div>
                         </div>
                     </Button>
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => handleStartCovoChallenge(randomCovoCities.medium, 'medium')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.medium <= 0}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleStartCovoChallenge(randomCovoCities.medium, 'medium')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.medium <= 0}>
                         <div className="flex items-center gap-4">
                            <div className="rounded-lg bg-yellow-500/20 p-3"><BrainCircuit className="h-6 w-6 text-yellow-400" /></div>
                            <div>
@@ -47,7 +47,7 @@ export const CovoMenuPage = ({ randomCovoCities, menuPlayerData, handleStartCovo
                            </div>
                         </div>
                     </Button>
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => handleStartCovoChallenge(randomCovoCities.large, 'large')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.large <= 0}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleStartCovoChallenge(randomCovoCities.large, 'large')} disabled={!menuPlayerData?.covoAttemptsRemaining || menuPlayerData.covoAttemptsRemaining.large <= 0}>
                         <div className="flex items-center gap-4">
                            <div className="rounded-lg bg-red-500/20 p-3"><BrainCircuit className="h-6 w-6 text-red-400" /></div>
                            <div>

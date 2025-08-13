@@ -22,7 +22,7 @@ export const CityPage = ({ onNavigate }: CityPageProps) => {
                     
                 </header>
                 <div className="grid w-full grid-cols-1 gap-3">
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('noble_area')}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('noble_area')}>
                         <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-yellow-500/20 p-3"><Landmark className="h-6 w-6 text-yellow-400" /></div>
                             <div>
@@ -31,7 +31,7 @@ export const CityPage = ({ onNavigate }: CityPageProps) => {
                             </div>
                         </div>
                     </Button>
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('merchant_area')}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('merchant_area')}>
                         <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-orange-500/20 p-3"><University className="h-6 w-6 text-orange-400" /></div>
                             <div>

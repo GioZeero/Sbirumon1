@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -25,10 +26,10 @@ export const EvolutionMenuPage = ({ menuPlayerData, handleEvolveCreature, naviga
                 </CardDescription>
             </CardHeader>
             <CardContent className="mt-4 flex flex-col space-y-4">
-                <Button size="lg" onClick={handleEvolveCreature} className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button size="lg" onClick={handleEvolveCreature} className="bg-purple-600 hover:bg-purple-700 text-white transition-transform duration-75 ease-in-out active:scale-95">
                     <StarIcon className="mr-2 h-5 w-5" /> Consentilo
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => navigateTo('main')}>
+                <Button size="lg" variant="outline" onClick={() => navigateTo('main')} className="transition-transform duration-75 ease-in-out active:scale-95">
                     Forse più tardi
                 </Button>
             </CardContent>

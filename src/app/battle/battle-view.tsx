@@ -338,7 +338,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             return (
                                 <div className="grid grid-cols-1 gap-2">
                                     {usableItems.map(invItem => (
-                                        <Button key={invItem.item.id} variant="outline" className="justify-start text-left h-auto py-2" onClick={() => handleUseConsumable(invItem)} disabled={!isPlayerTurn || !!winner || !player || isLoading || (invItem.item.effect.type === 'heal' && player.currentHealth === player.maxHealth && (invItem.item.effect.amount || invItem.item.effect.percentage))}>
+                                        <Button key={invItem.item.id} variant="outline" className="justify-start text-left h-auto py-2 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleUseConsumable(invItem)} disabled={!isPlayerTurn || !!winner || !player || isLoading || (invItem.item.effect.type === 'heal' && player.currentHealth === player.maxHealth && (invItem.item.effect.amount || invItem.item.effect.percentage))}>
                                             <span className="flex-grow">{invItem.item.name}</span>
                                             <span className="text-xs ml-2 text-muted-foreground">(x{invItem.quantity})</span>
                                         </Button>
@@ -367,7 +367,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                         </div>
                         <div className="flex items-center justify-between">
                             <Label className="text-base">Velocità Combattimento</Label>
-                            <Button onClick={handleSpeedToggle} variant="outline" size="sm" className="text-base w-16 h-9" disabled={winner || isInitializing}>
+                            <Button onClick={handleSpeedToggle} variant="outline" size="sm" className="text-base w-16 h-9 transition-transform duration-75 ease-in-out active:scale-95" disabled={winner || isInitializing}>
                                 x{speedMultiplier}
                             </Button>
                         </div>
@@ -376,7 +376,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             <span className="font-bold text-lg">{turnCount}</span>
                         </div>
                         <div className="border-t border-border pt-4">
-                            <Button onClick={() => { handlePistolaAction(); handleToggleOptions(); }} variant="destructive" className="w-full" disabled={!player || !opponent || winner || isInitializing || isBattleEnding}>
+                            <Button onClick={() => { handlePistolaAction(); handleToggleOptions(); }} variant="destructive" className="w-full transition-transform duration-75 ease-in-out active:scale-95" disabled={!player || !opponent || winner || isInitializing || isBattleEnding}>
                                 <Skull className="mr-2 h-4 w-4" /> Sacrifica Creatura
                             </Button>
                         </div>

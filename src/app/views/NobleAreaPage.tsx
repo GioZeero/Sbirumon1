@@ -23,7 +23,7 @@ export const NobleAreaPage = ({ onNavigate, menuPlayerData }: NobleAreaPageProps
                 
             </header>
             <div className="grid w-full max-w-sm grid-cols-1 gap-3">
-                 <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('arena')}>
+                 <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('arena')}>
                     <div className="flex items-center gap-4">
                         <div className="rounded-lg bg-red-500/20 p-3"><ShieldQuestion className="h-6 w-6 text-red-400" /></div>
                         <div>
@@ -32,7 +32,7 @@ export const NobleAreaPage = ({ onNavigate, menuPlayerData }: NobleAreaPageProps
                         </div>
                     </div>
                 </Button>
-                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('gym_menu')}>
+                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('gym_menu')}>
                     <div className="flex items-center gap-4">
                         <div className="rounded-lg bg-yellow-500/20 p-3"><Trophy className="h-6 w-6 text-yellow-400" /></div>
                         <div>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
@@ -122,7 +123,7 @@ export const ConsumablesPage = ({ onNavigate, trainerName, onPlayerDataChange }:
                             key={categoryName}
                             variant="outline"
                             size="lg"
-                            className="h-24 text-xl sm:text-2xl"
+                            className="h-24 text-xl sm:text-2xl transition-transform duration-75 ease-in-out active:scale-95"
                             onClick={() => handleOpenCategory(categoryName, items)}
                         >
                             <CategoryIcon className="mr-3 h-8 w-8 text-accent" />
@@ -162,7 +163,7 @@ export const ConsumablesPage = ({ onNavigate, trainerName, onPlayerDataChange }:
                                 </CardContent>
                             </div>
                             <div className="p-3 pt-0 mt-auto">
-                                {canUseNow && (<Button className="w-full" size="sm" onClick={() => handleUseItem(item.id)} disabled={disabledReason}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : "Usa"}</Button>)}
+                                {canUseNow && (<Button className="w-full transition-transform duration-75 ease-in-out active:scale-95" size="sm" onClick={() => handleUseItem(item.id)} disabled={disabledReason}>{isPending ? <Loader2 className="w-4 h-4 animate-spin"/> : "Usa"}</Button>)}
                             </div>
                           </Card>
                       )})}

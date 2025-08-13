@@ -199,7 +199,7 @@ export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMa
                                 <Badge variant={hasRequiredRemain ? 'default' : 'destructive'}>{requiredRemain?.name}</Badge>
                             </div>
                         )}
-                        <Button size="lg" className="w-full mt-6 h-14 text-lg" disabled={isDisabled} onClick={handleAction}>
+                        <Button size="lg" className="w-full mt-6 h-14 text-lg transition-transform duration-75 ease-in-out active:scale-95" disabled={isDisabled} onClick={handleAction}>
                             {isPending ? <Loader2 className="animate-spin" /> : buttonText}
                         </Button>
                     </CardContent>

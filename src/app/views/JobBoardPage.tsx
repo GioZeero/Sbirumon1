@@ -122,7 +122,7 @@ export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData, onPlayer
                 {visibleQuests.map(quest => {
                     const QuestIcon = iconMap[quest.iconName] || HelpCircle;
                     return (
-                        <Card key={quest.id} className="bg-card/70 p-3 flex items-center gap-4">
+                        <Card key={quest.id} className="bg-card/70 p-3 flex items-center gap-4 transition-transform duration-75 ease-in-out active:scale-95">
                            <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
                                <QuestIcon className="w-6 h-6 text-primary"/>
                            </div>
@@ -163,7 +163,7 @@ export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData, onPlayer
                          <Button 
                             onClick={() => handleCompleteQuest(selectedQuest.id)} 
                             disabled={!checkCanComplete(selectedQuest) || isCompleting}
-                            className="w-full"
+                            className="w-full transition-transform duration-75 ease-in-out active:scale-95"
                         >
                             {isCompleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Completa'}
                         </Button>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -44,7 +45,7 @@ export const ItemsHubPage = ({ onNavigate, menuPlayerData }: ItemsHubPageProps) 
             </Card>
         )}
         <div className="grid w-full max-w-sm grid-cols-1 gap-3">
-            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('items_consumables')}>
+            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('items_consumables')}>
                 <div className="flex items-center gap-4">
                     <div className="rounded-lg bg-blue-500/20 p-3"><PackagePlus className="h-6 w-6 text-blue-400" /></div>
                     <div>
@@ -53,7 +54,7 @@ export const ItemsHubPage = ({ onNavigate, menuPlayerData }: ItemsHubPageProps) 
                     </div>
                 </div>
             </Button>
-            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('items_moves')}>
+            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('items_moves')}>
                 <div className="flex items-center gap-4">
                     <div className="rounded-lg bg-orange-500/20 p-3"><Book className="h-6 w-6 text-orange-400" /></div>
                     <div>
@@ -62,7 +63,7 @@ export const ItemsHubPage = ({ onNavigate, menuPlayerData }: ItemsHubPageProps) 
                     </div>
                 </div>
             </Button>
-            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('sbirudex')}>
+            <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('sbirudex')}>
                 <div className="flex items-center gap-4">
                     <div className="rounded-lg bg-green-500/20 p-3"><Dna className="h-6 w-6 text-green-400" /></div>
                     <div>

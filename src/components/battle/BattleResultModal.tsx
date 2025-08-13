@@ -92,55 +92,55 @@ const BattleResultModal: FC<BattleResultModalProps> = ({
     if (isViandanteBattle && opponentFighter) {
         title = `Hai sconfitto ${opponentFighter.name}!`;
         description = "Questa creatura unica è ammirata dalla tua forza. Vuoi accettarla come tuo nuovo Sbirumon?";
-        primaryButton = <Button onClick={() => onAcceptCreature(opponentFighter)} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white">Accetta in Dono</Button>;
-        secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full">Rifiuta e torna al Menu</Button>;
+        primaryButton = <Button onClick={() => onAcceptCreature(opponentFighter)} className="w-full bg-yellow-500 hover:bg-yellow-600 text-white transition-transform duration-75 ease-in-out active:scale-95">Accetta in Dono</Button>;
+        secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full transition-transform duration-75 ease-in-out active:scale-95">Rifiuta e torna al Menu</Button>;
     } else if (isArenaBattle) {
         title = "Vittoria in Arena!";
         description = `Hai sconfitto ${opponentFighter?.trainerName || 'l\'avversario'}! Il suo Sbirumon è stato ritirato.`;
-        primaryButton = <Button onClick={onGoToMenu} className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground">Torna all'Arena</Button>;
+        primaryButton = <Button onClick={onGoToMenu} className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-transform duration-75 ease-in-out active:scale-95">Torna all'Arena</Button>;
     } else if (isGymBattle) {
         if (isLastGymTrainer) {
             title = `Hai conquistato la ${gymName}!`;
             description = "Hai sconfitto tutti gli allenatori!";
-            primaryButton = <Button onClick={onGoToMenu} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Torna al Menu Palestre</Button>;
+            primaryButton = <Button onClick={onGoToMenu} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Torna al Menu Palestre</Button>;
         } else {
             title = "Vittoria!";
             description = "Hai sconfitto questo allenatore! Preparati per il prossimo.";
-            primaryButton = <Button onClick={onNextGymTrainer} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Prossimo Allenatore</Button>;
+            primaryButton = <Button onClick={onNextGymTrainer} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Prossimo Allenatore</Button>;
         }
     } else if (isCovoBattle) {
       if (isLastCovoOpponent) {
         title = "Vittoria Completa!";
         description = `Hai battuto il covo dei nerd di ${covoCityName}!`;
-        primaryButton = <Button onClick={onGoToMenu} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Torna al Menu</Button>;
+        primaryButton = <Button onClick={onGoToMenu} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Torna al Menu</Button>;
       } else {
         title = "Vittoria!";
         description = "Hai sconfitto questo avversario!";
-        primaryButton = <Button onClick={onNextCovoOpponent} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Prossimo Avversario</Button>;
-        secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full">Torna al Menu</Button>;
+        primaryButton = <Button onClick={onNextCovoOpponent} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Prossimo Avversario</Button>;
+        secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full transition-transform duration-75 ease-in-out active:scale-95">Torna al Menu</Button>;
       }
     } else { // Prairie win
       title = "Vittoria!";
       description = "Hai sconfitto il tuo avversario!";
-      primaryButton = <Button onClick={onRematch} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Affronta nuovo selvaggio</Button>;
-      secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full">Torna al Menu</Button>;
+      primaryButton = <Button onClick={onRematch} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Affronta nuovo selvaggio</Button>;
+      secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full transition-transform duration-75 ease-in-out active:scale-95">Torna al Menu</Button>;
     }
   } else if (winner === 'opponent') {
     title = "Sconfitta!";
     description = "Il tuo Sbirulino è stato sconfitto. È ora di sceglierne uno nuovo per continuare l'avventura.";
-    primaryButton = <Button onClick={onGoToMenu} variant="destructive" className="w-full">Scegli nuovo Sbirulino</Button>;
+    primaryButton = <Button onClick={onGoToMenu} variant="destructive" className="w-full transition-transform duration-75 ease-in-out active:scale-95">Scegli nuovo Sbirulino</Button>;
     if (lastDroppedItem) {
         bottomContent = <DroppedItemDisplay item={lastDroppedItem} />;
     }
   } else if (winner === 'draw') {
     title = "Sconfitta!";
     description = "La battaglia è finita in stallo, ma la tua creatura non è riuscita a prevalere. È ora di sceglierne una nuova.";
-    primaryButton = <Button onClick={onGoToMenu} className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground">Scegli nuovo Sbirulino</Button>;
+    primaryButton = <Button onClick={onGoToMenu} className="w-full bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-transform duration-75 ease-in-out active:scale-95">Scegli nuovo Sbirulino</Button>;
   } else if (typeof winner === 'object' && winner.type === 'player_captured_opponent') {
     title = "Cattura Riuscita!";
     description = `Hai catturato ${winner.opponentName}! Ora è il tuo Sbirulino.`;
-    primaryButton = <Button onClick={onRematch} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Nuovo Incontro</Button>;
-    secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full">Torna al Menu</Button>;
+    primaryButton = <Button onClick={onRematch} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-transform duration-75 ease-in-out active:scale-95">Nuovo Incontro</Button>;
+    secondaryButton = <Button onClick={onGoToMenu} variant="outline" className="w-full transition-transform duration-75 ease-in-out active:scale-95">Torna al Menu</Button>;
   }
 
 
@@ -157,7 +157,7 @@ const BattleResultModal: FC<BattleResultModalProps> = ({
             <CombatLog logEntries={logEntries} isModalView onAttackClick={onAttackClick} />
           </div>
           <AlertDialogFooter className="pt-4">
-            <Button onClick={() => setShowLog(false)} variant="outline" className="w-full">
+            <Button onClick={() => setShowLog(false)} variant="outline" className="w-full transition-transform duration-75 ease-in-out active:scale-95">
               Indietro
             </Button>
           </AlertDialogFooter>
@@ -179,7 +179,7 @@ const BattleResultModal: FC<BattleResultModalProps> = ({
         <AlertDialogFooter className="flex flex-col gap-2 pt-4">
           {primaryButton}
           {secondaryButton}
-          <Button onClick={() => setShowLog(true)} variant="secondary" className="w-full mt-2 text-sm">
+          <Button onClick={() => setShowLog(true)} variant="secondary" className="w-full mt-2 text-sm transition-transform duration-75 ease-in-out active:scale-95">
             Vedi Log
           </Button>
         </AlertDialogFooter>

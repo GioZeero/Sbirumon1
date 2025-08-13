@@ -26,7 +26,7 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                     
                 </header>
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('shop_hub')}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('shop_hub')}>
                         <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-teal-500/20 p-3"><Store className="h-6 w-6 text-teal-400" /></div>
                             <div>
@@ -35,7 +35,7 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                             </div>
                         </div>
                     </Button>
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('covo_menu')}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('covo_menu')}>
                         <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-orange-500/20 p-3"><Glasses className="h-6 w-6 text-orange-400" /></div>
                             <div>
@@ -44,7 +44,7 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                             </div>
                         </div>
                     </Button>
-                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('job_board')}>
+                    <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('job_board')}>
                         <div className="flex items-center gap-4">
                             <div className="rounded-lg bg-blue-500/20 p-3"><Briefcase className="h-6 w-6 text-blue-400" /></div>
                             <div>
@@ -54,7 +54,7 @@ export const MerchantAreaPage = ({ onNavigate, menuPlayerData }: MerchantAreaPag
                         </div>
                     </Button>
                     {(menuPlayerData?.suicideCount ?? 0) >= 10 && (
-                        <Button variant="destructive" className="h-20 w-full justify-start p-4 text-left" onClick={() => onNavigate('black_market')}>
+                        <Button variant="destructive" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('black_market')}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-black/20 p-3"><Skull className="h-6 w-6 text-destructive" /></div>
                                 <div>

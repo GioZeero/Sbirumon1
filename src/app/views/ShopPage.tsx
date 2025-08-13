@@ -113,7 +113,7 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerData
                   <CardContent className="p-4 pt-0">
                      <div className="grid grid-cols-3 gap-4">
                         {bookOptions.map(({ rarity, label, cost, icon, color }) => (
-                            <Card key={rarity} className={cn("text-center p-4 flex flex-col items-center justify-between cursor-pointer transition-all", color)} onClick={() => handleBuyBook(rarity, cost)} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleBuyBook(rarity, cost)}>
+                            <Card key={rarity} className={cn("text-center p-4 flex flex-col items-center justify-between cursor-pointer transition-all transition-transform duration-75 ease-in-out active:scale-95", color)} onClick={() => handleBuyBook(rarity, cost)} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleBuyBook(rarity, cost)}>
                                 {icon}
                                 <p className="text-lg font-semibold mt-2">{label}</p>
                                 <p className="text-sm text-yellow-400 font-bold flex items-center gap-1.5">{cost} <Coins className="w-4 h-4"/></p>
@@ -131,7 +131,7 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerData
                         <ScrollArea className="h-[35vh]">
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 p-2">
                             {ALL_CONSUMABLES.filter(item => item.category !== 'Resti' && item.category !== 'Potenziamenti Illegali').map((item) => (
-                                <div key={item.id} className="flex flex-col items-center gap-2 cursor-pointer" onClick={() => handleOpenPurchaseDialog(item)}>
+                                <div key={item.id} className="flex flex-col items-center gap-2 cursor-pointer transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleOpenPurchaseDialog(item)}>
                                     <div className="p-3 bg-card/70 border rounded-lg hover:bg-accent/10 hover:border-accent transition-colors">
                                         {getConsumableIconElement(item, "w-8 h-8 text-primary")}
                                     </div>
@@ -156,9 +156,9 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerData
                         </DialogHeader>
                         <div className="py-4 space-y-4">
                             <div className="flex items-center justify-center gap-4">
-                                <Button variant="outline" size="icon" onClick={() => handleQuantityChange(-1)} disabled={purchaseDialogState.quantity <= 1}><Minus /></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleQuantityChange(-1)} disabled={purchaseDialogState.quantity <= 1} className="transition-transform duration-75 ease-in-out active:scale-95"><Minus /></Button>
                                 <span className="text-2xl font-bold w-12 text-center">{purchaseDialogState.quantity}</span>
-                                <Button variant="outline" size="icon" onClick={() => handleQuantityChange(1)}><Plus /></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleQuantityChange(1)} className="transition-transform duration-75 ease-in-out active:scale-95"><Plus /></Button>
                             </div>
                             <div className="text-center text-xl font-semibold">
                                 Costo Totale: 
@@ -169,11 +169,12 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerData
                             </div>
                         </div>
                         <DialogFooter>
-                            <DialogClose asChild><Button type="button" variant="secondary">Annulla</Button></DialogClose>
+                            <DialogClose asChild><Button type="button" variant="secondary" className="transition-transform duration-75 ease-in-out active:scale-95">Annulla</Button></DialogClose>
                             <Button
                                 type="button"
                                 onClick={handleBuyConsumable}
                                 disabled={isPending || (menuPlayerData.money ?? 0) < purchaseDialogState.item.cost * purchaseDialogState.quantity}
+                                className="transition-transform duration-75 ease-in-out active:scale-95"
                             >
                                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Acquista

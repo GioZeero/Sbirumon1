@@ -75,7 +75,7 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData, onPla
                                     </CardHeader>
                                     <CardContent className="flex-grow space-y-2 pt-0 pb-4"><p className="text-sm text-muted-foreground leading-snug">{item.description}</p></CardContent>
                                     <div className="p-4 pt-0 mt-auto">
-                                        <Button className="w-full" onClick={() => handleBuyItem(item.id, item.cost)} disabled={isPending || (menuPlayerData.money ?? 0) < item.cost}>{isPending ? <Loader2 className="animate-spin" /> : "Acquista"}</Button>
+                                        <Button className="w-full transition-transform duration-75 ease-in-out active:scale-95" onClick={() => handleBuyItem(item.id, item.cost)} disabled={isPending || (menuPlayerData.money ?? 0) < item.cost}>{isPending ? <Loader2 className="animate-spin" /> : "Acquista"}</Button>
                                     </div>
                                 </Card>
                             ))}

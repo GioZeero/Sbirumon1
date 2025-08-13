@@ -69,7 +69,7 @@ export const ArenaPage = ({
             )}
 
             <div className="w-full max-w-sm mx-auto space-y-3">
-                 <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={handleStartArenaBattle} disabled={isInitializing || !menuPlayerData}>
+                 <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={handleStartArenaBattle} disabled={isInitializing || !menuPlayerData}>
                     <div className="flex items-center gap-4">
                         <div className="rounded-lg bg-red-500/20 p-3">{isInitializing ? <Loader2 className="h-6 w-6 animate-spin"/> : <Swords className="h-6 w-6 text-red-400" />}</div>
                         <div>
@@ -78,7 +78,7 @@ export const ArenaPage = ({
                         </div>
                     </div>
                 </Button>
-                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left" onClick={() => navigateTo('arena_leaderboard')}>
+                <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left transition-transform duration-75 ease-in-out active:scale-95" onClick={() => navigateTo('arena_leaderboard')}>
                     <div className="flex items-center gap-4">
                         <div className="rounded-lg bg-blue-500/20 p-3"><ClipboardList className="h-6 w-6 text-blue-400" /></div>
                         <div>
@@ -99,8 +99,8 @@ export const ArenaPage = ({
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="secondary" onClick={() => setShowArenaDisclaimer(false)}>Annulla</Button>
-                    <Button variant="destructive" onClick={handleAcceptArenaDisclaimer}>Accetta e Combatti</Button>
+                    <Button variant="secondary" onClick={() => setShowArenaDisclaimer(false)} className="transition-transform duration-75 ease-in-out active:scale-95">Annulla</Button>
+                    <Button variant="destructive" onClick={handleAcceptArenaDisclaimer} className="transition-transform duration-75 ease-in-out active:scale-95">Accetta e Combatti</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -113,7 +113,7 @@ export const ArenaPage = ({
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button onClick={() => setShowNoOpponentFoundDialog(false)}>OK</Button>
+                    <Button onClick={() => setShowNoOpponentFoundDialog(false)} className="transition-transform duration-75 ease-in-out active:scale-95">OK</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -30,7 +30,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                 </header>
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
                      {canSeeSorcerer && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: false })}>
+                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('sorcerer_tent', { isMaster: false })}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-purple-500/20 p-3"><Wand2 className="h-6 w-6 text-purple-400" /></div>
                                 <div>
@@ -41,7 +41,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                         </Button>
                     )}
                     {canSeeMasterSorcerer && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-indigo-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: true })}>
+                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-indigo-500/50 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('sorcerer_tent', { isMaster: true })}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-indigo-500/20 p-3"><Sparkles className="h-6 w-6 text-indigo-400" /></div>
                                 <div>
@@ -52,7 +52,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                         </Button>
                     )}
                     {canSeeViandante && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-teal-500/50" onClick={startViandanteMaestroBattle}>
+                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-teal-500/50 transition-transform duration-75 ease-in-out active:scale-95" onClick={startViandanteMaestroBattle}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-teal-500/20 p-3"><Eye className="h-6 w-6 text-teal-400" /></div>
                                 <div>
