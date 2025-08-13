@@ -69,7 +69,7 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
                 <Dna className="h-12 w-12 text-primary"/>
                 <h1 className="text-4xl sm:text-5xl font-headline text-primary">Sbirudex</h1>
             </div>
-            <p className="text-center text-muted-foreground mt-2">L'enciclopedia delle creature che hai incontrato.</p>
+            
         </header>
 
         <ScrollArea className="h-[70vh]">

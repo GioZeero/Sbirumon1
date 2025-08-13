@@ -25,7 +25,7 @@ export const CovoMenuPage = ({ randomCovoCities, menuPlayerData, handleStartCovo
         <main className="flex w-full flex-grow flex-col items-center justify-center p-4">
             <header className="w-full max-w-sm mb-8 mt-12 sm:mt-0">
                 
-                <p className="text-center text-muted-foreground mt-2">Scegli la difficoltà del Covo</p>
+                
             </header>
             {!randomCovoCities ? <Loader2 className="mx-auto h-8 w-8 animate-spin" /> : (
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">

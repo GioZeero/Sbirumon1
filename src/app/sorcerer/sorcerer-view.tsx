@@ -131,7 +131,7 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
                 </div>
                 <div className="text-center">
                   
-                  <p className="text-muted-foreground mt-2">{pageDescription}</p>
+                  
                 </div>
             </header>
             <Card className="bg-card/70 backdrop-blur-sm sticky top-8">
@@ -180,4 +180,3 @@ export default function SorcererTentPage({ onNavigate, isMaster, trainerName, me
     </div>
   );
 }
-

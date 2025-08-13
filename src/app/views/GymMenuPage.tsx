@@ -25,7 +25,7 @@ export const GymMenuPage = ({ menuPlayerData, handleStartGymChallenge, navigateT
         <main className="flex w-full max-w-md flex-col justify-center p-4">
             <header className="mb-8 mt-12 sm:mt-0">
                 
-                <p className="text-center text-muted-foreground mt-2">Sconfiggi i capipalestra per dimostrare il tuo valore.</p>
+                
             </header>
             <div className="space-y-6">
                 <Card className="bg-card/70">

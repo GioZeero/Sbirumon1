@@ -27,7 +27,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
             <main className="flex w-full flex-col items-center p-4">
                 <header className="w-full max-w-sm mb-8 mt-12 sm:mt-0">
                     <h1 className="text-4xl md:text-5xl font-headline text-primary text-center">Sentiero Arcano</h1>
-                    <p className="text-center text-muted-foreground mt-2">I luoghi del potere nascosto si rivelano.</p>
+                    
                 </header>
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
                      {canSeeSorcerer && (

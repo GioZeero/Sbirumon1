@@ -46,7 +46,7 @@ export const ArenaLeaderboardPage = ({ onNavigate }: ArenaLeaderboardPageProps) 
             <main className="w-full max-w-lg p-4">
                 <header className="mb-8 mt-12 sm:mt-0">
                     
-                    <p className="text-muted-foreground mt-2 text-lg text-center">I migliori allenatori di Sbirumon</p>
+                    
                 </header>
                 <Card>
                     <CardContent className="p-4">

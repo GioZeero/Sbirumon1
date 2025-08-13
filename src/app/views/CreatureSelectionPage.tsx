@@ -22,7 +22,7 @@ export const CreatureSelectionPage = ({ isChoosingCreature, currentCreatureChoic
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
         <header className="w-full max-w-4xl mb-8 text-center">
             
-            <p className="text-foreground text-xl mt-2">Questo è il tuo primo Sbirulino. Prenditene cura.</p>
+            
         </header>
         <main className="w-full max-w-md flex flex-col justify-center items-center">
             {isChoosingCreature || !currentCreatureChoice ? <Loader2 className="h-24 w-24 animate-spin text-primary" /> : (

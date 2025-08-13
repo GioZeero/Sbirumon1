@@ -109,7 +109,7 @@ export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData }: JobBoa
         <header className="w-full mb-8 mt-12 sm:mt-0">
           <div className="text-center">
             
-            <p className="text-muted-foreground mt-2">Completa le missioni per ottenere ricompense.</p>
+            
           </div>
         </header>
         <Card>
