@@ -477,11 +477,6 @@ export async function getFighterDataForBattle(
         opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
       }
       
-      if (opponent && opponent.baseId) {
-          await addEncounteredCreature(trainerName, opponent.baseId);
-      } else if (opponent && opponent.isUnique) { // For Viandanti and other unique creatures
-          await addEncounteredCreature(trainerName, opponent.id);
-      }
       return opponent;
   }
 
@@ -775,7 +770,7 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
   const { 
       inventory, money, highestGymBeaten, trainerRankPoints, 
       attemptsRemaining, suicideCount, covoAttemptsRemaining, unlockedAttackIds,
-      activeSteroids, activeQuests, covoOpponentsDefeated
+      activeSteroids, activeQuests, covoOpponentsDefeated, encounteredCreatureIds
   } = playerToTransform;
 
   const transformedPlayer: Fighter = {
@@ -814,6 +809,7 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
     didNotUseConsumables: true,
     arenaDisclaimerAccepted: false,
     defeatedBy: null,
+    encounteredCreatureIds: encounteredCreatureIds, // Keep the existing Sbirudex
   };
 
   transformedPlayer.attacks = capturedOpponentData.attacks.map(a => ({ ...a }));
@@ -896,7 +892,6 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.defeatedBy = null;
     newPlayer.viandanteMaestroVisible = false;
     newPlayer.viandanteMaestroBattlesRemaining = 0;
-    newPlayer.encounteredCreatureIds = []; // Reset Sbirudex
     
     // Reset Covo attempts
     newPlayer.covoAttemptsRemaining = { small: 10, medium: 15, large: 20 };
@@ -948,7 +943,8 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
 
-    await addEncounteredCreature(trainerName, chosenCreature.baseId);
+    // Do NOT reset encounteredCreatureIds, keep it from playerShell
+    newPlayer.encounteredCreatureIds = playerShell.encounteredCreatureIds || [];
     await savePlayer(trainerName, newPlayer);
     
     return newPlayer;
@@ -1339,5 +1335,3 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
-
-    
