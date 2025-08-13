@@ -39,8 +39,8 @@ import { PackagePlus, Medal, ShieldAlert, HeartPulse, Star, type LucideIcon } fr
 import { getAllGameAttacks } from '@/config/fighters';
 import { useConsumableOutOfBattle } from './items/consumables/actions';
 import { buyConsumable, sellConsumable } from './shop/consumables/actions';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { buyMoveBook } from './shop/moves/actions';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import PageTransitionWrapper from '@/components/ui/page-transition-wrapper';
 import ProjectileAnimation from '@/components/battle/ProjectileAnimation';
 import ScoutAnalysisDisplay from '@/components/battle/ProjectileAnimation';
@@ -80,10 +80,10 @@ import {
   MessagesHubPage,
   ChatPage,
   GameOverPage,
+  JobBoardPage,
 } from './views';
 
 import { SorcererTentPage } from './sorcerer/sorcerer-view';
-import { JobBoardPage } from './views/JobBoardPage';
 
 import { hasUnreadMessages } from './messaging/actions';
 
@@ -1596,3 +1596,4 @@ export default function Page() {
     
 
     
+
