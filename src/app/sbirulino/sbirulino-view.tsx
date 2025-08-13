@@ -31,7 +31,7 @@ import { updateCreatureName, sacrificeCreature } from './actions';
 import {
   ArrowLeft, TrendingUp, Zap, Shield, Bone, Flame, Droplets, HandHelping,
   Sword, Sparkles, ShieldCheck, Gauge, Clover, Edit3, type LucideIcon, Star,
-  Leaf, Sun, Moon, Pencil, Loader2, MoreHorizontal, BrainCircuit, Heart, Skull
+  Leaf, Sun, Moon, Pencil, Loader2, MoreHorizontal, BrainCircuit, Heart, Skull, ChevronLeftCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TentennamentoAttack } from '@/config/fighters';
@@ -147,8 +147,8 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
     
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground relative">
-             <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
-                <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
+            <button className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('main')}>
+                <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
             </button>
             <main className="w-full max-w-md mx-auto p-6 mt-16 space-y-6">
                 <Card className="w-full bg-card/80 backdrop-blur-sm">

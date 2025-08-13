@@ -51,7 +51,7 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData, onPla
 
     return (
         <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
-            <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
+            <button className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('main')}>
                 <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
             </button>
             <main className="w-full max-w-4xl p-4 sm:p-6">

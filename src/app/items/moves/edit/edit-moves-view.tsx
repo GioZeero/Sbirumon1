@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Wrench, Bone, Flame, HandHelping, Zap, Droplets, TrendingUp, Shield, type LucideIcon, Loader2, PlusSquare, Trash2, Leaf, Sun, Moon, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Wrench, Bone, Flame, HandHelping, Zap, Droplets, TrendingUp, Shield, type LucideIcon, Loader2, PlusSquare, Trash2, Leaf, Sun, Moon, MoreHorizontal, ChevronLeftCircle } from 'lucide-react';
 import type { Fighter, Attack, AttackRarity, CreatureType } from '@/types/battle';
 import { updateSbirulinoMoves } from '@/app/items/moves/actions';
 import { cn } from '@/lib/utils';
@@ -185,9 +185,9 @@ export default function EditSbirulinoMovesClientView({ sbirulinoInitial, availab
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4 text-foreground">
         <p>Errore nel caricamento dei dati di Sbirulino.</p>
-        <Button variant="outline" className="mt-4" onClick={() => onNavigate('main')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-        </Button>
+        <button className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('main')}>
+            <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
+        </button>
       </div>
     );
   }
@@ -199,8 +199,8 @@ export default function EditSbirulinoMovesClientView({ sbirulinoInitial, availab
 
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground relative">
-      <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
-          <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
+      <button className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0 transition-transform duration-75 ease-in-out active:scale-95" onClick={() => onNavigate('main')}>
+          <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
       </button>
       <main className="w-full max-w-4xl space-y-4 p-4 sm:p-6 md:p-8">
         <header className="w-full mt-12 sm:mt-0 mb-4">
