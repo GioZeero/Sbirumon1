@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -11,6 +10,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
+        'start-screen-bg': "url('/gioca.png')",
         'main-menu': "url('/sfondo.png')",
         'prateria': "url('/prateria.png')",
         'city': "url('/citta.png')",

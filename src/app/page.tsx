@@ -1281,8 +1281,9 @@ function SbirumonApp() {
     switch(currentView) {
         case 'game_over':
         case 'welcome':
-        case 'start_screen':
             return 'bg-black'; // Use black for transitions and simple screens
+        case 'start_screen':
+            return 'bg-start-screen-bg';
         case 'city':
         case 'noble_area':
         case 'merchant_area':
@@ -1384,7 +1385,7 @@ function SbirumonApp() {
       }
 
       if (updatedPlayer) {
-          setMenuPlayerData(updatedPlayer);
+          onPlayerDataChange(updatedPlayer);
           if (toastMessage) {
             toast(toastMessage);
           }

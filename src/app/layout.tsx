@@ -29,6 +29,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet"/>
 
         {/* Preload background images */}
+        <link rel="preload" href="/gioca.png" as="image" />
         <link rel="preload" href="/sfondo.png" as="image" />
         <link rel="preload" href="/prateria.png" as="image" />
         <link rel="preload" href="/citta.png" as="image" />
