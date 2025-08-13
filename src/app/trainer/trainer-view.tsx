@@ -243,7 +243,6 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                                 <Trophy className="h-5 w-5 text-yellow-500" />
                                 Classifica
                             </CardTitle>
-                            <CardDescription>I migliori allenatori</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="h-48">
@@ -270,14 +269,11 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex items-center justify-center w-8 h-8">
                                                             {index < 3 ? (
-                                                                <motion.div
-                                                                    animate={{ rotate: [0, 360] }}
-                                                                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                                                >
+                                                                <div>
                                                                     {index === 0 && <Crown className="h-6 w-6 text-yellow-500" />}
                                                                     {index === 1 && <Medal className="h-6 w-6 text-slate-400" />}
                                                                     {index === 2 && <Medal className="h-6 w-6 text-orange-400" />}
-                                                                </motion.div>
+                                                                </div>
                                                             ) : (
                                                                 <span className="text-lg font-bold text-muted-foreground">
                                                                     {index + 1}
@@ -319,7 +315,7 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                         <AlertDialogTrigger asChild>
                             <Button 
                                 variant="destructive" 
-                                className="w-full"
+                                className="w-full bg-card text-destructive hover:bg-destructive/10"
                             >
                                 <Repeat className="w-4 h-4 mr-2" />
                                 Resetta Profilo
