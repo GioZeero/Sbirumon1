@@ -3,7 +3,7 @@
 
 import type { FC } from 'react';
 import { cn } from '@/lib/utils';
-import { Heart } from 'lucide-react';
+import { Smile } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 
 interface TrustLevelBarProps {
@@ -25,7 +25,7 @@ const TrustLevelBar: FC<TrustLevelBarProps> = ({
 
   return (
     <div className="flex w-full max-w-xs items-center gap-2">
-      <Heart className="h-5 w-5 text-red-400 flex-shrink-0" />
+      <Smile className="h-5 w-5 text-yellow-400 flex-shrink-0" />
       <Progress 
         value={percentage} 
         className="h-2.5" 
