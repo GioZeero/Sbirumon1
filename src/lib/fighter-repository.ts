@@ -477,6 +477,11 @@ export async function getFighterDataForBattle(
         opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
       }
       
+      // Add opponent to Sbirudex upon encounter
+      if (opponent && opponent.baseId) {
+        await addEncounteredCreature(trainerName, opponent.baseId);
+      }
+      
       return opponent;
   }
 
@@ -873,13 +878,11 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         return null;
     }
     
-    // Create a new player object based on the shell, but overwrite with creature data.
     const newPlayer = { ...playerShell, ...chosenCreature };
 
-    // Explicitly set crucial properties to ensure a clean state for the new creature.
     newPlayer.id = 'player';
-    newPlayer.baseId = chosenCreature.baseId; // This is the critical line to prevent undefined baseId
-    newPlayer.level = 1; // Start new creatures at level 1
+    newPlayer.baseId = chosenCreature.baseId;
+    newPlayer.level = 1;
     newPlayer.currentXP = 0;
     newPlayer.xpToNextLevel = 100;
     newPlayer.trustLevel = 3;
@@ -893,15 +896,12 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.viandanteMaestroVisible = false;
     newPlayer.viandanteMaestroBattlesRemaining = 0;
     
-    // Reset Covo attempts
     newPlayer.covoAttemptsRemaining = { small: 10, medium: 15, large: 20 };
 
-    // Decrement attempts remaining, if the field exists.
     if (playerShell.attemptsRemaining !== undefined) {
       newPlayer.attemptsRemaining = playerShell.attemptsRemaining - 1;
     }
     
-    // Level up the new creature to the starting level (e.g., 5)
     const targetLevel = 5;
     if (newPlayer.level < targetLevel) {
         const levelsToGain = targetLevel - newPlayer.level;
@@ -914,7 +914,6 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
-    // Reset health and current stats
     newPlayer.currentHealth = newPlayer.maxHealth;
     newPlayer.currentAttackStat = newPlayer.attackStat;
     newPlayer.currentDefenseStat = newPlayer.defenseStat;
@@ -924,13 +923,11 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.currentLuckStat = newPlayer.luckStat;
     newPlayer.statusEffects = [];
     
-    // Ensure correct number of attacks
     newPlayer.attacks = newPlayer.attacks.slice(0, 3);
     while(newPlayer.attacks.length < 3) {
       newPlayer.attacks.push(TentennamentoAttack);
     }
 
-    // Only give starter items if the inventory is completely empty
     if (!playerShell.inventory || Object.keys(playerShell.inventory).length === 0) {
         const potion = ALL_CONSUMABLES.find(c => c.id === 'potion');
         if (potion) {
@@ -942,9 +939,12 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
             newPlayer.inventory['sbiruball'] = { item: sbiruball, quantity: 5 };
         }
     }
-
-    // Do NOT reset encounteredCreatureIds, keep it from playerShell
+    
     newPlayer.encounteredCreatureIds = playerShell.encounteredCreatureIds || [];
+    if (!newPlayer.encounteredCreatureIds.includes(newPlayer.baseId)) {
+        newPlayer.encounteredCreatureIds.push(newPlayer.baseId);
+    }
+
     await savePlayer(trainerName, newPlayer);
     
     return newPlayer;

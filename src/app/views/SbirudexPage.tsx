@@ -57,10 +57,7 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
   }
   
   const encounteredIds = new Set(menuPlayerData.encounteredCreatureIds || []);
-  if (menuPlayerData.baseId) {
-    encounteredIds.add(menuPlayerData.baseId);
-  }
-
+  
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground pb-12 relative">
       <button onClick={() => onNavigate('items_hub')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
@@ -159,5 +156,3 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
     </div>
   );
 };
-
-    
