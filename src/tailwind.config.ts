@@ -21,7 +21,8 @@ export default {
         'gym-combat': "url('/palestracombat.png')",
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",
-        'sorcerer': "url('/sorcerer_tent.png')",
+        'sorcerer': "url('/stregone.png')",
+        'master-sorcerer': "url('/granmaestro.png')",
       },
       fontFamily: {
         body: ['Inter', 'sans-serif'],

@@ -1294,7 +1294,7 @@ function SbirumonApp() {
         case 'start_screen': return 'bg-main-menu';
         case 'black_market': return 'bg-covo';
         case 'sorcerer_tent': return 'bg-sorcerer';
-        case 'master_sorcerer': return 'bg-sorcerer';
+        case 'master_sorcerer': return 'bg-master-sorcerer';
         case 'evolution_menu': return 'bg-main-menu';
         case 'job_board': return 'bg-city';
         case 'arena':
