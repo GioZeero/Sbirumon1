@@ -17,7 +17,7 @@ export default {
         'storage': "url('/magazzino.png')",
         'gym-menu': "url('/palestre.png')",
         'covo': "url('/covo.png')",
-        'shop-hub': "url('/granmaestro.png')",
+        'shop-hub': "url('/stradaneg.png')",
         'gym-combat': "url('/palestracombat.png')",
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",

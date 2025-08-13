@@ -24,7 +24,7 @@ const iconMap: Record<string, LucideIcon> = {
     HelpCircle,
 };
 
-export default function JobBoardPage({ onNavigate, trainerName }: JobBoardPageProps) {
+export function JobBoardPage({ onNavigate, trainerName }: JobBoardPageProps) {
   const [player, setPlayer] = useState<Fighter | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleting, startTransition] = useTransition();

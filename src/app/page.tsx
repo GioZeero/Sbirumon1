@@ -69,8 +69,6 @@ import {
   ArenaPage,
   ArenaLeaderboardPage,
   BlackMarketPage,
-  SorcererTentPage,
-  JobBoardPage,
   SbirulinoPage,
   EditSbirulinoMovesPage,
   TrainerPage,
@@ -83,6 +81,9 @@ import {
   ChatPage,
   GameOverPage,
 } from './views';
+
+import { SorcererTentPage } from './sorcerer/sorcerer-view';
+import { JobBoardPage } from './views/JobBoardPage';
 
 import { hasUnreadMessages } from './messaging/actions';
 
