@@ -475,6 +475,9 @@ export async function getFighterDataForBattle(
         const creaturePool = getCreaturePool();
         const randomBase = creaturePool[Math.floor(Math.random() * creaturePool.length)];
         opponent = prepareFighterForBattleInstance(randomBase, 'opponent', restOptions);
+        if (opponent) {
+           await addEncounteredCreature(trainerName, opponent.baseId);
+        }
       }
       
       return opponent;
@@ -787,7 +790,7 @@ export async function transformAndSavePlayer(trainerName: string, capturedOppone
     currentAttackStat: capturedOpponentData.attackStat,
     currentDefenseStat: capturedOpponentData.defenseStat,
     currentSpecialAttackStat: capturedOpponentData.specialAttackStat,
-    currentSpecialDefenseStat: capturedOpponentData.specialDefenseStat,
+    currentSpecialDefenseStat: capturedOpponentData.defenseStat,
     currentSpeedStat: capturedOpponentData.speedStat,
     currentLuckStat: capturedOpponentData.luckStat,
     statusEffects: [],
@@ -849,7 +852,7 @@ export async function generateCreatureChoices(count: number = 1): Promise<Fighte
             choice.currentAttackStat = choice.attackStat;
             choice.currentDefenseStat = choice.defenseStat;
             choice.currentSpecialAttackStat = choice.specialAttackStat;
-            choice.currentSpecialDefenseStat = choice.defenseStat;
+            choice.currentDefenseStat = choice.defenseStat;
             choice.currentSpeedStat = choice.speedStat;
             choice.currentLuckStat = choice.luckStat;
 
@@ -874,6 +877,10 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     if (!playerShell) {
         console.error(`Could not find player shell for ${trainerName} during creature selection.`);
         return null;
+    }
+
+    if (playerShell.attemptsRemaining !== undefined && playerShell.attemptsRemaining <= 0) {
+        return null; // Signal that the game is over
     }
     
     const newPlayer = { ...playerShell, ...chosenCreature };
@@ -916,7 +923,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.currentAttackStat = newPlayer.attackStat;
     newPlayer.currentDefenseStat = newPlayer.defenseStat;
     newPlayer.currentSpecialAttackStat = newPlayer.specialAttackStat;
-    newPlayer.currentSpecialDefenseStat = newPlayer.specialDefenseStat;
+    newPlayer.currentSpecialDefenseStat = newPlayer.defenseStat;
     newPlayer.currentSpeedStat = newPlayer.speedStat;
     newPlayer.currentLuckStat = newPlayer.luckStat;
     newPlayer.statusEffects = [];
@@ -938,7 +945,6 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
-    // Add the new creature to the Sbirudex
     if (!newPlayer.encounteredCreatureIds) {
       newPlayer.encounteredCreatureIds = [];
     }
@@ -1356,3 +1362,5 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
+
+    

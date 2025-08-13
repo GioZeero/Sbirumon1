@@ -308,19 +308,15 @@ function SbirumonApp() {
   
     setIsActionDisabled(true);
     setIsLoading(true);
-    setCurrentTurnMessage(`Scelta di ${opponentRef.current.name}...`);
 
     let playerClone = attackerState ? cloneFighter(attackerState) : cloneFighter(playerRef.current!);
     let opponentClone = cloneFighter(opponentRef.current);
 
     const isHittingSelf = false;
     
-    // Opponent selects move for next turn while player animation is happening
     const nextOpponentMove = selectWeightedRandomAttack(opponentClone);
     setOpponentChosenAction(nextOpponentMove);
     
-    await new Promise(resolve => setTimeout(resolve, 500 / speedMultiplier));
-
     setCurrentTurnMessage(`${playerClone.name} usa ${attackToExecute.name}!`);
     
     setProjectileAnimations(prev => [...prev, {
@@ -930,6 +926,11 @@ function SbirumonApp() {
       if (newPlayer) {
         setMenuPlayerData(newPlayer);
         navigateTo('main');
+      } else {
+        // This means the player is out of attempts
+        const finalPlayerData = await getPlayerProfileData(activeTrainerName);
+        setFinalScore(finalPlayerData?.trainerRankPoints || 0);
+        setShowGameOverModal(true);
       }
     } catch (error) {
       console.error("Failed to set player creature:", error);
@@ -1586,3 +1587,5 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
