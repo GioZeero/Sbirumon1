@@ -91,12 +91,6 @@ interface BattleViewProps {
     turnCount: number;
     handlePistolaAction: () => void;
     isBattleEnding: boolean;
-    showGameOverModal: boolean;
-    setShowGameOverModal: (open: boolean) => void;
-    finalScore: number;
-    activeTrainerName: string | null;
-    resetPlayerRun: (name: string) => void;
-    navigateTo: (view: any) => void;
     showAttackDetailsDialog: boolean;
     handleCloseAttackDetailsDialog: () => void;
     selectedAttackForDetails: Attack | null;
@@ -123,8 +117,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
         showCombatLogModal, handleUseConsumable, setShowCombatLogModal, showOptionsMenu,
         handleToggleOptions, isAutoBattle, handleAutoBattleToggle, speedMultiplier,
         handleSpeedToggle, turnCount, handlePistolaAction, isBattleEnding,
-        showGameOverModal, setShowGameOverModal, finalScore, activeTrainerName,
-        resetPlayerRun, navigateTo, showAttackDetailsDialog, handleCloseAttackDetailsDialog,
+        showAttackDetailsDialog, handleCloseAttackDetailsDialog,
         selectedAttackForDetails, onRematch, opponentTrainer,
         chargeProgress, handleChargeMouseDown, handleChargeMouseUp
     } = props;
@@ -135,7 +128,7 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
         return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
     }
     if (!player || !opponent) {
-        return <div className="min-h-screen flex flex-col items-center justify-center"><p className="text-lg text-destructive mb-4">Errore: Dati dei combattenti non caricati.</p><Button onClick={() => navigateTo('main')} variant="outline"><Undo2 className="mr-2 h-4 w-4" /> Torna al Menu Principale</Button></div>;
+        return <div className="min-h-screen flex flex-col items-center justify-center"><p className="text-lg text-destructive mb-4">Errore: Dati dei combattenti non caricati.</p><Button onClick={() => handleGoToMenu('main')} variant="outline"><Undo2 className="mr-2 h-4 w-4" /> Torna al Menu Principale</Button></div>;
     }
 
     const actionToDisplay = isPlayerTurn ? playerChosenAction : opponentChosenAction;
@@ -388,13 +381,6 @@ const BattleView: React.FC<BattleViewProps> = (props) => {
                             </Button>
                         </div>
                     </div>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={showGameOverModal} onOpenChange={(open) => { if (!open && activeTrainerName) { resetPlayerRun(activeTrainerName).then(() => { localStorage.removeItem('sbirumon-trainer'); navigateTo('welcome'); }); } }}>
-                <DialogContent>
-                    <DialogHeader><DialogTitle className="text-primary text-center text-3xl">Game Over</DialogTitle><DialogDescription className="text-center pt-2 text-lg">Hai esaurito i tentativi.</DialogDescription></DialogHeader>
-                    <div className="mt-4 text-center"><p className="text-xl">Punteggio Finale: <span className="font-bold text-accent">{finalScore}</span></p></div>
-                    <div className="flex justify-center mt-6"><Button onClick={() => setShowGameOverModal(false)}>Ricomincia</Button></div>
                 </DialogContent>
             </Dialog>
             {selectedAttackForDetails && (

@@ -83,6 +83,7 @@ import {
   SbirudexPage,
   MessagesHubPage,
   ChatPage,
+  GameOverPage,
 } from './views';
 
 import { hasUnreadMessages } from './messaging/actions';
@@ -100,7 +101,7 @@ type ProjectileState = {
 type Coords = { x: number; y: number } | null;
 
 
-const AppFooter = ({ onNavigate, unreadMessages }: { onNavigate: (view: View) => void, unreadMessages: boolean }) => {
+const AppFooter = ({ onNavigate, unreadMessages }: { onNavigate: (view: View, data?: any) => void, unreadMessages: boolean }) => {
     return (
         <footer
             className="sticky bottom-0 w-full bg-background/80 backdrop-blur-sm border-t border-border shadow-t-lg z-20"
@@ -127,6 +128,7 @@ const AppFooter = ({ onNavigate, unreadMessages }: { onNavigate: (view: View) =>
 
 function SbirumonApp() {
   const [currentView, setCurrentView] = useState<View>('loading');
+  const [viewData, setViewData] = useState<any>(null); // To pass data between views
   const [previousView, setPreviousView] = useState<View>('main');
   const [activeTrainerName, setActiveTrainerName] = useState<string | null>(null);
   const [menuPlayerData, setMenuPlayerData] = useState<Fighter | null>(null);
@@ -156,8 +158,6 @@ function SbirumonApp() {
   const [showSecretMenu, setShowSecretMenu] = useState(false);
   const [secretCode, setSecretCode] = useState('');
   const [playerWasDefeated, setPlayerWasDefeated] = useState(false);
-  const [showGameOverModal, setShowGameOverModal] = useState(false);
-  const [finalScore, setFinalScore] = useState(0);
   const [currentCreatureChoice, setCurrentCreatureChoice] = useState<Fighter | null>(null);
   const [isChoosingCreature, setIsChoosingCreature] = useState(false);
   const [rerollCount, setRerollCount] = useState(2);
@@ -219,6 +219,23 @@ function SbirumonApp() {
     });
   }, []);
 
+  const navigateTo = (view: View, data?: any) => {
+    setIsLoading(true);
+    setTimeout(() => {
+        if (view === 'chat' && data?.recipient) {
+          setChatTarget(data.recipient);
+        } else {
+          setChatTarget(null);
+        }
+        if (currentView !== view) {
+            setPreviousView(currentView);
+        }
+        setViewData(data); // Store the data
+        setCurrentView(view);
+        setIsLoading(false);
+    }, 150); // Short delay to allow loader to show and assets to potentially load
+  };
+  
   const endTurn = useCallback((
     updatedPlayer: Fighter,
     updatedOpponent: Fighter,
@@ -605,12 +622,8 @@ function SbirumonApp() {
   }, [speedMultiplier, addMultipleLogEntries, endTurn, isPaused, winner, opponentChosenAction]);
 
   const handleGoToMenu = useCallback(async (targetView: View = 'main') => {
-    // This function is the exit point from a battle.
-    // We check for defeat status here.
-
     const wasDefeated = winner === 'opponent';
 
-    // Reset battle state first
     setShowBattle(false);
     setPlayer(null);
     setOpponent(null);
@@ -620,7 +633,6 @@ function SbirumonApp() {
     setIsLoading(false);
     setIsActionDisabled(false);
     setLastDroppedItem(null);
-
     setCovoConfig(null);
     setCovoProgress(0);
     setGymConfig(null);
@@ -632,20 +644,21 @@ function SbirumonApp() {
         setIsInitializing(true);
         const playerData = await getPlayerProfileData(activeTrainerName);
         if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
-            setFinalScore(playerData.trainerRankPoints || 0);
-            setShowGameOverModal(true); // Game Over Logic
+            navigateTo('game_over', { 
+                trainerName: playerData.trainerName,
+                score: playerData.trainerRankPoints || 0
+            });
         } else {
-            navigateTo('creature_selection'); // Still has attempts, go select a new creature
+            navigateTo('creature_selection');
         }
         setIsInitializing(false);
     } else {
-        // This path is for wins, or escapes
         if (activeTrainerName) {
             await updateViandanteMaestroVisibility(activeTrainerName);
         }
         navigateTo(targetView);
     }
-}, [winner, activeTrainerName]);
+}, [winner, activeTrainerName, navigateTo]);
   
   const initializeBattle = useCallback(async (options?: {
       isCovo?: boolean,
@@ -803,22 +816,6 @@ function SbirumonApp() {
     }
     return data;
   }, []);
-
-  const navigateTo = (view: View, data?: any) => {
-    setIsLoading(true);
-    setTimeout(() => {
-        if (view === 'chat' && data?.recipient) {
-          setChatTarget(data.recipient);
-        } else {
-          setChatTarget(null);
-        }
-        if (currentView !== view) {
-            setPreviousView(currentView);
-        }
-        setCurrentView(view);
-        setIsLoading(false);
-    }, 150); // Short delay to allow loader to show and assets to potentially load
-  };
   
   useEffect(() => {
     const startup = async () => {
@@ -928,11 +925,11 @@ function SbirumonApp() {
         setMenuPlayerData(newPlayer);
         navigateTo('main');
       } else {
-        // This case is now handled by the check in handleGoToMenu.
-        // This is a fallback in case the flow is entered differently.
         const finalPlayerData = await getPlayerProfileData(activeTrainerName);
-        setFinalScore(finalPlayerData?.trainerRankPoints || 0);
-        setShowGameOverModal(true);
+        navigateTo('game_over', { 
+            trainerName: activeTrainerName,
+            score: finalPlayerData?.trainerRankPoints || 0
+        });
       }
     } catch (error) {
       console.error("Failed to set player creature:", error);
@@ -1272,6 +1269,8 @@ function SbirumonApp() {
        return covoConfig ? 'bg-covo' : gymConfig ? 'bg-gym-combat' : isArenaBattle ? 'bg-gym-combat' : 'bg-prateria';
     }
     switch(currentView) {
+        case 'game_over':
+            return 'bg-black';
         case 'city':
         case 'noble_area':
         case 'merchant_area':
@@ -1417,6 +1416,11 @@ function SbirumonApp() {
         handleEvolveCreature={handleEvolveCreature}
         navigateTo={navigateTo}
       />,
+    game_over: <GameOverPage 
+        trainerName={viewData?.trainerName}
+        score={viewData?.score}
+        onResetProfile={handleResetProfile}
+      />,
     city: <CityPage onNavigate={navigateTo} />,
     covo_menu: <CovoMenuPage
         randomCovoCities={randomCovoCities}
@@ -1536,12 +1540,6 @@ function SbirumonApp() {
                           turnCount={turnCount}
                           handlePistolaAction={handlePistolaAction}
                           isBattleEnding={isBattleEnding}
-                          showGameOverModal={showGameOverModal}
-                          setShowGameOverModal={setShowGameOverModal}
-                          finalScore={finalScore}
-                          activeTrainerName={activeTrainerName}
-                          resetPlayerRun={resetPlayerRun}
-                          navigateTo={navigateTo}
                           showAttackDetailsDialog={showAttackDetailsDialog}
                           handleCloseAttackDetailsDialog={handleCloseAttackDetailsDialog}
                           selectedAttackForDetails={selectedAttackForDetails}

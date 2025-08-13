@@ -25,3 +25,4 @@ export { ArcanePathPage } from './ArcanePathPage';
 export { SbirudexPage } from './SbirudexPage';
 export { MessagesHubPage } from './MessagesHubPage';
 export { ChatPage } from './ChatPage';
+export { GameOverPage } from './GameOverPage';
