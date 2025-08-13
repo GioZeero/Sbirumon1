@@ -15,8 +15,6 @@ interface ArcanePathPageProps {
 }
 
 export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaestroBattle }: ArcanePathPageProps) => {
-    const canSeeSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.sorcererTentVisible;
-    const canSeeMasterSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.masterSorcererTentVisible;
     const canSeeViandante = menuPlayerData?.viandanteMaestroVisible;
 
     return (
@@ -30,28 +28,6 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                     
                 </header>
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
-                     {canSeeSorcerer && (
-                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: false })}>
-                            <div className="flex items-center gap-4">
-                                <div className="rounded-lg bg-purple-500/20 p-3"><Wand2 className="h-6 w-6 text-purple-400" /></div>
-                                <div>
-                                    <p className="text-base font-bold">Tenda dello Stregone</p>
-                                    <p className="text-sm text-muted-foreground">Altera il destino del tuo Sbirumon</p>
-                                </div>
-                            </div>
-                        </Button>
-                    )}
-                    {canSeeMasterSorcerer && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-fuchsia-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: true })}>
-                            <div className="flex items-center gap-4">
-                                <div className="rounded-lg bg-fuchsia-500/20 p-3"><Sparkles className="h-6 w-6 text-fuchsia-400" /></div>
-                                <div>
-                                    <p className="text-base font-bold">Maestro Stregone</p>
-                                    <p className="text-sm text-muted-foreground">Forza un'evoluzione... a tuo rischio</p>
-                                </div>
-                            </div>
-                        </Button>
-                    )}
                     {canSeeViandante && (
                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-teal-500/50" onClick={startViandanteMaestroBattle}>
                             <div className="flex items-center gap-4">
@@ -63,7 +39,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                             </div>
                         </Button>
                     )}
-                    {!canSeeSorcerer && !canSeeMasterSorcerer && !canSeeViandante && (
+                    {!canSeeViandante && (
                         <p className="text-center text-muted-foreground mt-8">Il sentiero è ancora avvolto nella nebbia. Prosegui nel tuo viaggio per svelarne i segreti.</p>
                     )}
                 </div>

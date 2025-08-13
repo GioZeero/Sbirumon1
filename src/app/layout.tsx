@@ -36,9 +36,6 @@ export default function RootLayout({
         <link rel="preload" href="/covo.png" as="image" />
         <link rel="preload" href="/palestracombat.png" as="image" />
         <link rel="preload" href="/casa.png" as="image" />
-        <link rel="preload" href="/stregone.png" as="image" />
-        <link rel="preload" href="/granstregone.png" as="image" />
-
       </head>
       <body className={"font-body antialiased overflow-hidden"} suppressHydrationWarning={true}>
         {children}
@@ -47,5 +44,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-    

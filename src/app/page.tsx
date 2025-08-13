@@ -81,7 +81,6 @@ import {
   ChatPage,
   GameOverPage,
   JobBoardPage,
-  SorcererTentPage
 } from './views';
 
 
@@ -1292,8 +1291,6 @@ function SbirumonApp() {
         case 'main':
         case 'start_screen': return 'bg-main-menu';
         case 'black_market': return 'bg-covo';
-        case 'sorcerer_tent':
-            return viewData?.isMaster ? 'bg-master-sorcerer' : 'bg-sorcerer';
         case 'evolution_menu': return 'bg-main-menu';
         case 'job_board': return 'bg-city';
         case 'arena':
@@ -1315,7 +1312,7 @@ function SbirumonApp() {
   const footerViews: View[] = [
     'main', 'city', 'noble_area', 'merchant_area', 'shop_hub', 'items_hub',
     'covo_menu', 'gym_menu', 'arena', 'arena_leaderboard', 'job_board', 'black_market',
-    'sorcerer_tent', 'arcane_path'
+    'arcane_path'
   ];
 
   const handleSecretMenuClick = () => {
@@ -1462,7 +1459,6 @@ function SbirumonApp() {
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} hasUnreadMessages={unreadMessages} />,
     black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
-    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} isMaster={viewData?.isMaster || false} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData}/>,
     sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     messages_hub: <MessagesHubPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
@@ -1592,5 +1588,3 @@ export default function Page() {
     </Suspense>
   )
 }
-
-    
