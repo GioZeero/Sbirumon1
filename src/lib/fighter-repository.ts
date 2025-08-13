@@ -896,6 +896,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.defeatedBy = null;
     newPlayer.viandanteMaestroVisible = false;
     newPlayer.viandanteMaestroBattlesRemaining = 0;
+    newPlayer.encounteredCreatureIds = []; // Reset Sbirudex
     
     // Reset Covo attempts
     newPlayer.covoAttemptsRemaining = { small: 10, medium: 15, large: 20 };
@@ -1338,3 +1339,5 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
+
+    

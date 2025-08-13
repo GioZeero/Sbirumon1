@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -77,7 +78,7 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
         <ScrollArea className="h-[70vh]">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-2">
                 {allCreatures.map((creature) => {
-                    const isEncountered = encounteredIds.has(creature.id) || encounteredIds.has(creature.baseId);
+                    const isEncountered = encounteredIds.has(creature.id) || (creature.baseId && encounteredIds.has(creature.baseId));
                     const TypeIcon = creatureTypeIconMap[creature.creatureType];
 
                     return (
@@ -158,3 +159,5 @@ export const SbirudexPage = ({ onNavigate, trainerName, menuPlayerData }: Sbirud
     </div>
   );
 };
+
+    
