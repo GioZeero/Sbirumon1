@@ -236,7 +236,7 @@ function SbirumonApp() {
         setViewData(data); // Store the data
         setCurrentView(view);
         setIsLoading(false);
-    }, 150); // Short delay to allow loader to show and assets to potentially load
+    }, 500); // Short delay to allow loader to show and assets to potentially load
   };
   
   const endTurn = useCallback((
