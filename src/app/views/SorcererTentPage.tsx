@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, Wand2, Sword, Shield, Sparkles, ShieldCheck, Gauge, Clover, Bone, Feather, Coins, ChevronLeftCircle } from 'lucide-react';
-import type { Fighter } from '@/types/battle';
+import type { Fighter, FighterBaseStatKeys, FighterCurrentStatKeys } from '@/types/battle';
 import { randomizePlayerStats as rerollPlayerStatsInRepo, evolvePlayerCreatureWithDebuff, getPlayerProfileData, updatePlayerPersistentInventory, updatePlayerMoney } from '@/lib/fighter-repository';
 import { GameBalance } from '@/config/game-balance';
 import { cn } from '@/lib/utils';
@@ -14,7 +15,7 @@ import type { View } from './types';
 
 
 // Server Actions are now co-located in this file for simplicity and to avoid import conflicts.
-async function rerollStats(trainerName: string): Promise<{ success: boolean; message: string; updatedPlayer?: Fighter }> {
+async function rerollStats(trainerName: string): Promise<{success: boolean, message: string, updatedPlayer?: Fighter}> {
   const player = await getPlayerProfileData(trainerName);
   if (!player) {
     return { success: false, message: 'Giocatore non trovato.' };
