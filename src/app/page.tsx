@@ -223,7 +223,6 @@ function SbirumonApp() {
   }, []);
 
   const navigateTo = (view: View, data?: any) => {
-    // No need for setIsLoading here, transition is handled by AnimatePresence
     if (view === 'chat' && data?.recipient) {
       setChatTarget(data.recipient);
     } else {
@@ -232,10 +231,8 @@ function SbirumonApp() {
     if (currentView !== view) {
         setPreviousView(currentView);
     }
-    setTimeout(() => {
-        setViewData(data);
-        setCurrentView(view);
-    }, 150); // Small delay to allow fade out to start
+    setViewData(data);
+    setCurrentView(view);
   };
   
   const endTurn = useCallback((
@@ -1278,16 +1275,17 @@ function SbirumonApp() {
        return covoConfig ? 'bg-covo' : gymConfig ? 'bg-gym-combat' : isArenaBattle ? 'bg-gym-combat' : 'bg-prateria';
     }
     switch(currentView) {
-        case 'game_over':
         case 'welcome':
         case 'loading':
-            return 'bg-black'; // Use black for transitions and simple screens
+            return 'bg-black';
         case 'start_screen':
             return 'bg-start-screen-bg';
         case 'city':
         case 'noble_area':
         case 'merchant_area':
         case 'arcane_path':
+        case 'job_board':
+        case 'game_over':
             return 'bg-city';
         case 'shop_hub': return 'bg-shop-hub';
         case 'items_moves_edit':
@@ -1299,7 +1297,6 @@ function SbirumonApp() {
         case 'main': return 'bg-main-menu';
         case 'black_market': return 'bg-covo';
         case 'evolution_menu': return 'bg-main-menu';
-        case 'job_board': return 'bg-city';
         case 'arena':
         case 'arena_leaderboard':
             return 'bg-gym-menu';
@@ -1486,7 +1483,7 @@ function SbirumonApp() {
     }
 
   return (
-    <div className={cn("min-h-screen", "bg-background")} style={mainAppContainerStyle}>
+    <div className={mainAppContainerClass} style={mainAppContainerStyle}>
           <div className="relative z-10">
             <PageTransitionWrapper transitionKey={currentView}>
               <div className="min-h-screen flex flex-col bg-background/0">
@@ -1604,6 +1601,7 @@ export default function Page() {
     
 
     
+
 
 
 
