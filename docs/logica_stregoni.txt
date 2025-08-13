@@ -1,0 +1,29 @@
+## Logica delle Tende dello Stregone
+
+Questa documentazione descrive il funzionamento delle due tende magiche accessibili dal "Sentiero Arcano".
+
+### 1. Tenda dello Stregone (Normale)
+
+- **Accesso**: Disponibile per tutti i giocatori che possono accedere al Sentiero Arcano.
+- **Funzionalità**: Permette al giocatore di "ridistribuire" le statistiche base (Attacco, Difesa, Attacco Speciale, Difesa Speciale, Velocità, Fortuna) della propria creatura.
+- **Meccanismo**:
+  1. Il totale dei punti statistica della creatura viene calcolato e conservato.
+  2. Tutte le statistiche base vengono resettate a 1.
+  3. I punti rimanenti (totale - numero di statistiche) vengono distribuiti casualmente tra le sei statistiche.
+- **Costo**: 1000 monete per ogni tentativo.
+- **Scopo**: Offrire un modo per i giocatori di tentare di ottenere una distribuzione di statistiche più favorevole per la propria creatura, senza alterarne la potenza complessiva.
+
+### 2. Tenda del Maestro Stregone (Avanzata)
+
+- **Accesso**: Diventa visibile e accessibile solo dopo che il giocatore ha sconfitto la terza palestra.
+- **Funzionalità**: Permette al giocatore di tentare un'evoluzione forzata e prematura della propria creatura.
+- **Meccanismo**:
+  1. Richiede un "Resto" specifico basato sull'archetipo della creatura del giocatore:
+     - **Physical**: Guscio di Tartaruga
+     - **Special**: Piuma
+     - **Balanced**: Dente
+  2. Il giocatore deve possedere l'oggetto richiesto nel proprio inventario.
+  3. Il rito consuma il Resto e ha un costo di 1000 monete.
+  4. C'è una probabilità del 70% (`GameBalance.REMAINS_EVOLVE_CHANCE`) che l'evoluzione abbia successo.
+  5. **Conseguenze**: Se l'evoluzione riesce, la creatura si evolve, ma acquisisce permanentemente lo stato "Impaurita", che le conferisce una probabilità del 15% di saltare il proprio turno in combattimento.
+- **Scopo**: Fornire una via rischiosa ma potente per ottenere un vantaggio significativo in anticipo, a un costo permanente.

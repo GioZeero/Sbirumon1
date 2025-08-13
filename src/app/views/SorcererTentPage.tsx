@@ -1,12 +1,10 @@
-
-
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Loader2, Wand2, Sword, Shield, Sparkles, ShieldCheck, Gauge, Clover, Bone, Feather, Coins, ChevronLeftCircle } from 'lucide-react';
+import { Loader2, Wand2, Sword, Shield, Sparkles, ShieldCheck, Gauge, Clover, Bone, Feather, Coins, ChevronLeftCircle } from 'lucide-react';
 import type { Fighter } from '@/types/battle';
 import { randomizePlayerStats as rerollPlayerStatsInRepo, evolvePlayerCreatureWithDebuff, getPlayerProfileData, updatePlayerPersistentInventory, updatePlayerMoney } from '@/lib/fighter-repository';
 import { GameBalance } from '@/config/game-balance';
@@ -15,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import type { View } from './types';
 
 
-// Server Actions need to be defined in the same file if they are not in a separate 'actions.ts' file
+// Server Actions are now co-located in this file for simplicity and to avoid import conflicts.
 async function rerollStats(trainerName: string): Promise<{ success: boolean; message: string; updatedPlayer?: Fighter }> {
   const player = await getPlayerProfileData(trainerName);
   if (!player) {
@@ -254,5 +252,3 @@ export const SorcererTentPage = ({ onNavigate, isMaster, trainerName, menuPlayer
     </div>
   );
 };
-
-    
