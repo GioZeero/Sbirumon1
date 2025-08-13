@@ -1304,8 +1304,6 @@ function SbirumonApp() {
         case 'messages_hub':
         case 'chat':
             return 'bg-storage';
-        case 'sorcerer_tent':
-            return viewData?.isMaster ? 'bg-master-sorcerer' : 'bg-sorcerer';
         case 'loading':
         case 'welcome':
         default: return '';
@@ -1477,8 +1475,14 @@ function SbirumonApp() {
      backgroundClass()
   );
 
+  const mainAppContainerStyle: React.CSSProperties = {};
+    if (currentView === 'sorcerer_tent') {
+        const imageUrl = viewData?.isMaster ? '/granstregone.png' : '/stregone.png';
+        mainAppContainerStyle.backgroundImage = `url(${imageUrl})`;
+    }
+
   return (
-    <div className={mainAppContainerClass}>
+    <div className={mainAppContainerClass} style={mainAppContainerStyle}>
           <div className="relative z-10">
             <PageTransitionWrapper transitionKey={currentView}>
               <div className="min-h-screen flex flex-col">
