@@ -913,7 +913,14 @@ function SbirumonApp() {
   
   const handleStartGame = () => {
     handleRequestFullscreen();
-    navigateTo('main');
+    if (menuPlayerData && menuPlayerData.attemptsRemaining !== undefined && menuPlayerData.attemptsRemaining <= 0) {
+        navigateTo('game_over', { 
+            trainerName: menuPlayerData.trainerName,
+            score: menuPlayerData.trainerRankPoints || 0
+        });
+    } else {
+        navigateTo('main');
+    }
   };
 
   const handleCreatureSelect = async (creature: Fighter) => {
@@ -1587,3 +1594,5 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
