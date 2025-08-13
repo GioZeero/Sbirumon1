@@ -9,7 +9,7 @@ import { Wand2, Sparkles, ChevronLeftCircle, Eye } from 'lucide-react';
 import type { View } from './types';
 
 interface ArcanePathPageProps {
-  onNavigate: (view: View) => void;
+  onNavigate: (view: View, data?: any) => void;
   menuPlayerData: Fighter | null;
   startViandanteMaestroBattle: () => void;
 }
@@ -31,7 +31,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                 </header>
                 <div className="grid w-full max-w-sm grid-cols-1 gap-3">
                      {canSeeSorcerer && (
-                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('sorcerer_tent')}>
+                         <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: false })}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-purple-500/20 p-3"><Wand2 className="h-6 w-6 text-purple-400" /></div>
                                 <div>
@@ -42,7 +42,7 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaest
                         </Button>
                     )}
                     {canSeeMasterSorcerer && (
-                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-fuchsia-500/50" onClick={() => onNavigate('master_sorcerer')}>
+                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-fuchsia-500/50" onClick={() => onNavigate('sorcerer_tent', { isMaster: true })}>
                             <div className="flex items-center gap-4">
                                 <div className="rounded-lg bg-fuchsia-500/20 p-3"><Sparkles className="h-6 w-6 text-fuchsia-400" /></div>
                                 <div>
