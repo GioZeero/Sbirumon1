@@ -318,8 +318,8 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button 
-                                variant="ghost" 
-                                className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                                variant="destructive" 
+                                className="w-full"
                             >
                                 <Repeat className="w-4 h-4 mr-2" />
                                 Resetta Profilo
