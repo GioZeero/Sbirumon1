@@ -232,8 +232,10 @@ function SbirumonApp() {
     if (currentView !== view) {
         setPreviousView(currentView);
     }
-    setViewData(data);
-    setCurrentView(view);
+    setTimeout(() => {
+        setViewData(data);
+        setCurrentView(view);
+    }, 150); // Small delay to allow fade out to start
   };
   
   const endTurn = useCallback((
@@ -1473,7 +1475,7 @@ function SbirumonApp() {
   const currentViewContent = currentView === 'loading' ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
-    "min-h-screen bg-cover bg-center",
+    "min-h-screen bg-cover bg-center bg-black",
      !showBattle && backgroundClass()
   );
 
@@ -1602,3 +1604,4 @@ export default function Page() {
     
 
     
+
