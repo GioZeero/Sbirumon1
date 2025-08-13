@@ -223,6 +223,7 @@ function SbirumonApp() {
   }, []);
 
   const navigateTo = (view: View, data?: any) => {
+    // No need for setIsLoading here, transition is handled by AnimatePresence
     if (view === 'chat' && data?.recipient) {
       setChatTarget(data.recipient);
     } else {
@@ -1277,6 +1278,7 @@ function SbirumonApp() {
     switch(currentView) {
         case 'game_over':
         case 'welcome':
+        case 'loading':
             return 'bg-black'; // Use black for transitions and simple screens
         case 'start_screen':
             return 'bg-start-screen-bg';
@@ -1306,7 +1308,6 @@ function SbirumonApp() {
         case 'messages_hub':
         case 'chat':
             return 'bg-storage';
-        case 'loading':
         default: return 'bg-black';
     }
   };
@@ -1472,7 +1473,7 @@ function SbirumonApp() {
   const currentViewContent = currentView === 'loading' ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
-    "min-h-screen bg-black bg-cover bg-center",
+    "min-h-screen bg-cover bg-center",
      !showBattle && backgroundClass()
   );
 
