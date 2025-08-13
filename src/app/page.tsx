@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
 import type { Fighter, BattleLogEntry, BattleWinner, Attack, ConsumableInventoryItem, CreatureType, AttackRarity, AnalyzedStats, Archetype, LogMessagePart } from '@/types/battle';
-import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank } from '@/lib/fighter-repository';
+import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank, addMultipleItemsToInventory } from '@/lib/fighter-repository';
 import FighterCard from '@/components/battle/FighterCard';
 import CombatLog from '@/components/battle/CombatLog';
 import BattleResultModal from '@/components/battle/BattleResultModal';
@@ -1328,6 +1328,34 @@ function SbirumonApp() {
     }
   };
 
+  const handleSecretCode = async () => {
+      if (!activeTrainerName) return;
+      let updatedPlayer: Fighter | null = null;
+      switch (secretCode.toLowerCase()) {
+          case 'stregone':
+              updatedPlayer = await setSorcererTentVisibility(activeTrainerName, true);
+              break;
+          case 'granstregone':
+              updatedPlayer = await setMasterSorcererTentVisibility(activeTrainerName, true);
+              break;
+          case 'viandante':
+              updatedPlayer = await updateViandanteMaestroVisibility(activeTrainerName, true);
+              break;
+          case 'infinite':
+              await updatePlayerMoney(activeTrainerName, 10000);
+              updatedPlayer = await addMultipleItemsToInventory(activeTrainerName, 10);
+              break;
+          default:
+              // toast({ title: "Codice non valido" });
+              break;
+      }
+      if (updatedPlayer) {
+          setMenuPlayerData(updatedPlayer);
+      }
+      setShowSecretMenu(false);
+      setSecretCode('');
+  };
+
 
   const showFooter = footerViews.includes(currentView) && !showBattle;
 
@@ -1512,10 +1540,11 @@ function SbirumonApp() {
                         placeholder="Codice Segreto" 
                         value={secretCode}
                         onChange={(e) => setSecretCode(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSecretCode()}
                     />
                 </div>
                 <DialogFooter>
-                    <Button onClick={() => setShowSecretMenu(false)}>Conferma</Button>
+                    <Button onClick={handleSecretCode}>Conferma</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -1534,4 +1563,5 @@ export default function Page() {
     
 
     
+
 

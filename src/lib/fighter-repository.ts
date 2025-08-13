@@ -743,6 +743,28 @@ export async function updatePlayerPersistentInventory(trainerName: string, itemI
     return JSON.parse(JSON.stringify(player));
 }
 
+export async function addMultipleItemsToInventory(trainerName: string, quantity: number): Promise<Fighter | null> {
+    const player = await getPlayerFromStore(trainerName);
+    if (!player) return null;
+
+    if (!player.inventory) player.inventory = {};
+
+    const itemsToAdd = ALL_CONSUMABLES.filter(item => item.category !== 'Potenziamenti Illegali' && item.category !== 'Resti');
+
+    for (const item of itemsToAdd) {
+        const currentItemEntry = player.inventory[item.id];
+        if (currentItemEntry) {
+            currentItemEntry.quantity += quantity;
+        } else {
+            player.inventory[item.id] = { item: JSON.parse(JSON.stringify(item)), quantity: quantity };
+        }
+    }
+
+    await savePlayer(trainerName, player);
+    return JSON.parse(JSON.stringify(player));
+}
+
+
 export async function transformAndSavePlayer(trainerName: string, capturedOpponentData: Fighter): Promise<Fighter | null> {
   const playerToTransform = await getPlayerFromStore(trainerName);
   if (!playerToTransform) {
