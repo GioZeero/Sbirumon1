@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
 import type { Fighter, BattleLogEntry, BattleWinner, Attack, ConsumableInventoryItem, CreatureType, AttackRarity, AnalyzedStats, Archetype, LogMessagePart } from '@/types/battle';
-import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank, addMultipleItemsToInventory } from '@/lib/fighter-repository';
+import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank, addMultipleItemsToInventory, updatePlayerAttempts } from '@/lib/fighter-repository';
 import FighterCard from '@/components/battle/FighterCard';
 import CombatLog from '@/components/battle/CombatLog';
 import BattleResultModal from '@/components/battle/BattleResultModal';
@@ -383,8 +383,7 @@ function SbirumonApp() {
   }, [playerChosenAction, winner, isPaused, activeTrainerName, canPlayerAct, addLogEntry, executePlayerChosenAttack, endTurn]);
   
   const handleChargeMouseDown = () => {
-    const isActionDisabledNow = isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn;
-    if (isActionDisabledNow || winner) return;
+    if (isActionDisabled || isPaused || !canPlayerAct || !isPlayerTurn || winner) return;
 
     chargeTimerRef.current = setTimeout(() => {
         handleChargeAction();
@@ -407,7 +406,7 @@ function SbirumonApp() {
       if (chargeTimerRef.current) {
         clearTimeout(chargeTimerRef.current);
         chargeTimerRef.current = null;
-        if (playerChosenAction && !isActionDisabled && !isPaused && canPlayerAct && !winner) {
+        if (playerChosenAction && !isActionDisabled && !isPaused && canPlayerAct && !winner && isPlayerTurn) {
             executePlayerChosenAttack(playerChosenAction);
         }
     }
@@ -1335,29 +1334,46 @@ function SbirumonApp() {
       if (!activeTrainerName) return;
       let updatedPlayer: Fighter | null = null;
       let toastMessage: { title: string; description?: string } | null = null;
-      
-      switch (secretCode.toLowerCase()) {
-          case 'stregone':
-              updatedPlayer = await setSorcererTentVisibility(activeTrainerName, true);
-              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda dello Stregone è ora visibile." };
-              break;
-          case 'granstregone':
-              updatedPlayer = await setMasterSorcererTentVisibility(activeTrainerName, true);
-              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda del Maestro Stregone è ora visibile." };
-              break;
-          case 'viandante':
-              updatedPlayer = await updateViandanteMaestroVisibility(activeTrainerName, true);
-              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Il Viandante Maestro è apparso..." };
-              break;
-          case 'infinite':
-              await updatePlayerMoney(activeTrainerName, 10000);
-              updatedPlayer = await addMultipleItemsToInventory(activeTrainerName, 10);
-               if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Hai ricevuto 10.000 monete e 10 di ogni consumabile." };
-              break;
-          default:
-              toast({ title: "Codice non valido", variant: "destructive" });
-              break;
+      const lowerCaseCode = secretCode.toLowerCase();
+
+      if (lowerCaseCode.startsWith('tentativi ')) {
+          const parts = secretCode.split(' ');
+          if (parts.length === 2 && !isNaN(parseInt(parts[1], 10))) {
+              const newAttempts = parseInt(parts[1], 10);
+              if (newAttempts >= 0) {
+                  updatedPlayer = await updatePlayerAttempts(activeTrainerName, newAttempts);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: `Numero di tentativi impostato a ${newAttempts}.` };
+              } else {
+                  toast({ title: "Numero non valido", description: "Il numero di tentativi deve essere positivo.", variant: "destructive" });
+              }
+          } else {
+              toast({ title: "Codice non valido", description: "Formato corretto: tentativi [numero]", variant: "destructive" });
+          }
+      } else {
+          switch (lowerCaseCode) {
+              case 'stregone':
+                  updatedPlayer = await setSorcererTentVisibility(activeTrainerName, true);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda dello Stregone è ora visibile." };
+                  break;
+              case 'granstregone':
+                  updatedPlayer = await setMasterSorcererTentVisibility(activeTrainerName, true);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda del Maestro Stregone è ora visibile." };
+                  break;
+              case 'viandante':
+                  updatedPlayer = await updateViandanteMaestroVisibility(activeTrainerName, true);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Il Viandante Maestro è apparso..." };
+                  break;
+              case 'infinite':
+                  await updatePlayerMoney(activeTrainerName, 10000);
+                  updatedPlayer = await addMultipleItemsToInventory(activeTrainerName, 10);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Hai ricevuto 10.000 monete e 10 di ogni consumabile." };
+                  break;
+              default:
+                  toast({ title: "Codice non valido", variant: "destructive" });
+                  break;
+          }
       }
+
       if (updatedPlayer) {
           setMenuPlayerData(updatedPlayer);
           if (toastMessage) {
@@ -1575,6 +1591,7 @@ export default function Page() {
     
 
     
+
 
 
 

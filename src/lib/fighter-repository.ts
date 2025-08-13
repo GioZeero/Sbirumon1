@@ -479,7 +479,8 @@ export async function getFighterDataForBattle(
       
       // Add opponent to Sbirudex upon encounter
       if (opponent && opponent.baseId) {
-        await addEncounteredCreature(trainerName, opponent.baseId);
+        // This is now done only on capture/transform
+        // await addEncounteredCreature(trainerName, opponent.baseId);
       }
       
       return opponent;
@@ -940,10 +941,8 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
-    newPlayer.encounteredCreatureIds = playerShell.encounteredCreatureIds || [];
-    if (!newPlayer.encounteredCreatureIds.includes(newPlayer.baseId)) {
-        newPlayer.encounteredCreatureIds.push(newPlayer.baseId);
-    }
+    // Reset Sbirudex for the new creature's life
+    newPlayer.encounteredCreatureIds = [newPlayer.baseId];
 
     await savePlayer(trainerName, newPlayer);
     
@@ -1258,6 +1257,15 @@ export async function randomizePlayerStats(trainerName: string): Promise<{succes
     };
 }
 
+export async function updatePlayerAttempts(trainerName: string, newAttempts: number): Promise<Fighter | null> {
+    const player = await getPlayerFromStore(trainerName);
+    if (!player) return null;
+    player.attemptsRemaining = newAttempts;
+    await savePlayer(trainerName, player);
+    return JSON.parse(JSON.stringify(player));
+}
+
+
 // --- Arena Functions ---
 
 export async function getRandomOnlineOpponent(currentPlayerTrainerName: string): Promise<Fighter | null> {
@@ -1335,3 +1343,4 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
+
