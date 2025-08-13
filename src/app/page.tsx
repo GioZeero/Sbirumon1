@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
@@ -222,18 +223,16 @@ function SbirumonApp() {
   }, []);
 
   const navigateTo = (view: View, data?: any) => {
-    setTimeout(() => {
-        if (view === 'chat' && data?.recipient) {
-          setChatTarget(data.recipient);
-        } else {
-          setChatTarget(null);
-        }
-        if (currentView !== view) {
-            setPreviousView(currentView);
-        }
-        setViewData(data); // Store the data
-        setCurrentView(view);
-    }, 500); // 0.5-second delay for black screen
+    if (view === 'chat' && data?.recipient) {
+      setChatTarget(data.recipient);
+    } else {
+      setChatTarget(null);
+    }
+    if (currentView !== view) {
+        setPreviousView(currentView);
+    }
+    setViewData(data);
+    setCurrentView(view);
   };
   
   const endTurn = useCallback((
@@ -1598,5 +1597,7 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
 
     
