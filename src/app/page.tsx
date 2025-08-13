@@ -631,15 +631,14 @@ function SbirumonApp() {
     if (playerWasDefeated && activeTrainerName) {
         setPlayerWasDefeated(false);
         setIsInitializing(true);
-        getPlayerProfileData(activeTrainerName).then(playerData => {
-            if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
-                setFinalScore(playerData.trainerRankPoints || 0);
-                setShowGameOverModal(true);
-            } else {
-                navigateTo('creature_selection');
-            }
-            setIsInitializing(false);
-        });
+        const playerData = await getPlayerProfileData(activeTrainerName);
+        if (playerData && playerData.attemptsRemaining !== undefined && playerData.attemptsRemaining <= 0) {
+            setFinalScore(playerData.trainerRankPoints || 0);
+            setShowGameOverModal(true);
+        } else {
+            navigateTo('creature_selection');
+        }
+        setIsInitializing(false);
     } else {
         setIsInitializing(false);
         navigateTo(targetView);
@@ -927,7 +926,6 @@ function SbirumonApp() {
         setMenuPlayerData(newPlayer);
         navigateTo('main');
       } else {
-        // This means the player is out of attempts
         const finalPlayerData = await getPlayerProfileData(activeTrainerName);
         setFinalScore(finalPlayerData?.trainerRankPoints || 0);
         setShowGameOverModal(true);
@@ -1587,5 +1585,3 @@ export default function Page() {
     </Suspense>
   )
 }
-
-    

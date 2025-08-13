@@ -880,7 +880,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     }
 
     if (playerShell.attemptsRemaining !== undefined && playerShell.attemptsRemaining <= 0) {
-        return null; // Signal that the game is over
+        return null;
     }
     
     const newPlayer = { ...playerShell, ...chosenCreature };
@@ -898,8 +898,6 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
     newPlayer.isEvolved = false;
     newPlayer.didNotUseConsumables = true;
     newPlayer.defeatedBy = null;
-    newPlayer.viandanteMaestroVisible = false;
-    newPlayer.viandanteMaestroBattlesRemaining = 0;
     
     newPlayer.covoAttemptsRemaining = { small: 10, medium: 15, large: 20 };
 
@@ -945,6 +943,7 @@ export async function setPlayerCreature(trainerName: string, chosenCreature: Fig
         }
     }
     
+    // Add the new creature to the Sbirudex
     if (!newPlayer.encounteredCreatureIds) {
       newPlayer.encounteredCreatureIds = [];
     }
@@ -1362,5 +1361,3 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 
     return leaderboard;
 }
-
-    
