@@ -38,7 +38,8 @@ interface TrainerViewProps {
 }
 
 const rankTiers = [
-    { name: 'Bronzo', points: 0, icon: Medal, color: 'text-orange-400', shadowColor: '#fb923c' },
+    { name: 'Non classificato', points: 0, icon: Star, color: 'text-muted-foreground', shadowColor: '#a1a1aa' },
+    { name: 'Bronzo', points: 1, icon: Medal, color: 'text-orange-400', shadowColor: '#fb923c' },
     { name: 'Argento', points: 10, icon: Medal, color: 'text-slate-400', shadowColor: '#94a3b8' },
     { name: 'Oro', points: 25, icon: Trophy, color: 'text-yellow-500', shadowColor: '#eab308' },
     { name: 'Platino', points: 50, icon: Crown, color: 'text-teal-400', shadowColor: '#2dd4bf' },
@@ -47,12 +48,17 @@ const rankTiers = [
 
 const getRankInfo = (points: number) => {
     let currentRank = rankTiers[0];
-    for (let i = rankTiers.length - 1; i >= 0; i--) {
-        if (points >= rankTiers[i].points) {
-            currentRank = rankTiers[i];
-            break;
+    if (points === 0) {
+        currentRank = rankTiers[0];
+    } else {
+        for (let i = rankTiers.length - 1; i >= 0; i--) {
+            if (points >= rankTiers[i].points) {
+                currentRank = rankTiers[i];
+                break;
+            }
         }
     }
+    
     const nextRankIndex = rankTiers.findIndex(rank => rank.points > currentRank.points);
     const nextRank = nextRankIndex !== -1 ? rankTiers[nextRankIndex] : null;
 
