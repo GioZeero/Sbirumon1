@@ -233,7 +233,7 @@ function SbirumonApp() {
         }
         setViewData(data); // Store the data
         setCurrentView(view);
-    }, 1000); // 1-second delay for black screen
+    }, 500); // 0.5-second delay for black screen
   };
   
   const endTurn = useCallback((
