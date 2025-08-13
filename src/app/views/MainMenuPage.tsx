@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -110,7 +109,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 )}
             </div>
             <motion.div
-                className="relative w-[230px] h-[230px] border-4 border-primary/20 rounded-full"
+                className="relative w-[265px] h-[265px] border-4 border-primary/20 rounded-full"
                 animate={{ rotate: rotation }}
                 transition={{
                     type: "spring",
@@ -120,7 +119,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             >
                 {mainMenuDestinations.map((dest, index) => {
                     const angle = (index / mainMenuDestinations.length) * 360;
-                    const radiusLg = 144;
+                    const radiusLg = 166;
                     const isActive = index === selectedIndex;
                     
                     return (
@@ -171,12 +170,16 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                 })}
             </motion.div>
         </div>
-         <div className="absolute bottom-[20vh] w-full flex items-center justify-center z-20">
+         <div className="absolute bottom-[14vh] w-full flex items-center justify-center z-20">
              <div className="flex items-center justify-center gap-4 bg-background/50 backdrop-blur-sm rounded-full px-2 shadow-lg">
                 <Button variant="default" className="w-14 h-14 rounded-full bg-transparent hover:bg-transparent text-foreground" onClick={() => handleArrowClick('left')}>
                     <ArrowLeft className="w-8 h-8" strokeWidth={2.5} />
                 </Button>
-                 <div className="w-52 text-center">
+                 <div className="w-52 text-center cursor-pointer" onClick={() => {
+                    const dest = mainMenuDestinations[selectedIndex];
+                    if (dest.view === 'prairie') initializeBattle();
+                    else navigateTo(dest.view);
+                }}>
                     <AnimatePresence mode="wait">
                         <motion.p
                             key={selectedIndex}
