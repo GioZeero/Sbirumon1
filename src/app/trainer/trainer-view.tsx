@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -156,23 +157,6 @@ const TrainerView: React.FC<TrainerViewProps> = ({ player, onNavigate, onResetPr
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, duration: 0.5, type: 'spring' }}
             >
-                {player.spriteUrl && (
-                    <div className="relative mb-4">
-                        <motion.img
-                            src={player.spriteUrl}
-                            alt={player.trainerName}
-                            className="w-32 h-32 object-contain"
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <motion.div
-                            className="absolute -inset-4 rounded-full opacity-30"
-                            style={{ backgroundColor: rankInfo.shadowColor }}
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                    </div>
-                )}
                 <h1 className="text-3xl md:text-4xl font-headline text-primary mb-2">{player.trainerName}</h1>
                 <motion.div 
                     className={cn("flex items-center gap-2 text-lg font-semibold", rankInfo.color)}
