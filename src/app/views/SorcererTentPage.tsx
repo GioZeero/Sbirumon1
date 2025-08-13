@@ -6,7 +6,7 @@ import React, { useState, useEffect, useTransition, useCallback } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Loader2, Wand2, Sword, Shield, Sparkles, ShieldCheck, Gauge, Clover, Bone, Feather, Coins } from 'lucide-react';
+import { ArrowLeft, Loader2, Wand2, Sword, Shield, Sparkles, ShieldCheck, Gauge, Clover, Bone, Feather, Coins, ChevronLeftCircle } from 'lucide-react';
 import type { Fighter } from '@/types/battle';
 import { rerollStats, evolveWithRemains } from '../sorcerer/actions';
 import { cn } from '@/lib/utils';
@@ -87,7 +87,7 @@ export const SorcererTentPage = ({ onNavigate, isMaster, trainerName, menuPlayer
   return (
     <div className="min-h-screen flex flex-col items-center text-foreground pb-24 relative">
       <button onClick={() => onNavigate('arcane_path')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
-          <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
+          <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
       </button>
        <header className="w-full text-center mt-12 mb-4">
             <h1 className="text-4xl md:text-5xl font-headline text-primary">{pageTitle}</h1>
