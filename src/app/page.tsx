@@ -201,6 +201,10 @@ function SbirumonApp() {
   useEffect(() => { opponentRef.current = opponent; }, [opponent]);
 
   const { toast } = useToast();
+  
+  const updateMenuPlayerData = (newPlayerData: Fighter) => {
+    setMenuPlayerData(newPlayerData);
+  };
 
   const addLogEntry = useCallback((message: LogMessagePart[]) => {
     setLogEntries(prev => {
@@ -1452,19 +1456,19 @@ function SbirumonApp() {
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle}/>,
-    shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
+    shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData}/>,
     items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
-    items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
+    items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} onPlayerDataChange={updateMenuPlayerData} />,
     items_moves: <MovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} hasUnreadMessages={unreadMessages} />,
-    black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
-    job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData}/>,
+    black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData} />,
+    job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData}/>,
     sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     messages_hub: <MessagesHubPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     chat: <ChatPage onNavigate={navigateTo} trainerName={activeTrainerName!} recipientName={chatTarget!} />,
-    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} isMaster={viewData?.isMaster} />,
+    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} isMaster={viewData?.isMaster} onPlayerDataChange={updateMenuPlayerData} />,
     battle: <></>
   };
 

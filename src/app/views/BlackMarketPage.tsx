@@ -4,7 +4,6 @@
 
 import React, { useState, useEffect, useCallback, useTransition } from 'react';
 import type { Fighter } from '@/types/battle';
-import { getPlayerProfileData, updatePlayerMoney } from '@/lib/fighter-repository';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2, Coins, ChevronLeftCircle, Info, Bone, Beaker } from 'lucide-react';
@@ -26,29 +25,25 @@ interface BlackMarketPageProps {
   onNavigate: (view: View) => void;
   trainerName: string;
   menuPlayerData: Fighter | null;
+  onPlayerDataChange: (newPlayerData: Fighter) => void;
 }
 
-export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData }: BlackMarketPageProps) => {
-    const [player, setPlayer] = useState<Fighter | null>(menuPlayerData);
+export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerDataChange }: BlackMarketPageProps) => {
     const [isPending, startTransition] = useTransition();
 
-    useEffect(() => {
-        setPlayer(menuPlayerData);
-    }, [menuPlayerData]);
-
     const handleBuyItem = (itemId: string, cost: number) => {
-        if (!player || player.money === undefined || player.money < cost) {
+        if (!menuPlayerData || menuPlayerData.money === undefined || menuPlayerData.money < cost) {
             return;
         }
         startTransition(async () => {
             const result = await buyConsumable(trainerName, itemId, cost);
             if (result.success && result.updatedPlayer) {
-                setPlayer(result.updatedPlayer);
+                onPlayerDataChange(result.updatedPlayer);
             }
         });
     };
 
-    if (!player) {
+    if (!menuPlayerData) {
         return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
     }
     
@@ -61,7 +56,7 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData }: Bla
             </button>
             <main className="w-full max-w-4xl p-4 sm:p-6">
                 <header className="w-full mb-8 mt-12 sm:mt-0 relative">
-                    <div className="absolute top-0 right-0 flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md"><Coins className="h-6 w-6 text-yellow-400" /><span className="font-bold text-lg text-foreground">{player.money ?? 0}</span></div>
+                    <div className="absolute top-0 right-0 flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md"><Coins className="h-6 w-6 text-yellow-400" /><span className="font-bold text-lg text-foreground">{menuPlayerData.money ?? 0}</span></div>
                     
                 </header>
                 <Card className="shadow-xl bg-card/80 backdrop-blur-sm">
@@ -80,7 +75,7 @@ export const BlackMarketPage = ({ onNavigate, trainerName, menuPlayerData }: Bla
                                     </CardHeader>
                                     <CardContent className="flex-grow space-y-2 pt-0 pb-4"><p className="text-sm text-muted-foreground leading-snug">{item.description}</p></CardContent>
                                     <div className="p-4 pt-0 mt-auto">
-                                        <Button className="w-full" onClick={() => handleBuyItem(item.id, item.cost)} disabled={isPending || (player.money ?? 0) < item.cost}>{isPending ? <Loader2 className="animate-spin" /> : "Acquista"}</Button>
+                                        <Button className="w-full" onClick={() => handleBuyItem(item.id, item.cost)} disabled={isPending || (menuPlayerData.money ?? 0) < item.cost}>{isPending ? <Loader2 className="animate-spin" /> : "Acquista"}</Button>
                                     </div>
                                 </Card>
                             ))}

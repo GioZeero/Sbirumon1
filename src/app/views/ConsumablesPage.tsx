@@ -59,9 +59,10 @@ function categorizeConsumables(items: ConsumableItem[]): CategorizedConsumables 
 interface ConsumablesPageProps {
   onNavigate: (view: View) => void;
   trainerName: string;
+  onPlayerDataChange: (newPlayerData: Fighter) => void;
 }
 
-export const ConsumablesPage = ({ onNavigate, trainerName }: ConsumablesPageProps) => {
+export const ConsumablesPage = ({ onNavigate, trainerName, onPlayerDataChange }: ConsumablesPageProps) => {
     const [player, setPlayer] = useState<Fighter | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
@@ -77,10 +78,12 @@ export const ConsumablesPage = ({ onNavigate, trainerName }: ConsumablesPageProp
             setIsLoading(false);
         }).catch(() => setIsLoading(false));
     }, [trainerName]);
+    
     const handleUseItem = (itemId: string) => {
         startTransition(async () => {
             const result = await useConsumableOutOfBattle(trainerName, itemId);
             if (result.success && result.updatedPlayer) {
+                onPlayerDataChange(result.updatedPlayer);
                 setPlayer(result.updatedPlayer);
             }
         });

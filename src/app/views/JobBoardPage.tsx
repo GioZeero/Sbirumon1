@@ -27,9 +27,10 @@ interface JobBoardPageProps {
   onNavigate: (view: View) => void;
   trainerName: string;
   menuPlayerData: Fighter | null;
+  onPlayerDataChange: (newPlayerData: Fighter) => void;
 }
 
-export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData }: JobBoardPageProps) => {
+export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerDataChange }: JobBoardPageProps) => {
   const [player, setPlayer] = useState<Fighter | null>(menuPlayerData);
   const [isCompleting, startTransition] = useTransition();
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
@@ -42,9 +43,9 @@ export const JobBoardPage = ({ onNavigate, trainerName, menuPlayerData }: JobBoa
     startTransition(async () => {
       const result = await completeQuest(trainerName, questId);
       if (result.success && result.updatedPlayer) {
+        onPlayerDataChange(result.updatedPlayer);
         setPlayer(result.updatedPlayer);
         setSelectedQuest(null); // Close the dialog on success
-        // If the quest was the sorcerer's, navigate to creature selection
         if (questId === 'sorcerer_quest') {
             onNavigate('creature_selection');
         }

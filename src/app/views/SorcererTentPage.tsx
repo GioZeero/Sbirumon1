@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useTransition } from 'react';
@@ -87,12 +88,14 @@ interface SorcererTentPageProps {
   trainerName: string;
   menuPlayerData: Fighter | null;
   isMaster: boolean;
+  onPlayerDataChange: (newPlayerData: Fighter) => void;
 }
 
-export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMaster }: SorcererTentPageProps) => {
-    const [player, setPlayer] = useState(menuPlayerData);
+export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMaster, onPlayerDataChange }: SorcererTentPageProps) => {
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
+
+    const player = menuPlayerData;
 
     const requiredRemainId = player?.archetype === 'Physical' ? 'guscio_di_tartaruga' : player?.archetype === 'Special' ? 'piuma' : 'dente';
     const requiredRemain = ALL_CONSUMABLES.find(item => item.id === requiredRemainId);
@@ -112,8 +115,8 @@ export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMa
                 variant: result.success ? "default" : "destructive",
             });
 
-            if (result.updatedPlayer) { // Update player state on both success and failure
-                setPlayer(result.updatedPlayer);
+            if (result.updatedPlayer) {
+                onPlayerDataChange(result.updatedPlayer);
             }
         });
     };
@@ -156,7 +159,7 @@ export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMa
                            Tipo: {player.creatureType} / Archetipo: {player.archetype}
                        </div>
                     </CardHeader>
-                    {!isMaster && (
+                     {!isMaster && (
                         <CardContent>
                            <div className="flex items-center text-lg"><Heart className="w-5 h-5 mr-2 text-red-500" /> Salute <span className="ml-auto font-semibold">{player.currentHealth} / {player.maxHealth}</span></div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-base mt-2">

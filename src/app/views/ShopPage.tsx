@@ -29,6 +29,7 @@ interface ShopPageProps {
   onNavigate: (view: View) => void;
   trainerName: string;
   menuPlayerData: Fighter | null;
+  onPlayerDataChange: (newPlayerData: Fighter) => void;
 }
 
 interface PurchaseDialogState {
@@ -36,14 +37,9 @@ interface PurchaseDialogState {
     quantity: number;
 }
 
-export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPageProps) => {
-    const [player, setPlayer] = useState<Fighter | null>(menuPlayerData);
+export const ShopPage = ({ onNavigate, trainerName, menuPlayerData, onPlayerDataChange }: ShopPageProps) => {
     const [isPending, startTransition] = useTransition();
     const [purchaseDialogState, setPurchaseDialogState] = useState<PurchaseDialogState | null>(null);
-
-    useEffect(() => {
-        setPlayer(menuPlayerData);
-    }, [menuPlayerData]);
 
     const handleOpenPurchaseDialog = (item: ConsumableItem) => {
         setPurchaseDialogState({ item, quantity: 1 });
@@ -59,49 +55,44 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
     };
 
     const handleBuyConsumable = () => {
-        if (!purchaseDialogState || !player) return;
+        if (!purchaseDialogState || !menuPlayerData) return;
         const { item, quantity } = purchaseDialogState;
         const totalCost = item.cost * quantity;
         
-        if (player.money === undefined || player.money < totalCost) {
-            // Optionally show a toast for insufficient funds
+        if (menuPlayerData.money === undefined || menuPlayerData.money < totalCost) {
             return;
         }
 
         startTransition(async () => {
-            // We'll call the server action `quantity` times.
-            // A more optimized approach might be a new server action that accepts quantity.
-            // For now, this respects the existing action signature.
-            let latestPlayerState = player;
+            let latestPlayerState = menuPlayerData;
             for (let i = 0; i < quantity; i++) {
                 const result = await buyConsumable(trainerName, item.id, item.cost);
                 if (result.success && result.updatedPlayer) {
                     latestPlayerState = result.updatedPlayer;
                 } else {
-                    // Stop on first failure
                     break;
                 }
             }
-            setPlayer(latestPlayerState);
-            setPurchaseDialogState(null); // Close dialog on success
+            onPlayerDataChange(latestPlayerState);
+            setPurchaseDialogState(null);
         });
     };
     
     const bookOptions: { rarity: AttackRarity, label: string, cost: number, icon: React.ReactNode, color: string }[] = [ { rarity: 'Common', label: 'Comuni', cost: 50, icon: <Book className="h-8 w-8 text-gray-400" />, color: "border-gray-400/50 hover:border-gray-400" }, { rarity: 'Rare', label: 'Rare', cost: 100, icon: <Book className="h-8 w-8 text-blue-400" />, color: "border-blue-400/50 hover:border-blue-400" }, { rarity: 'Epic', label: 'Epiche', cost: 250, icon: <Book className="h-8 w-8 text-purple-500" />, color: "border-purple-500/50 hover:border-purple-500" } ];
     
     const handleBuyBook = (rarity: AttackRarity, cost: number) => {
-        if (!player || player.money === undefined || player.money < cost) {
+        if (!menuPlayerData || menuPlayerData.money === undefined || menuPlayerData.money < cost) {
             return;
         }
         startTransition(async () => {
             const result = await buyMoveBook(trainerName, rarity);
             if (result.success && result.updatedPlayer) {
-                setPlayer(result.updatedPlayer);
+                onPlayerDataChange(result.updatedPlayer);
             }
         });
     };
 
-    if (!player) {
+    if (!menuPlayerData) {
         return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
     }
 
@@ -113,7 +104,7 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
                 </button>
                  <div className="flex items-center space-x-2 bg-card p-2 rounded-lg border border-border shadow-md">
                     <Coins className="h-6 w-6 text-yellow-400" />
-                    <span className="font-bold text-lg text-foreground">{player.money ?? 0}</span>
+                    <span className="font-bold text-lg text-foreground">{menuPlayerData.money ?? 0}</span>
                 </div>
             </header>
             <main className="w-full max-w-4xl p-4 sm:p-6 pt-0">
@@ -182,7 +173,7 @@ export const ShopPage = ({ onNavigate, trainerName, menuPlayerData }: ShopPagePr
                             <Button
                                 type="button"
                                 onClick={handleBuyConsumable}
-                                disabled={isPending || (player.money ?? 0) < purchaseDialogState.item.cost * purchaseDialogState.quantity}
+                                disabled={isPending || (menuPlayerData.money ?? 0) < purchaseDialogState.item.cost * purchaseDialogState.quantity}
                             >
                                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Acquista
