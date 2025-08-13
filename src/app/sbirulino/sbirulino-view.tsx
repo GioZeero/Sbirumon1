@@ -17,17 +17,27 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { updateCreatureName } from './actions';
+import { updateCreatureName, sacrificeCreature } from './actions';
 import {
   ArrowLeft, TrendingUp, Zap, Shield, Bone, Flame, Droplets, HandHelping,
   Sword, Sparkles, ShieldCheck, Gauge, Clover, Edit3, type LucideIcon, Star,
-  Leaf, Sun, Moon, Pencil, Loader2, MoreHorizontal, BrainCircuit, Heart
+  Leaf, Sun, Moon, Pencil, Loader2, MoreHorizontal, BrainCircuit, Heart, Skull
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TentennamentoAttack } from '@/config/fighters';
 import { STATUS_EFFECTS } from '@/config/statusEffects';
+import { useToast } from '@/hooks/use-toast';
 
 const creatureTypeIconMap: Record<CreatureType, LucideIcon> = {
   Fire: Flame,
@@ -79,6 +89,7 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
     const [isPending, startTransition] = useTransition();
     const [selectedAttackForDetails, setSelectedAttackForDetails] = useState<Attack | null>(null);
     const [showAttackDetailsDialog, setShowAttackDetailsDialog] = useState(false);
+    const { toast } = useToast();
 
     const handleNameChangeSubmit = async () => {
         if (newName.trim() === sbirulino.name || !sbirulino.trainerName) {
@@ -103,6 +114,27 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
         }
     };
     
+    const handleSacrifice = () => {
+        if (!sbirulino.trainerName) return;
+        startTransition(async () => {
+            const result = await sacrificeCreature(sbirulino.trainerName!);
+            if (result.success) {
+                toast({
+                    title: "Sacrificio Compiuto",
+                    description: result.droppedItem ? `Hai ottenuto: ${result.droppedItem.name}` : "Il tuo Sbirulino è svanito."
+                });
+                // After a short delay, navigate to the creature selection screen
+                setTimeout(() => onNavigate('creature_selection'), 1000);
+            } else {
+                 toast({
+                    title: "Errore",
+                    description: result.message,
+                    variant: 'destructive'
+                });
+            }
+        });
+    };
+
     const getStatColor = (current: number, base: number): string => {
         if (current > base) return "text-green-400";
         if (current < base) return "text-destructive";
@@ -178,6 +210,28 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
                             Modifica Mosse
                         </Button>
                     )}
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="lg" className="w-full h-14 text-lg">
+                                <Skull className="mr-2 h-5 w-5" />
+                                Sacrifica Creatura
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Sei sicuro di voler sacrificare {sbirulino.name}?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Questa azione è irreversibile. Terminerai la tua avventura con questa creatura e dovrai sceglierne una nuova. C'è una piccola possibilità di ottenere un oggetto raro.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Annulla</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleSacrifice} disabled={isPending}>
+                                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sì, Sacrifica"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </section>
             </main>
             
