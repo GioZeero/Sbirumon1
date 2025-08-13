@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
@@ -202,7 +201,7 @@ function SbirumonApp() {
 
   const { toast } = useToast();
   
-  const updateMenuPlayerData = (newPlayerData: Fighter) => {
+  const onPlayerDataChange = (newPlayerData: Fighter) => {
     setMenuPlayerData(newPlayerData);
   };
 
@@ -223,7 +222,6 @@ function SbirumonApp() {
   }, []);
 
   const navigateTo = (view: View, data?: any) => {
-    setIsLoading(true);
     setTimeout(() => {
         if (view === 'chat' && data?.recipient) {
           setChatTarget(data.recipient);
@@ -235,8 +233,7 @@ function SbirumonApp() {
         }
         setViewData(data); // Store the data
         setCurrentView(view);
-        setIsLoading(false);
-    }, 500); // Short delay to allow loader to show and assets to potentially load
+    }, 1000); // 1-second delay for black screen
   };
   
   const endTurn = useCallback((
@@ -1078,7 +1075,7 @@ function SbirumonApp() {
             
             if (finalPlayerState) {
                 setPlayer(finalPlayerState);
-                setMenuPlayerData(finalPlayerState);
+                onPlayerDataChange(finalPlayerState);
             }
         };
 
@@ -1092,7 +1089,7 @@ function SbirumonApp() {
             getPlayerProfileData(activeTrainerName).then(newPlayerData => {
                 if (newPlayerData) {
                    setPlayer(newPlayerData);
-                   setMenuPlayerData(newPlayerData);
+                   onPlayerDataChange(newPlayerData);
                 }
             });
         }
@@ -1166,7 +1163,7 @@ function SbirumonApp() {
     setShowArenaDisclaimer(false);
     if (activeTrainerName) {
       const updatedPlayer = await setArenaDisclaimerAccepted(activeTrainerName);
-      setMenuPlayerData(updatedPlayer);
+      onPlayerDataChange(updatedPlayer);
       initializeBattle({ isArena: true });
     }
   };
@@ -1175,7 +1172,7 @@ function SbirumonApp() {
     if (!activeTrainerName) return;
     const newPlayer = await transformAndSavePlayer(activeTrainerName, creature);
     if (newPlayer) {
-        setMenuPlayerData(newPlayer);
+        onPlayerDataChange(newPlayer);
         setPlayer(newPlayer);
         handleGoToMenu('sbirulino');
     }
@@ -1185,7 +1182,7 @@ function SbirumonApp() {
     if (!activeTrainerName) return;
     const newPlayer = await evolvePlayerCreature(activeTrainerName);
     if(newPlayer) {
-        setMenuPlayerData(newPlayer);
+        onPlayerDataChange(newPlayer);
     }
     navigateTo('sbirulino');
   };
@@ -1457,23 +1454,23 @@ function SbirumonApp() {
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle}/>,
-    shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData}/>,
+    shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={onPlayerDataChange}/>,
     items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
-    items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} onPlayerDataChange={updateMenuPlayerData} />,
+    items_consumables: <ConsumablesPage onNavigate={navigateTo} trainerName={activeTrainerName!} onPlayerDataChange={onPlayerDataChange} />,
     items_moves: <MovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     sbirulino: <SbirulinoPage onNavigate={navigateTo} trainerName={activeTrainerName!} previousView={previousView} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
     trainer: <TrainerPage onNavigate={navigateTo} trainerName={activeTrainerName!} onResetProfile={handleResetProfile} handleRequestFullscreen={handleRequestFullscreen} previousView={previousView} menuPlayerData={menuPlayerData} hasUnreadMessages={unreadMessages} />,
-    black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData} />,
-    job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={updateMenuPlayerData}/>,
+    black_market: <BlackMarketPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={onPlayerDataChange} />,
+    job_board: <JobBoardPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={onPlayerDataChange}/>,
     sbirudex: <SbirudexPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     messages_hub: <MessagesHubPage onNavigate={navigateTo} trainerName={activeTrainerName!} />,
     chat: <ChatPage onNavigate={navigateTo} trainerName={activeTrainerName!} recipientName={chatTarget!} />,
-    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} isMaster={viewData?.isMaster} onPlayerDataChange={updateMenuPlayerData} />,
+    sorcerer_tent: <SorcererTentPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} isMaster={viewData?.isMaster} onPlayerDataChange={onPlayerDataChange} />,
     battle: <></>
   };
 
-  const currentViewContent = isLoading ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
+  const currentViewContent = currentView === 'loading' ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
     "min-h-screen bg-black bg-cover bg-center",
@@ -1601,3 +1598,5 @@ export default function Page() {
     </Suspense>
   )
 }
+
+    
