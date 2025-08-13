@@ -38,6 +38,7 @@ import { cn } from '@/lib/utils';
 import { TentennamentoAttack } from '@/config/fighters';
 import { STATUS_EFFECTS } from '@/config/statusEffects';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '@/components/ui/separator';
 
 const creatureTypeIconMap: Record<CreatureType, LucideIcon> = {
   Fire: Flame,
@@ -150,89 +151,94 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
              <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
                 <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
             </button>
-            <main className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-6 mt-16">
-                <section className="flex flex-col items-center">
-                    <Card className="w-full max-w-md">
-                        <CardHeader className="items-center pb-4">
-                             <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-primary bg-background/10 mb-4">
-                                <Image
-                                    src={sbirulino.spriteUrl}
-                                    alt={sbirulino.name}
-                                    width={160}
-                                    height={160}
-                                    className="w-full h-full object-cover"
-                                    unoptimized
-                                />
-                            </div>
-                            <div className="flex items-center justify-center gap-1">
-                                <CardTitle className="text-3xl text-primary">{sbirulino.name}</CardTitle>
-                                <Button variant="ghost" size="icon" onClick={() => setIsNameDialogOpen(true)} className="text-primary hover:text-primary/80 h-8 w-8">
-                                    <Pencil className="h-4 w-4"/>
-                                </Button>
-                            </div>
-                             <div className="flex items-center justify-center text-sm mt-1 text-accent">
-                                {SbirulinoTypeIcon && <SbirulinoTypeIcon className="w-4 h-4 mr-1.5" />}
-                                Tipo: {sbirulino.creatureType}
-                            </div>
-                        </CardHeader>
-                        <CardContent className="pt-2 px-6 pb-6 space-y-4">
-                             <div className="text-center">
-                                <div className="flex items-center justify-center space-x-2">
-                                    <Badge variant="secondary" className="text-sm">{archetype}</Badge>
-                                    {sbirulino.isEvolved && <Badge variant="default" className="text-sm bg-purple-500 text-white">Evoluto</Badge>}
-                                </div>
-                                <CardDescription className="text-sm mt-2">Salute Massima: {sbirulino.maxHealth} HP</CardDescription>
-                            </div>
-                            <div>
-                                <div className="flex items-center justify-center text-lg text-accent font-semibold">
-                                    <Star className="w-5 h-5 mr-2" /> 
-                                    Livello: {sbirulino.level}
-                                </div>
-                                <div className="w-full mt-1">
-                                    <p className="text-sm text-muted-foreground text-center mb-1">XP: {sbirulino.currentXP} / {sbirulino.xpToNextLevel}</p>
-                                    <Progress value={xpPercentage} className="h-2.5" indicatorClassName="bg-accent" />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </section>
-                
-                <section className="space-y-4 pt-8 md:pt-0">
-                    <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => setIsStatsDialogOpen(true)}>
-                        Visualizza Statistiche
-                    </Button>
-                    <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => setIsMovesDialogOpen(true)}>
-                        Visualizza Mosse
-                    </Button>
-                     {!sbirulino.isUnique && (
-                        <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => onNavigate('items_moves_edit')}>
-                            <Edit3 className="mr-2 h-5 w-5" />
-                            Modifica Mosse
-                        </Button>
-                    )}
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="lg" className="w-full h-14 text-lg">
-                                <Skull className="mr-2 h-5 w-5" />
-                                Sacrifica Creatura
+            <main className="w-full max-w-lg mx-auto p-6 mt-16 space-y-6">
+                <Card className="w-full bg-card/80 backdrop-blur-sm">
+                    <CardHeader className="items-center pb-4">
+                        <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-primary bg-background/10 mb-4">
+                            <Image
+                                src={sbirulino.spriteUrl}
+                                alt={sbirulino.name}
+                                width={160}
+                                height={160}
+                                className="w-full h-full object-cover"
+                                unoptimized
+                            />
+                        </div>
+                        <div className="flex items-center justify-center gap-1">
+                            <CardTitle className="text-3xl text-primary">{sbirulino.name}</CardTitle>
+                            <Button variant="ghost" size="icon" onClick={() => setIsNameDialogOpen(true)} className="text-primary hover:text-primary/80 h-8 w-8">
+                                <Pencil className="h-4 w-4"/>
                             </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Sei sicuro di voler sacrificare {sbirulino.name}?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Questa azione è irreversibile. Terminerai la tua avventura con questa creatura e dovrai sceglierne una nuova. C'è una piccola possibilità di ottenere un oggetto raro.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Annulla</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleSacrifice} disabled={isPending}>
-                                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sì, Sacrifica"}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </section>
+                        </div>
+                        <div className="flex items-center justify-center gap-4 text-sm mt-1">
+                          <Badge variant="outline" className="flex items-center gap-1.5">
+                            {SbirulinoTypeIcon && <SbirulinoTypeIcon className="w-3 h-3" />}
+                            {sbirulino.creatureType}
+                          </Badge>
+                          <Badge variant="secondary">{archetype}</Badge>
+                          {sbirulino.isEvolved && <Badge variant="default" className="bg-purple-500 text-white">Evoluto</Badge>}
+                        </div>
+                    </CardHeader>
+                    <CardContent className="pt-2 px-6 pb-6 space-y-4">
+                        <div>
+                            <div className="flex items-center justify-between text-lg text-accent font-semibold">
+                                <span className="flex items-center gap-2"><Star className="w-5 h-5" /> Livello</span>
+                                <span>{sbirulino.level}</span>
+                            </div>
+                            <div className="w-full mt-1">
+                                <p className="text-sm text-muted-foreground text-center mb-1">XP: {sbirulino.currentXP} / {sbirulino.xpToNextLevel}</p>
+                                <Progress value={xpPercentage} className="h-2.5" indicatorClassName="bg-accent" />
+                            </div>
+                        </div>
+                        <p className="text-center text-sm text-muted-foreground">Salute Massima: {sbirulino.maxHealth} HP</p>
+                    </CardContent>
+                </Card>
+
+                <Card className="w-full bg-card/80 backdrop-blur-sm">
+                    <CardHeader><CardTitle className="text-center text-xl text-primary">Informazioni & Azioni</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-3">
+                           <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => setIsStatsDialogOpen(true)}>
+                                Statistiche
+                           </Button>
+                           <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => setIsMovesDialogOpen(true)}>
+                                Mosse
+                           </Button>
+                        </div>
+                        <Separator/>
+                        <div className="space-y-3">
+                           <h3 className="text-center font-semibold text-muted-foreground">Gestione</h3>
+                            {!sbirulino.isUnique && (
+                               <Button variant="outline" size="lg" className="w-full h-14 text-lg" onClick={() => onNavigate('items_moves_edit')}>
+                                   <Edit3 className="mr-2 h-5 w-5" />
+                                   Modifica Mosse
+                               </Button>
+                           )}
+                           <AlertDialog>
+                               <AlertDialogTrigger asChild>
+                                   <Button variant="destructive" size="lg" className="w-full h-14 text-lg">
+                                       <Skull className="mr-2 h-5 w-5" />
+                                       Sacrifica Creatura
+                                   </Button>
+                               </AlertDialogTrigger>
+                               <AlertDialogContent>
+                                   <AlertDialogHeader>
+                                       <AlertDialogTitle>Sei sicuro di voler sacrificare {sbirulino.name}?</AlertDialogTitle>
+                                       <AlertDialogDescription>
+                                           Questa azione è irreversibile. Terminerai la tua avventura con questa creatura e dovrai sceglierne una nuova. C'è una piccola possibilità di ottenere un oggetto raro.
+                                       </AlertDialogDescription>
+                                   </AlertDialogHeader>
+                                   <AlertDialogFooter>
+                                       <AlertDialogCancel>Annulla</AlertDialogCancel>
+                                       <AlertDialogAction onClick={handleSacrifice} disabled={isPending}>
+                                           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sì, Sacrifica"}
+                                       </AlertDialogAction>
+                                   </AlertDialogFooter>
+                               </AlertDialogContent>
+                           </AlertDialog>
+                        </div>
+                    </CardContent>
+                </Card>
             </main>
             
             <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
