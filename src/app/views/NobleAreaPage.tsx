@@ -11,10 +11,9 @@ import type { View } from './types';
 interface NobleAreaPageProps {
   onNavigate: (view: View) => void;
   menuPlayerData: Fighter | null;
-  startViandanteMaestroBattle: () => void;
 }
 
-export const NobleAreaPage = ({ onNavigate, menuPlayerData, startViandanteMaestroBattle }: NobleAreaPageProps) => (
+export const NobleAreaPage = ({ onNavigate, menuPlayerData }: NobleAreaPageProps) => (
     <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
         <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
             <ChevronLeftCircle className="h-full w-full p-1" strokeWidth={2.5} />
@@ -42,17 +41,6 @@ export const NobleAreaPage = ({ onNavigate, menuPlayerData, startViandanteMaestr
                         </div>
                     </div>
                 </Button>
-                {menuPlayerData?.viandanteMaestroVisible && (
-                     <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-purple-500/50" onClick={startViandanteMaestroBattle}>
-                        <div className="flex items-center gap-4">
-                            <div className="rounded-lg bg-purple-500/20 p-3"><Eye className="h-6 w-6 text-purple-400" /></div>
-                            <div>
-                                <p className="text-base font-bold">Viandante Maestro</p>
-                                <p className="text-sm text-muted-foreground">Una sfida inaspettata ti attende</p>
-                            </div>
-                        </div>
-                    </Button>
-                )}
             </div>
         </main>
     </div>

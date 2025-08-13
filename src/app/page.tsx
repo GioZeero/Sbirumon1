@@ -53,6 +53,7 @@ import BattleView from './battle/battle-view';
 import { Separator } from '@/components/ui/separator';
 import { motion, useMotionValue, useTransform, AnimatePresence, useAnimation, useSpring, animate } from 'framer-motion';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { useToast } from "@/hooks/use-toast";
 
 import type { View } from './views/types';
 import {
@@ -199,6 +200,8 @@ function SbirumonApp() {
   
   const opponentRef = useRef(opponent);
   useEffect(() => { opponentRef.current = opponent; }, [opponent]);
+
+  const { toast } = useToast();
 
   const addLogEntry = useCallback((message: LogMessagePart[]) => {
     setLogEntries(prev => {
@@ -416,7 +419,7 @@ function SbirumonApp() {
   };
   
   const handleBlockAction = useCallback(() => {
-    if (!playerRef.current || !opponentRef.current || winner || isPaused || (!isPlayerTurn && !canPlayerAct)) {
+    if (!playerRef.current || !opponentRef.current || winner || isPaused || !isPlayerTurn || !canPlayerAct) {
         return;
     }
     const currentPlayer = playerRef.current;
@@ -757,7 +760,7 @@ function SbirumonApp() {
   }, [activeTrainerName, menuPlayerData]);
 
   const handleEscapeAttempt = useCallback(async () => {
-      if (!playerRef.current || winner || isPaused || (!isPlayerTurn && !canPlayerAct) || isArenaBattle) {
+      if (!playerRef.current || winner || isPaused || !isPlayerTurn || !canPlayerAct || isArenaBattle) {
           return;
       }
       setIsAttemptingEscape(true);
@@ -1331,26 +1334,35 @@ function SbirumonApp() {
   const handleSecretCode = async () => {
       if (!activeTrainerName) return;
       let updatedPlayer: Fighter | null = null;
+      let toastMessage: { title: string; description?: string } | null = null;
+      
       switch (secretCode.toLowerCase()) {
           case 'stregone':
               updatedPlayer = await setSorcererTentVisibility(activeTrainerName, true);
+              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda dello Stregone è ora visibile." };
               break;
           case 'granstregone':
               updatedPlayer = await setMasterSorcererTentVisibility(activeTrainerName, true);
+              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "La tenda del Maestro Stregone è ora visibile." };
               break;
           case 'viandante':
               updatedPlayer = await updateViandanteMaestroVisibility(activeTrainerName, true);
+              if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Il Viandante Maestro è apparso..." };
               break;
           case 'infinite':
               await updatePlayerMoney(activeTrainerName, 10000);
               updatedPlayer = await addMultipleItemsToInventory(activeTrainerName, 10);
+               if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: "Hai ricevuto 10.000 monete e 10 di ogni consumabile." };
               break;
           default:
-              // toast({ title: "Codice non valido" });
+              toast({ title: "Codice non valido", variant: "destructive" });
               break;
       }
       if (updatedPlayer) {
           setMenuPlayerData(updatedPlayer);
+          if (toastMessage) {
+            toast(toastMessage);
+          }
       }
       setShowSecretMenu(false);
       setSecretCode('');
@@ -1411,9 +1423,9 @@ function SbirumonApp() {
         setShowNoOpponentFoundDialog={setShowNoOpponentFoundDialog}
       />,
     arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
-    noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle} />,
+    noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
-    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
+    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle}/>,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} />,
     items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
@@ -1563,5 +1575,6 @@ export default function Page() {
     
 
     
+
 
 

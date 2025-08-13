@@ -5,17 +5,19 @@
 import React from 'react';
 import type { Fighter } from '@/types/battle';
 import { Button } from '@/components/ui/button';
-import { Wand2, Sparkles, ChevronLeftCircle } from 'lucide-react';
+import { Wand2, Sparkles, ChevronLeftCircle, Eye } from 'lucide-react';
 import type { View } from './types';
 
 interface ArcanePathPageProps {
   onNavigate: (view: View) => void;
   menuPlayerData: Fighter | null;
+  startViandanteMaestroBattle: () => void;
 }
 
-export const ArcanePathPage = ({ onNavigate, menuPlayerData }: ArcanePathPageProps) => {
+export const ArcanePathPage = ({ onNavigate, menuPlayerData, startViandanteMaestroBattle }: ArcanePathPageProps) => {
     const canSeeSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.sorcererTentVisible;
     const canSeeMasterSorcerer = (menuPlayerData?.highestGymBeaten ?? 0) >= 3 || menuPlayerData?.masterSorcererTentVisible;
+    const canSeeViandante = menuPlayerData?.viandanteMaestroVisible;
 
     return (
         <div className="relative flex min-h-screen flex-col items-center pb-24 text-foreground">
@@ -50,7 +52,18 @@ export const ArcanePathPage = ({ onNavigate, menuPlayerData }: ArcanePathPagePro
                             </div>
                         </Button>
                     )}
-                    {!canSeeSorcerer && !canSeeMasterSorcerer && (
+                    {canSeeViandante && (
+                        <Button variant="secondary" className="h-20 w-full justify-start p-4 text-left border-teal-500/50" onClick={startViandanteMaestroBattle}>
+                            <div className="flex items-center gap-4">
+                                <div className="rounded-lg bg-teal-500/20 p-3"><Eye className="h-6 w-6 text-teal-400" /></div>
+                                <div>
+                                    <p className="text-base font-bold">Viandante Maestro</p>
+                                    <p className="text-sm text-muted-foreground">Una sfida inaspettata ti attende</p>
+                                </div>
+                            </div>
+                        </Button>
+                    )}
+                    {!canSeeSorcerer && !canSeeMasterSorcerer && !canSeeViandante && (
                         <p className="text-center text-muted-foreground mt-8">Il sentiero è ancora avvolto nella nebbia. Prosegui nel tuo viaggio per svelarne i segreti.</p>
                     )}
                 </div>
