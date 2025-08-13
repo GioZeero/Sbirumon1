@@ -25,3 +25,4 @@ export { MessagesHubPage } from './MessagesHubPage';
 export { ChatPage } from './ChatPage';
 export { GameOverPage } from './GameOverPage';
 export { JobBoardPage } from './JobBoardPage';
+export { SorcererTentPage } from './SorcererTentPage';

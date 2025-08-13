@@ -81,9 +81,9 @@ import {
   ChatPage,
   GameOverPage,
   JobBoardPage,
+  SorcererTentPage
 } from './views';
 
-import { SorcererTentPage } from './sorcerer/sorcerer-view';
 
 import { hasUnreadMessages } from './messaging/actions';
 
@@ -992,7 +992,7 @@ function SbirumonApp() {
         }, GameBalance.OPPONENT_TURN_DELAY_MS / speedMultiplier);
     }
      return () => clearTimeout(timeoutId);
-  }, [isPlayerTurn, showBattle, isInitializing, winner, isPaused, isBattleEnding, playerChosenAction, isAutoBattle, addMultipleLogEntries, endTurn, executePlayerChosenAttack, speedMultiplier, turnCount]);
+  }, [isPlayerTurn, showBattle, isInitializing, winner, isPaused, isBattleEnding, playerChosenAction, isAutoBattle, addMultipleLogEntries, endTurn, executeOpponentTurn, speedMultiplier, turnCount]);
 
   useEffect(() => {
     if (winner && !isBattleEnding) {
@@ -1592,8 +1592,3 @@ export default function Page() {
     </Suspense>
   )
 }
-
-    
-
-    
-
