@@ -11,39 +11,62 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { ALL_CONSUMABLES } from '@/config/consumables';
 import { GameBalance } from '@/config/game-balance';
-import { evolvePlayerCreatureWithDebuff, randomizePlayerStats, updatePlayerMoney, updatePlayerPersistentInventory } from '@/lib/fighter-repository';
+import { evolvePlayerCreatureWithDebuff, randomizePlayerStats, updatePlayerMoney, updatePlayerPersistentInventory, getPlayerProfileData } from '@/lib/fighter-repository';
 import { useToast } from '@/hooks/use-toast';
 
 
 // Server actions defined directly in the view component
 async function performStatReroll(trainerName: string): Promise<{ success: boolean, message: string, updatedPlayer?: Fighter }> {
     const cost = 1000;
-    const player = await randomizePlayerStats(trainerName); // This action already gets the player
-    if (!player.success || !player.updatedPlayer) {
-        return { success: false, message: player.message || 'Errore durante il rimescolamento.' };
+    
+    const playerPreAction = await getPlayerProfileData(trainerName);
+    if (!playerPreAction) {
+        return { success: false, message: 'Giocatore non trovato.' };
     }
-    if ((player.updatedPlayer.money ?? 0) < cost) {
-        // This check should ideally be done before, but as a safeguard.
+     if ((playerPreAction.money ?? 0) < cost) {
         return { success: false, message: 'Fondi insufficienti.' };
     }
+
     const playerAfterPayment = await updatePlayerMoney(trainerName, -cost);
-    return { success: true, message: 'Statistiche rimescolate!', updatedPlayer: playerAfterPayment ?? undefined };
+     if (!playerAfterPayment) {
+        return { success: false, message: 'Errore durante il pagamento.' };
+    }
+
+    const rerollResult = await randomizePlayerStats(trainerName);
+    if (!rerollResult.success || !rerollResult.updatedPlayer) {
+        // Refund if reroll fails
+        await updatePlayerMoney(trainerName, cost);
+        return { success: false, message: rerollResult.message || 'Errore durante il rimescolamento.' };
+    }
+    
+    return { success: true, message: 'Statistiche rimescolate!', updatedPlayer: rerollResult.updatedPlayer };
 }
 
 async function performForcedEvolution(trainerName: string, requiredItemId: string): Promise<{ success: boolean, message: string, updatedPlayer?: Fighter }> {
     const cost = 1000;
-    const playerWithItem = await updatePlayerPersistentInventory(trainerName, requiredItemId, -1);
-    if (!playerWithItem) {
+
+    const playerPreAction = await getPlayerProfileData(trainerName);
+    if (!playerPreAction) {
+        return { success: false, message: 'Giocatore non trovato.' };
+    }
+
+    const hasRequiredRemain = playerPreAction.inventory?.[requiredItemId]?.quantity ?? 0 > 0;
+    if (!hasRequiredRemain) {
         return { success: false, message: 'Oggetto richiesto non trovato nell\'inventario.' };
     }
-    if ((playerWithItem.money ?? 0) < cost) {
-        // Refund item if payment fails
-        await updatePlayerPersistentInventory(trainerName, requiredItemId, 1);
+
+    if ((playerPreAction.money ?? 0) < cost) {
         return { success: false, message: 'Fondi insufficienti.' };
     }
+
+    const playerAfterItemConsumed = await updatePlayerPersistentInventory(trainerName, requiredItemId, -1);
+    if (!playerAfterItemConsumed) {
+         return { success: false, message: 'Errore nel consumo dell\'oggetto.' };
+    }
+
     const playerAfterPayment = await updatePlayerMoney(trainerName, -cost);
     if (!playerAfterPayment) {
-        // Refund item
+        // Refund item if payment fails
         await updatePlayerPersistentInventory(trainerName, requiredItemId, 1);
         return { success: false, message: 'Errore durante il pagamento.' };
     }
@@ -52,13 +75,15 @@ async function performForcedEvolution(trainerName: string, requiredItemId: strin
         const evolvedPlayer = await evolvePlayerCreatureWithDebuff(trainerName);
         return { success: true, message: 'Evoluzione riuscita! Ma la tua creatura è ora permanentemente Impaurita.', updatedPlayer: evolvedPlayer ?? undefined };
     } else {
-        return { success: false, message: 'Il rito è fallito. Il resto è andato perduto.' };
+        // To get the updated player state after payment even on failure, we refetch.
+        const finalPlayerState = await getPlayerProfileData(trainerName);
+        return { success: false, message: 'Il rito è fallito. Il resto è andato perduto.', updatedPlayer: finalPlayerState ?? undefined };
     }
 }
 
 
 interface SorcererTentPageProps {
-  onNavigate: (view: View) => void;
+  onNavigate: (view: View, data?: any) => void;
   trainerName: string;
   menuPlayerData: Fighter | null;
   isMaster: boolean;
@@ -87,7 +112,7 @@ export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMa
                 variant: result.success ? "default" : "destructive",
             });
 
-            if (result.success && result.updatedPlayer) {
+            if (result.updatedPlayer) { // Update player state on both success and failure
                 setPlayer(result.updatedPlayer);
             }
         });
@@ -131,17 +156,19 @@ export const SorcererTentPage = ({ onNavigate, trainerName, menuPlayerData, isMa
                            Tipo: {player.creatureType} / Archetipo: {player.archetype}
                        </div>
                     </CardHeader>
-                    <CardContent>
-                       <div className="flex items-center text-lg"><Heart className="w-5 h-5 mr-2 text-red-500" /> Salute <span className="ml-auto font-semibold">{player.currentHealth} / {player.maxHealth}</span></div>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-base mt-2">
-                           <div>Attacco: <span className="font-semibold float-right">{player.attackStat}</span></div>
-                           <div>Difesa: <span className="font-semibold float-right">{player.defenseStat}</span></div>
-                           <div>Att. Sp.: <span className="font-semibold float-right">{player.specialAttackStat}</span></div>
-                           <div>Dif. Sp.: <span className="font-semibold float-right">{player.specialDefenseStat}</span></div>
-                           <div>Velocità: <span className="font-semibold float-right">{player.speedStat}</span></div>
-                           <div>Fortuna: <span className="font-semibold float-right">{player.luckStat}</span></div>
-                       </div>
-                    </CardContent>
+                    {!isMaster && (
+                        <CardContent>
+                           <div className="flex items-center text-lg"><Heart className="w-5 h-5 mr-2 text-red-500" /> Salute <span className="ml-auto font-semibold">{player.currentHealth} / {player.maxHealth}</span></div>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-base mt-2">
+                               <div>Attacco: <span className="font-semibold float-right">{player.attackStat}</span></div>
+                               <div>Difesa: <span className="font-semibold float-right">{player.defenseStat}</span></div>
+                               <div>Att. Sp.: <span className="font-semibold float-right">{player.specialAttackStat}</span></div>
+                               <div>Dif. Sp.: <span className="font-semibold float-right">{player.specialDefenseStat}</span></div>
+                               <div>Velocità: <span className="font-semibold float-right">{player.speedStat}</span></div>
+                               <div>Fortuna: <span className="font-semibold float-right">{player.luckStat}</span></div>
+                           </div>
+                        </CardContent>
+                    )}
                 </Card>
 
                 {/* Ritual Card */}
