@@ -95,7 +95,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
             style={{ perspective: 1000 }}
         >
              <div
-                className="absolute z-10 w-[40vw] h-[40vw] cursor-pointer pointer-events-auto"
+                className="absolute z-10 w-[48vw] h-[48vw] cursor-pointer pointer-events-auto"
                 onClick={() => navigateTo('sbirulino')}
             >
                 {menuPlayerData && (
@@ -126,7 +126,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                     return (
                          <div
                             key={dest.name}
-                            className="absolute top-1/2 left-1/2 -mt-6 -ml-6 pointer-events-auto"
+                            className="absolute top-1/2 left-1/2 -mt-[1.8rem] -ml-[1.8rem] pointer-events-auto"
                             style={{
                               transform: `rotate(${angle}deg) translateY(-${radiusLg}px)`,
                             }}
@@ -135,7 +135,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                                 variant="outline"
                                 size="icon"
                                 className={cn(
-                                    "relative w-12 h-12 rounded-full bg-background/70 backdrop-blur-sm shadow-lg transition-all"
+                                    "relative w-14 h-14 rounded-full bg-background/70 backdrop-blur-sm shadow-lg transition-all"
                                 )}
                                 onClick={() => {
                                     if (dest.view === 'prairie') initializeBattle();
@@ -151,7 +151,7 @@ export const MainMenuPage = ({ menuPlayerData, leaderboardRank, initializeBattle
                                       damping: 25
                                     }}
                                 >
-                                    {isLoading && isActive ? <Loader2 className="w-6 h-6 animate-spin" /> : <dest.icon className={cn("w-6 h-6", dest.color)} />}
+                                    {isLoading && isActive ? <Loader2 className="w-7 h-7 animate-spin" /> : <dest.icon className={cn("w-7 h-7", dest.color)} />}
                                 </motion.div>
                             </Button>
                             <AnimatePresence>
