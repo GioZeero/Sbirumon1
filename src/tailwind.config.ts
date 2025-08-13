@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -18,7 +17,7 @@ export default {
         'storage': "url('/magazzino.png')",
         'gym-menu': "url('/palestre.png')",
         'covo': "url('/covo.png')",
-        'shop-hub': "url('/negozio.png')",
+        'shop-hub': "url('/granmaestro.png')",
         'gym-combat': "url('/palestracombat.png')",
         'gran-maestro': "url('/granmaestro.png')",
         'home-menu': "url('/casa.png')",
