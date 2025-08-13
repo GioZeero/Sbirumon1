@@ -176,10 +176,12 @@ const BattleResultModal: FC<BattleResultModalProps> = ({
           </AlertDialogDescription>
            {bottomContent}
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex flex-col gap-2 pt-4">
-          {primaryButton}
-          {secondaryButton}
-          <Button onClick={() => setShowLog(true)} variant="secondary" className="w-full mt-2 text-sm transition-transform duration-75 ease-in-out active:scale-95">
+        <AlertDialogFooter className="sm:justify-center flex-col-reverse sm:flex-row gap-2 pt-4">
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            {secondaryButton}
+            {primaryButton}
+          </div>
+          <Button onClick={() => setShowLog(true)} variant="secondary" className="w-full sm:w-auto mt-2 sm:mt-0 text-sm transition-transform duration-75 ease-in-out active:scale-95">
             Vedi Log
           </Button>
         </AlertDialogFooter>
