@@ -1,7 +1,6 @@
 
 
 import type {Metadata} from 'next';
-import '@/app/globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import { headers } from 'next/headers';
