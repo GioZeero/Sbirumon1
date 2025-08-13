@@ -151,7 +151,7 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
              <button onClick={() => onNavigate('main')} className="absolute top-6 left-6 z-10 h-12 w-12 rounded-full hover:bg-background/20 transition-colors flex items-center justify-center p-0">
                 <ArrowLeft className="h-full w-full p-2" strokeWidth={3} />
             </button>
-            <main className="w-full max-w-lg mx-auto p-6 mt-16 space-y-6">
+            <main className="w-full max-w-md mx-auto p-6 mt-16 space-y-6">
                 <Card className="w-full bg-card/80 backdrop-blur-sm">
                     <CardHeader className="items-center pb-4">
                         <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-primary bg-background/10 mb-4">
