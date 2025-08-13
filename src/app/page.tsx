@@ -1475,7 +1475,7 @@ function SbirumonApp() {
   const currentViewContent = currentView === 'loading' ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
-    "min-h-screen bg-cover bg-center bg-black",
+    "min-h-screen bg-cover bg-center",
      !showBattle && backgroundClass()
   );
 
@@ -1604,4 +1604,5 @@ export default function Page() {
     
 
     
+
 
