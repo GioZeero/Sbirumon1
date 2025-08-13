@@ -1310,7 +1310,7 @@ function SbirumonApp() {
         case 'messages_hub':
         case 'chat':
             return 'bg-storage';
-        default: return 'bg-black';
+        default: return 'bg-background';
     }
   };
   
@@ -1486,7 +1486,7 @@ function SbirumonApp() {
     }
 
   return (
-    <div className={mainAppContainerClass} style={mainAppContainerStyle}>
+    <div className={cn("min-h-screen", "bg-background")} style={mainAppContainerStyle}>
           <div className="relative z-10">
             <PageTransitionWrapper transitionKey={currentView}>
               <div className="min-h-screen flex flex-col bg-background/0">
@@ -1604,5 +1604,6 @@ export default function Page() {
     
 
     
+
 
 

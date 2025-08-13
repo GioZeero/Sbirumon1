@@ -12,7 +12,7 @@ interface StartScreenPageProps {
 
 export const StartScreenPage = ({ onStartGame }: StartScreenPageProps) => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-start-screen-bg bg-cover bg-center">
         
         <Button size="lg" className="text-4xl py-10 px-16" onClick={onStartGame}>
             <Play className="mr-4 h-8 w-8" />
