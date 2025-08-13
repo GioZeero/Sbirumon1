@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,10 +14,10 @@ const PageTransitionWrapper = ({
     <AnimatePresence mode="wait">
       <motion.div
         key={transitionKey}
-        initial={{ opacity: 1, scale: 1 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
         {children}
       </motion.div>

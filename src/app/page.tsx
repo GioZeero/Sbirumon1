@@ -1280,7 +1280,9 @@ function SbirumonApp() {
     }
     switch(currentView) {
         case 'game_over':
-            return 'bg-black';
+        case 'welcome':
+        case 'start_screen':
+            return 'bg-black'; // Use black for transitions and simple screens
         case 'city':
         case 'noble_area':
         case 'merchant_area':
@@ -1293,8 +1295,7 @@ function SbirumonApp() {
         case 'gym_menu': return 'bg-gym-menu';
         case 'covo_menu': return 'bg-covo';
         case 'creature_selection': return 'bg-prateria';
-        case 'main':
-        case 'start_screen': return 'bg-main-menu';
+        case 'main': return 'bg-main-menu';
         case 'black_market': return 'bg-covo';
         case 'evolution_menu': return 'bg-main-menu';
         case 'job_board': return 'bg-city';
@@ -1309,8 +1310,7 @@ function SbirumonApp() {
         case 'chat':
             return 'bg-storage';
         case 'loading':
-        case 'welcome':
-        default: return '';
+        default: return 'bg-black';
     }
   };
   
@@ -1475,8 +1475,8 @@ function SbirumonApp() {
   const currentViewContent = isLoading ? menuViews['loading'] : menuViews[currentView] ?? menuViews['loading'];
   
   const mainAppContainerClass = cn(
-    "min-h-screen bg-cover bg-center",
-     backgroundClass()
+    "min-h-screen bg-black bg-cover bg-center",
+     !showBattle && backgroundClass()
   );
 
   const mainAppContainerStyle: React.CSSProperties = {};
@@ -1489,7 +1489,7 @@ function SbirumonApp() {
     <div className={mainAppContainerClass} style={mainAppContainerStyle}>
           <div className="relative z-10">
             <PageTransitionWrapper transitionKey={currentView}>
-              <div className="min-h-screen flex flex-col">
+              <div className="min-h-screen flex flex-col bg-background/0">
                   <main className="flex-grow">
                       {showBattle ? (
                         <BattleView
