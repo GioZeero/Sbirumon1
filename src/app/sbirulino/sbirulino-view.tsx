@@ -153,12 +153,12 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
             <main className="w-full max-w-md mx-auto p-6 mt-16 space-y-6">
                 <Card className="w-full bg-card/80 backdrop-blur-sm">
                     <CardHeader className="items-center pb-4">
-                        <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-primary bg-background/10 mb-4">
+                        <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-primary bg-background/10 mb-4">
                             <Image
                                 src={sbirulino.spriteUrl}
                                 alt={sbirulino.name}
-                                width={160}
-                                height={160}
+                                width={144}
+                                height={144}
                                 className="w-full h-full object-cover"
                                 unoptimized
                             />
