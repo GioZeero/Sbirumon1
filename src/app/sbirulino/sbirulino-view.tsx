@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useTransition, useEffect } from 'react';
@@ -190,7 +189,6 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
                                 <Progress value={xpPercentage} className="h-2.5" indicatorClassName="bg-accent" />
                             </div>
                         </div>
-                        <p className="text-center text-sm text-muted-foreground">Salute Massima: {sbirulino.maxHealth} HP</p>
                     </CardContent>
                 </Card>
 
@@ -278,7 +276,10 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-semibold text-accent text-center">Statistiche di {sbirulino.name}</DialogTitle>
                 </DialogHeader>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-md mt-4">
+                 <div className="flex items-center text-lg py-2 border-b border-t border-border/50">
+                    <Heart className="w-5 h-5 mr-2 text-red-500" /> Salute Massima <span className="ml-auto font-semibold">{sbirulino.maxHealth} HP</span>
+                </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-md mt-2">
                     <div className="flex items-center"><Sword className="w-4 h-4 mr-2 text-primary/80" /> <span className={cn(getStatGrowthColor(archetype, 'physical'))}>Attacco</span> <span className={cn("ml-auto font-semibold", getStatColor(sbirulino.currentAttackStat, sbirulino.attackStat))}>{sbirulino.currentAttackStat ?? 'N/A'}</span></div>
                     <div className="flex items-center"><Shield className="w-4 h-4 mr-2 text-primary/80" /> <span className={cn(getStatGrowthColor(archetype, 'physical'))}>Difesa</span> <span className={cn("ml-auto font-semibold", getStatColor(sbirulino.currentDefenseStat, sbirulino.defenseStat))}>{sbirulino.currentDefenseStat ?? 'N/A'}</span></div>
                     <div className="flex items-center"><Sparkles className="w-4 h-4 mr-2 text-primary/80" /> <span className={cn(getStatGrowthColor(archetype, 'special'))}>Attacco Sp</span> <span className={cn("ml-auto font-semibold", getStatColor(sbirulino.currentSpecialAttackStat, sbirulino.specialAttackStat))}>{sbirulino.currentSpecialAttackStat ?? 'N/A'}</span></div>
@@ -334,4 +335,3 @@ export default function SbirulinoClientView({ initialSbirulino, onNavigate, allG
             )}
         </div>
     );
-}
