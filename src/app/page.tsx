@@ -1297,7 +1297,7 @@ function SbirumonApp() {
         case 'sbirudex':
         case 'messages_hub':
         case 'chat':
-            return 'bg-background'; // Removed custom background
+            return 'bg-home-menu';
         case 'gym_menu': return 'bg-gym-menu';
         case 'covo_menu': return 'bg-covo';
         case 'creature_selection': return 'bg-prateria';
@@ -1614,6 +1614,7 @@ export default function Page() {
     
 
     
+
 
 
 
