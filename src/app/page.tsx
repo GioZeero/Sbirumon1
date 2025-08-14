@@ -1465,7 +1465,7 @@ function SbirumonApp() {
     arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
-    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={startViandanteMaestroBattle}/>,
+    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle}/>,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={onPlayerDataChange}/>,
     items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
@@ -1614,6 +1614,7 @@ export default function Page() {
     
 
     
+
 
 
 
