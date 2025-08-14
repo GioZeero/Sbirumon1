@@ -1283,6 +1283,53 @@ export async function updatePlayerAttempts(trainerName: string, newAttempts: num
     return currentPlayer;
 }
 
+export async function setPlayerLevel(trainerName: string, newLevel: number): Promise<Fighter | null> {
+    let player = await getPlayerFromStore(trainerName);
+    if (!player) return null;
+
+    // Create a pristine copy of the base creature at level 1
+    const creaturePool = getCreaturePool();
+    const baseCreature = creaturePool.find(c => c.id === player.baseId);
+    if (!baseCreature) return player; // Cannot de-level if base creature is not found
+    
+    let newPlayerState: Fighter = {
+        ...player,
+        ...JSON.parse(JSON.stringify(baseCreature)), // Reset stats to base
+        level: 1,
+        currentXP: 0,
+        xpToNextLevel: 100,
+    };
+    
+    // Level up from level 1 to the target level
+    if (newLevel > 1) {
+        for (let i = 1; i < newLevel; i++) {
+            const newStats = calculateLevelUp(newPlayerState);
+            Object.assign(newPlayerState, newStats);
+            newPlayerState.level += 1;
+        }
+    }
+    
+    newPlayerState.level = newLevel;
+    newPlayerState.currentXP = 0;
+    newPlayerState.xpToNextLevel = Math.floor(100 * Math.pow(1 + GameBalance.XP_TO_NEXT_LEVEL_INCREASE_FACTOR, newPlayerState.level));
+    newPlayerState.currentHealth = newPlayerState.maxHealth;
+
+    // Carry over important progress data
+    newPlayerState.id = player.id;
+    newPlayerState.trainerName = player.trainerName;
+    newPlayerState.name = player.name;
+    newPlayerState.unlockedAttackIds = player.unlockedAttackIds;
+    newPlayerState.inventory = player.inventory;
+    newPlayerState.money = player.money;
+    newPlayerState.highestGymBeaten = player.highestGymBeaten;
+    newPlayerState.trainerRankPoints = player.trainerRankPoints;
+    newPlayerState.attemptsRemaining = player.attemptsRemaining;
+    newPlayerState.suicideCount = player.suicideCount;
+    
+    await savePlayer(trainerName, newPlayerState);
+    return newPlayerState;
+}
+
 
 // --- Arena Functions ---
 
@@ -1355,7 +1402,7 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
         const data = doc.data() as FighterDbData;
         leaderboard.push({
             trainerName: data.trainerName,
-            rankPoints: data.trainerRankPoints ?? 0,
+            rankPoints: data.rankPoints ?? 0,
         });
     });
 

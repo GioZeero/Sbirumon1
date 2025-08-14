@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback, useRef, Suspense, useTransition } from 'react';
 import type { Fighter, BattleLogEntry, BattleWinner, Attack, ConsumableInventoryItem, CreatureType, AttackRarity, AnalyzedStats, Archetype, LogMessagePart } from '@/types/battle';
-import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank, addMultipleItemsToInventory, updatePlayerAttempts } from '@/lib/fighter-repository';
+import { getFighterDataForBattle, updatePlayerXPAndLevel, updatePlayerPersistentInventory, transformAndSavePlayer, getPlayerProfileData, updatePlayerMoney, initializePlayerWithTrainerName, generateCreatureChoices, setPlayerCreature, markGymAsBeaten, resetPlayerRun, decrementCovoAttempt, recordSuicideAndDropItem, incrementBattlesWon, updateSteroidCountersAndApplyDebuffs, updateViandanteMaestroVisibility, setSorcererTentVisibility, setMasterSorcererTentVisibility, applyLevelUpToPlayer, evolvePlayerCreature, evolvePlayerCreatureWithDebuff, deletePlayerProfile, setArenaDisclaimerAccepted, clearDefeatedBy, markOpponentAsDefeated, getLeaderboard, incrementArenaRank, addMultipleItemsToInventory, updatePlayerAttempts, setPlayerLevel } from '@/lib/fighter-repository';
 import FighterCard from '@/components/battle/FighterCard';
 import CombatLog from '@/components/battle/CombatLog';
 import BattleResultModal from '@/components/battle/BattleResultModal';
@@ -1355,6 +1355,19 @@ function SbirumonApp() {
           } else {
               toast({ title: "Codice non valido", description: "Formato corretto: tentativi [numero]", variant: "destructive" });
           }
+      } else if (lowerCaseCode.startsWith('livello ')) {
+          const parts = secretCode.split(' ');
+          if (parts.length === 2 && !isNaN(parseInt(parts[1], 10))) {
+              const newLevel = parseInt(parts[1], 10);
+              if (newLevel > 0 && newLevel <= 100) {
+                  updatedPlayer = await setPlayerLevel(activeTrainerName, newLevel);
+                  if (updatedPlayer) toastMessage = { title: "Codice Attivato!", description: `Livello impostato a ${newLevel}.` };
+              } else {
+                  toast({ title: "Numero non valido", description: "Il livello deve essere tra 1 e 100.", variant: "destructive" });
+              }
+          } else {
+              toast({ title: "Codice non valido", description: "Formato corretto: livello [numero]", variant: "destructive" });
+          }
       } else {
           switch (lowerCaseCode) {
               case 'stregone':
@@ -1452,7 +1465,7 @@ function SbirumonApp() {
     arena_leaderboard: <ArenaLeaderboardPage onNavigate={navigateTo} />,
     noble_area: <NobleAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     merchant_area: <MerchantAreaPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
-    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={handleStartViandanteMaestroBattle}/>,
+    arcane_path: <ArcanePathPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} startViandanteMaestroBattle={startViandanteMaestroBattle}/>,
     shop_hub: <ShopPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} onPlayerDataChange={onPlayerDataChange}/>,
     items_hub: <ItemsHubPage onNavigate={navigateTo} menuPlayerData={menuPlayerData} />,
     items_moves_edit: <EditSbirulinoMovesPage onNavigate={navigateTo} trainerName={activeTrainerName!} menuPlayerData={menuPlayerData} allGameAttacks={allGameAttacks} />,
@@ -1601,6 +1614,7 @@ export default function Page() {
     
 
     
+
 
 
 
