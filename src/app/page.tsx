@@ -1290,7 +1290,14 @@ function SbirumonApp() {
         case 'shop_hub': return 'bg-shop-hub';
         case 'items_moves_edit':
         case 'sbirulino':
-        case 'trainer': return 'bg-home-menu';
+        case 'trainer':
+        case 'items_hub':
+        case 'items_consumables':
+        case 'items_moves':
+        case 'sbirudex':
+        case 'messages_hub':
+        case 'chat':
+            return 'bg-background'; // Removed custom background
         case 'gym_menu': return 'bg-gym-menu';
         case 'covo_menu': return 'bg-covo';
         case 'creature_selection': return 'bg-prateria';
@@ -1300,13 +1307,6 @@ function SbirumonApp() {
         case 'arena':
         case 'arena_leaderboard':
             return 'bg-gym-menu';
-        case 'items_hub':
-        case 'items_consumables':
-        case 'items_moves':
-        case 'sbirudex':
-        case 'messages_hub':
-        case 'chat':
-            return 'bg-storage';
         default: return 'bg-background';
     }
   };
@@ -1614,6 +1614,7 @@ export default function Page() {
     
 
     
+
 
 
 
